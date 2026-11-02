@@ -4,22 +4,30 @@ title Modulwerk (Academic Workspace)
 cd /d "%~dp0"
 
 echo ==========================================================
-echo   Modulwerk - Academic Workspace ^& Exercise Tracker
-echo   Starting server...
+echo   Modulwerk - Academic Workspace ^& Task Manager
+echo   Starting local server...
 echo ==========================================================
 echo.
 
-:: 1. Check if python is in PATH and working
+:: 1. Attempt to launch via Python standard-library engine
 where python >nul 2>&1
 if %ERRORLEVEL% equ 0 (
     python -c "import sys; sys.exit(0 if sys.version_info >= (3, 6) else 1)" >nul 2>&1
     if %ERRORLEVEL% equ 0 (
+        echo [OK] Python detected. Launching cross-platform engine...
         python .tracker\tracker_server.py
         goto :eof
     )
 )
 
-:: 2. Fallback to Windows built-in PowerShell engine
+:: 2. Fallback to Windows built-in PowerShell micro-server
+echo [*] Launching via Windows PowerShell engine...
 powershell -NoProfile -ExecutionPolicy Bypass -File ".tracker\tracker_server.ps1"
 
-pause
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo [ERROR] Failed to start Modulwerk server.
+    echo Please make sure either Python 3 or Windows PowerShell is available.
+    echo.
+    pause
+)

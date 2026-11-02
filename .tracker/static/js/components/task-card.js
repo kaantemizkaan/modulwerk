@@ -1,51 +1,72 @@
 // ========================================================
-// TASK CARD COMPONENT (DUAL-BOX FILE-PAIR LAYOUT)
+// TASK CARD COMPONENT (DUAL-BOX FILE-PAIR LAYOUT - ENGLISH)
 // ========================================================
 
 import { esc } from '../utils.js';
 
+const categoryLabels = {
+  'Hausaufgabe': 'Homework',
+  'Übungsblatt': 'Exercise Sheet',
+  'Präsenzübung': 'In-Class Lab',
+  'Praktikum': 'Lab / Project',
+  'Tutorium': 'Tutorial'
+};
+
 /**
- * Render single task card HTML
+ * Render single task card HTML in English
  * @param {Object} t 
  * @returns {string}
  */
 export function renderTaskCard(t) {
   const isDone = !!t.completed;
-  const isAbgabe = t.category === 'Hausaufgabe' && !isDone;
+  const isAbgabe = (t.category === 'Hausaufgabe' || t.category === 'Homework') && !isDone;
   const isOpt = !!t.is_optional;
   const cleanNote = (t.notes || '').trim();
 
-  // Folder breadcrumb display
-  const dirPath = t.file_path ? t.file_path.replace(/\\/g, '/').replace(/\/[^\/]+$/, '') : (t.subject + ' / ' + t.sheet);
+  // Category in English
+  const displayCategory = categoryLabels[t.category] || t.category;
 
-  // Aufgabendatei information
-  const assignName = t.file_name || (t.file_path ? t.file_path.split(/[\\\/]/).pop() : 'Aufgabendatei');
-  const assignSize = t.file_size || '';
+  // Sheet in English
+  const displaySheet = t.sheet ? t.sheet.replace(/^Blatt\s*/i, 'Sheet ') : 'Sheet 01';
+
+  // Folder breadcrumb display
+  const dirPath = t.file_path ? t.file_path.replace(/\\/g, '/').replace(/\/[^\/]+$/, '') : (t.subject + ' / ' + displaySheet);
+
+  // Assignment file info
+  const assignName = t.file_name || (t.file_path ? t.file_path.split(/[\\\/]/).pop() : 'Assignment File');
+  const assignSize = t.file_size ? t.file_size.replace('Java-Dateien', 'Java Files').replace('Dateien', 'Files') : '';
   const assignExt = (t.file_ext || 'PDF').toUpperCase();
 
-  // Lösungsdatei information
+  // Solution file info
   const hasSolution = !!(t.solution_path || t.solution_note);
-  const solName = t.solution_name || (t.solution_path ? t.solution_path.split(/[\\\/]/).pop() : 'Lösungsdatei');
+  const solName = t.solution_name || (t.solution_path ? t.solution_path.split(/[\\\/]/).pop() : 'Solution File');
   const solSize = t.solution_size || '';
   const solExt = (t.solution_ext || 'PDF').toUpperCase();
 
   // Category badge class
   let catClass = '';
-  if (t.category === 'Hausaufgabe') catClass = 'badge-abgabe';
-  else if (t.category.includes('Präsenz')) catClass = 'badge-praesenz';
-  else if (t.category === 'Praktikum') catClass = 'badge-praktikum';
-  else if (t.category === 'Tutorium') catClass = 'badge-tutorium';
+  if (t.category === 'Hausaufgabe' || t.category === 'Homework') catClass = 'badge-abgabe';
+  else if (t.category.includes('Präsenz') || t.category.includes('In-Class')) catClass = 'badge-praesenz';
+  else if (t.category === 'Praktikum' || t.category.includes('Lab')) catClass = 'badge-praktikum';
+  else if (t.category === 'Tutorium' || t.category === 'Tutorial') catClass = 'badge-tutorium';
 
   // Extension classes
   const assignExtClass = assignExt === 'PDF' ? 'pdf' : (assignExt === 'JAVA' ? 'java' : '');
   const solExtClass = hasSolution ? 'sol' : (solExt === 'PDF' ? 'pdf' : '');
+
+  // Format title (replace Blatt with Sheet, Uebungsblatt with Exercise)
+  let cleanTitle = t.title || '';
+  cleanTitle = cleanTitle.replace(/\bBlatt\b/gi, 'Sheet');
+  cleanTitle = cleanTitle.replace(/\bUebungsblatt\b/gi, 'Exercise');
+  cleanTitle = cleanTitle.replace(/\bHausaufgabe\b/gi, 'Homework');
+  cleanTitle = cleanTitle.replace(/\bLoesung\b/gi, 'Solution');
 
   return `
     <article 
       class="task-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}" 
       id="card-${t.id}"
       data-subject="${esc(t.subject)}"
-      data-category="${esc(t.category)}"
+      data-category="${esc(displayCategory)}"
     >
       <!-- Top Row: Checkbox, Sheet, Title, Tags, Breadcrumb & Actions -->
       <div class="card-top">
@@ -53,25 +74,25 @@ export function renderTaskCard(t) {
           <button 
             class="cb-btn" 
             onclick="window.appActions.toggleTask('${t.id}')"
-            title="${isDone ? 'Als offen markieren' : 'Als erledigt markieren'}"
+            title="${isDone ? 'Mark as pending' : 'Mark as completed'}"
           >
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
 
-          <span class="sheet-badge">${esc(t.sheet)}</span>
+          <span class="sheet-badge">${esc(displaySheet)}</span>
 
-          <h2 class="card-title" onclick="window.appActions.toggleTask('${t.id}')" title="${esc(t.title)}">
-            ${esc(t.title)}
+          <h2 class="card-title" onclick="window.appActions.toggleTask('${t.id}')" title="${esc(cleanTitle)}">
+            ${esc(cleanTitle)}
           </h2>
 
-          <span class="badge ${catClass}">${esc(t.category)}</span>
+          <span class="badge ${catClass}">${esc(displayCategory)}</span>
 
           <button 
             class="opt-tag ${isOpt ? 'optional' : 'mandatory'}"
             onclick="window.appActions.toggleOptional('${t.id}')"
-            title="${isOpt ? 'Freiwillig (klicken, um zur Pflichtaufgabe zu machen)' : 'Pflichtaufgabe (klicken, um als freiwillig zu markieren)'}"
+            title="${isOpt ? 'Optional (click to mark as required)' : 'Required (click to mark as optional)'}"
           >
-            ${isOpt ? 'Freiwillig' : 'Pflicht'}
+            ${isOpt ? 'Optional' : 'Required'}
           </button>
         </div>
 
@@ -79,7 +100,7 @@ export function renderTaskCard(t) {
           <span 
             class="folder-crumb" 
             onclick="window.appActions.openTaskFolder('${t.id}')"
-            title="Ordner im Explorer öffnen: ${esc(dirPath)}"
+            title="Open folder in file explorer: ${esc(dirPath)}"
           >
             <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             <span>${esc(dirPath)}</span>
@@ -88,8 +109,8 @@ export function renderTaskCard(t) {
           <button 
             class="btn btn-icon" 
             onclick="window.appActions.toggleNoteDrawer('${t.id}')"
-            title="${cleanNote ? 'Notiz anzeigen/bearbeiten' : 'Notiz hinzufügen'}"
-            style="${cleanNote ? 'color: var(--lmu-green); border-color: var(--lmu-green-border); background: var(--lmu-green-bg);' : ''}"
+            title="${cleanNote ? 'View/edit note' : 'Add note'}"
+            style="${cleanNote ? 'color: var(--done); border-color: var(--done-border); background: var(--done-bg);' : ''}"
           >
             <svg viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
@@ -97,16 +118,16 @@ export function renderTaskCard(t) {
           <button 
             class="btn btn-icon btn-delete" 
             onclick="window.appActions.promptDeleteTask('${t.id}')"
-            title="Aufgabe dauerhaft löschen"
+            title="Permanently delete task"
           >
             <svg viewBox="0 0 24 24" style="width:12px;height:12px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- The File-Pair Section: Distinct Left (Aufgabe) & Right (Lösung) Tiles -->
+      <!-- The File-Pair Section: Left (Assignment) & Right (Solution) Tiles -->
       <div class="file-pair-grid">
-        <!-- Left Box: Aufgabendatei -->
+        <!-- Left Box: Assignment File -->
         <div 
           class="file-box assignment" 
           ondragover="window.appActions.handleCardDragOver(event, '${t.id}')"
@@ -114,7 +135,7 @@ export function renderTaskCard(t) {
           ondrop="window.appActions.handleCardDrop(event, '${t.id}', false)"
         >
           <div class="file-main">
-            <div class="file-icon-wrap ${assignExt === 'PDF' ? 'pdf-type' : (assignExt === 'JAVA' ? 'java-type' : '')}" title="${t.is_folder ? 'Ordner' : 'Dokument'}">
+            <div class="file-icon-wrap ${assignExt === 'PDF' ? 'pdf-type' : (assignExt === 'JAVA' ? 'java-type' : '')}" title="${t.is_folder ? 'Folder' : 'Document'}">
               ${t.is_folder ? `
                 <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               ` : `
@@ -122,7 +143,7 @@ export function renderTaskCard(t) {
               `}
             </div>
             <div class="file-texts">
-              <span class="file-label">Aufgabe</span>
+              <span class="file-label">Assignment</span>
               <span class="file-name" title="${esc(assignName)}">${esc(assignName)}</span>
               <div class="file-meta-row">
                 <span class="file-ext-badge ${assignExtClass}">${esc(assignExt)}</span>
@@ -132,8 +153,8 @@ export function renderTaskCard(t) {
           </div>
           <div class="file-actions">
             ${t.file_path ? `
-              <button class="file-btn" onclick="window.appActions.openTaskFile('${t.id}')" title="Datei öffnen">
-                ${t.is_folder ? 'Ordner' : 'Öffnen'}
+              <button class="file-btn" onclick="window.appActions.openTaskFile('${t.id}')" title="Open file">
+                ${t.is_folder ? 'Folder' : 'Open'}
               </button>
             ` : ''}
           </div>
@@ -144,7 +165,7 @@ export function renderTaskCard(t) {
           <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </div>
 
-        <!-- Right Box: Lösungsdatei (Present or Interactive Drop Zone) -->
+        <!-- Right Box: Solution File (Attached or Interactive Drop Zone) -->
         ${hasSolution ? `
           <div 
             class="file-box solution-present" 
@@ -152,14 +173,14 @@ export function renderTaskCard(t) {
             ondragover="window.appActions.handleCardDragOver(event, '${t.id}')"
             ondragleave="window.appActions.handleCardDragLeave(event, '${t.id}')"
             ondrop="window.appActions.handleCardDrop(event, '${t.id}', true)"
-            title="Lösung vorhanden (Datei hier ablegen, um Lösung zu ersetzen)"
+            title="Solution attached (drop file here to replace)"
           >
             <div class="file-main">
-              <div class="file-icon-wrap" title="Lösung verknüpft">
+              <div class="file-icon-wrap" title="Solution attached">
                 <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div class="file-texts">
-                <span class="file-label" style="color:var(--done);">Lösung verknüpft</span>
+                <span class="file-label" style="color:var(--done);">Solution Linked</span>
                 <span class="file-name" title="${esc(solName)}">${esc(solName)}</span>
                 <div class="file-meta-row">
                   <span class="file-ext-badge ${solExtClass}">${esc(solExt)}</span>
@@ -168,8 +189,8 @@ export function renderTaskCard(t) {
               </div>
             </div>
             <div class="file-actions">
-              <button class="file-btn file-btn-primary" onclick="window.appActions.openTaskSolution('${t.id}')" title="Lösung im Browser öffnen">
-                Lösung
+              <button class="file-btn file-btn-primary" onclick="window.appActions.openTaskSolution('${t.id}')" title="Open solution in browser">
+                Solution
               </button>
             </div>
           </div>
@@ -181,20 +202,20 @@ export function renderTaskCard(t) {
             ondragover="window.appActions.handleCardDragOver(event, '${t.id}')"
             ondragleave="window.appActions.handleCardDragLeave(event, '${t.id}')"
             ondrop="window.appActions.handleCardDrop(event, '${t.id}', true)"
-            title="Klicken veya Lösungs-PDF hier ablegen"
+            title="Click or drop solution file here"
           >
             <div class="file-main">
               <div class="file-icon-wrap">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
               </div>
               <div class="file-texts">
-                <span class="file-label" style="${!isOpt ? 'color:var(--opt);' : ''}">Keine Lösung hinterlegt</span>
-                <span class="file-name" style="color:var(--text-muted); font-size:11.5px;">+ Lösungsdatei hier ablegen oder wählen</span>
+                <span class="file-label" style="${!isOpt ? 'color:var(--opt);' : ''}">No solution attached</span>
+                <span class="file-name" style="color:var(--text-muted); font-size:11.5px;">+ Drop solution file here or browse</span>
               </div>
             </div>
             <div class="file-actions">
               <button class="file-btn" onclick="event.stopPropagation(); window.appActions.triggerSolutionPicker('${t.id}')">
-                Wählen
+                Browse
               </button>
             </div>
           </div>
@@ -206,7 +227,7 @@ export function renderTaskCard(t) {
         <input 
           type="text" 
           class="note-input" 
-          placeholder="Eigene Notiz hinzufügen (Enter zum Speichern)..." 
+          placeholder="Add personal note (Press Enter to save)..." 
           value="${esc(t.notes || '')}"
           onblur="window.appActions.saveNote('${t.id}', this.value)"
           onkeydown="if(event.key==='Enter') this.blur()"

@@ -118,7 +118,7 @@ export function getFilteredTasks() {
 export function getActiveModules() {
   const detected = [...new Set(state.tasks.map(t => t.subject).filter(Boolean))].sort();
   if (detected.length > 0) return detected;
-  return ['Allgemein'];
+  return ['General'];
 }
 
 /**

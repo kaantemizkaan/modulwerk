@@ -73,12 +73,12 @@ async function toggleTask(id) {
   if (state.isOnline) {
     try {
       await api.toggleTaskStatus(id);
-      showToast(t.completed ? 'Als erledigt markiert' : 'Als ausstehend markiert');
+      showToast(t.completed ? 'Marked as completed' : 'Marked as pending');
     } catch {
-      showToast('Verbindungsfehler beim Status-Update');
+      showToast('Connection error while updating status');
     }
   } else {
-    localStorage.setItem('lmu_tasks_de_v2', JSON.stringify(state.tasks));
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
   }
 }
 
@@ -91,13 +91,13 @@ async function toggleOptional(id) {
   if (state.isOnline) {
     try {
       await api.toggleTaskOptional(id);
-      showToast(t.is_optional ? 'Als freiwillige Übung markiert' : 'Als Pflichtaufgabe markiert');
+      showToast(t.is_optional ? 'Marked as optional' : 'Marked as required');
     } catch {
-      showToast('Verbindungsfehler beim Pflicht-Update');
+      showToast('Connection error while updating requirement');
     }
   } else {
-    localStorage.setItem('lmu_tasks_de_v2', JSON.stringify(state.tasks));
-    showToast(t.is_optional ? 'Als freiwillig markiert' : 'Als Pflichtaufgabe markiert');
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
+    showToast(t.is_optional ? 'Marked as optional' : 'Marked as required');
   }
 }
 
@@ -111,7 +111,7 @@ function openTaskFile(id) {
   if (state.isOnline) {
     window.open('/file?id=' + encodeURIComponent(id), '_blank');
   } else {
-    showToast('Datei kann nur bei aktiver Serververbindung direkt geöffnet werden.');
+    showToast('Files can only be opened when the Modulwerk server is active.');
   }
 }
 
@@ -121,7 +121,7 @@ function openTaskSolution(id) {
   if (state.isOnline) {
     window.open('/file?id=' + encodeURIComponent(id) + '&type=solution', '_blank');
   } else {
-    showToast('Lösung kann nur bei aktiver Serververbindung direkt geöffnet werden.');
+    showToast('Solutions can only be opened when the Modulwerk server is active.');
   }
 }
 
@@ -129,14 +129,14 @@ async function openTaskFolder(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
   if (!state.isOnline) {
-    showToast('Server nicht erreichbar');
+    showToast('Server not reachable');
     return;
   }
   try {
     await api.openFolderInExplorer(t.file_path, id);
-    showToast('Im Explorer geöffnet');
+    showToast('Opened in file explorer');
   } catch {
-    showToast('Ordner konnte nicht geöffnet werden');
+    showToast('Could not open folder');
   }
 }
 
@@ -148,10 +148,10 @@ async function saveNote(id, text) {
   if (state.isOnline) {
     try {
       await api.saveTaskNote(id, val);
-      showToast('Notiz gespeichert');
+      showToast('Note saved');
     } catch {}
   } else {
-    localStorage.setItem('lmu_tasks_de_v2', JSON.stringify(state.tasks));
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
   }
 }
 
@@ -201,11 +201,11 @@ async function handleCardDrop(event, taskId, isSolution) {
 
 async function uploadFileToServer(file, targetTaskId = null, isSolution = false) {
   if (!state.isOnline) {
-    showToast('Upload erfordert aktiven Modulwerk-Server (Modulwerk.bat).');
+    showToast('Upload requires an active Modulwerk server.');
     return;
   }
 
-  showToast(`Lade ${file.name} hoch...`);
+  showToast(`Uploading ${file.name}...`);
 
   try {
     const result = await api.uploadFile(file, targetTaskId, isSolution);
@@ -216,16 +216,16 @@ async function uploadFileToServer(file, targetTaskId = null, isSolution = false)
     } else {
       await loadTasks();
     }
-    showToast(`✓ ${result.message || 'Datei erfolgreich gespeichert!'}`);
+    showToast(`✓ ${result.message || 'File saved successfully!'}`);
     checkNormalizeCandidates();
   } catch (err) {
-    showToast(`Upload-Fehler: ${err.message}`);
+    showToast(`Upload error: ${err.message}`);
   }
 }
 
 async function triggerRescan() {
   if (!state.isOnline) {
-    showToast('Server nicht aktiv');
+    showToast('Server not active');
     return;
   }
   const scanIcon = document.getElementById('scanIcon');
@@ -236,9 +236,9 @@ async function triggerRescan() {
     state.ignoredTasks = Array.isArray(payload.data.ignored_tasks) ? payload.data.ignored_tasks : (payload.data.ignored_tasks ? [payload.data.ignored_tasks] : []);
     notifySubscribers();
     checkNormalizeCandidates();
-    showToast('Verzeichnis aktualisiert');
+    showToast('Workspace refreshed');
   } catch {
-    showToast('Scan fehlgeschlagen');
+    showToast('Scan failed');
   } finally {
     if (scanIcon) setTimeout(() => scanIcon.classList.remove('spinning'), 500);
   }
@@ -246,7 +246,7 @@ async function triggerRescan() {
 
 function setViewMode(mode) {
   state.viewMode = mode;
-  localStorage.setItem('lmu_view_mode', mode);
+  localStorage.setItem('modulwerk_view_mode', mode);
   updateViewModeButtons();
   notifySubscribers();
 }
@@ -270,7 +270,7 @@ function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme') || 'dark';
   const next = cur === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('lmu_theme', next);
+  localStorage.setItem('modulwerk_theme', next);
   state.theme = next;
 }
 
@@ -281,10 +281,10 @@ function updateSyncBadge(online) {
   if (!el || !txt) return;
   if (online) {
     el.classList.remove('offline');
-    txt.textContent = 'Synchronisiert';
+    txt.textContent = 'Synchronized';
   } else {
     el.classList.add('offline');
-    txt.textContent = 'Lokaler Modus';
+    txt.textContent = 'Offline Mode';
   }
 }
 
@@ -376,10 +376,10 @@ export function render() {
   if (elPct) elPct.textContent = stats.pct + '%';
 
   const elFraction = document.getElementById('statFraction');
-  if (elFraction) elFraction.textContent = `${stats.mandDone} von ${stats.mandTasks} Pflichtaufgaben erledigt`;
+  if (elFraction) elFraction.textContent = `${stats.mandDone} of ${stats.mandTasks} required tasks completed`;
 
   const elOptFraction = document.getElementById('statOptFraction');
-  if (elOptFraction) elOptFraction.textContent = `(+ ${stats.optDone} von ${stats.optTasks} freiwilligen Übungen)`;
+  if (elOptFraction) elOptFraction.textContent = `(+ ${stats.optDone} of ${stats.optTasks} optional exercises)`;
 
   // Dynamic progress bar
   const progressFill = document.getElementById('progressFill');
@@ -422,7 +422,7 @@ export function render() {
       const isAct = state.filterSubject === m;
 
       return `
-        <span class="module-stat-chip ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} Pflichtaufgaben (${mPct}%) ${isAct ? '· Filter aktiv' : '· Klicken zum Filtern'}">
+        <span class="module-stat-chip ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} required (${mPct}%) ${isAct ? '· Filter active' : '· Click to filter'}">
           <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
           <span class="mod-name">${m}</span>
           <strong class="mod-fraction">${mMandDone}/${mMandTasks.length}</strong>

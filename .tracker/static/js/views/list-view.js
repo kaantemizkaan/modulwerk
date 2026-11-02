@@ -1,5 +1,5 @@
 // ========================================================
-// LIST VIEW (DYNAMIC MODULE GROUPINGS + TASK CARDS)
+// LIST VIEW (DYNAMIC MODULE GROUPINGS + TASK CARDS - ENGLISH)
 // ========================================================
 
 import { esc } from '../utils.js';
@@ -15,10 +15,10 @@ import { renderTaskCard } from '../components/task-card.js';
 export function renderListView(filtered, modules) {
   const activeModules = modules.filter(m => filtered.some(t => t.subject === m));
   const otherTasks = filtered.filter(t => !modules.includes(t.subject));
-  if (otherTasks.length) activeModules.push('Sonstige');
+  if (otherTasks.length) activeModules.push('Other');
 
   const groupsHtml = activeModules.map(mod => {
-    const groupItems = filtered.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Sonstige'));
+    const groupItems = filtered.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
     const gDone = groupItems.filter(t => t.completed).length;
     const gMand = groupItems.filter(t => !t.is_optional);
     const gMandDone = gMand.filter(t => t.completed).length;
@@ -33,7 +33,7 @@ export function renderListView(filtered, modules) {
             <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
             <span>${esc(mod)}</span>
           </div>
-          <span class="group-header-meta">${gMandDone}/${gMand.length} Pflichtaufgaben · ${gDone}/${groupItems.length} gesamt</span>
+          <span class="group-header-meta">${gMandDone}/${gMand.length} required · ${gDone}/${groupItems.length} total</span>
         </div>
         <div class="task-cards-list">${cardsHtml}</div>
       </section>

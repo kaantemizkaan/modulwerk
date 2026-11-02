@@ -1,5 +1,5 @@
 // ========================================================
-// MODAL CONTROLLERS & POPUPS
+// MODAL CONTROLLERS & POPUPS (ENGLISH)
 // ========================================================
 
 import { state, notifySubscribers, showToast, getActiveModules } from '../state.js';
@@ -40,9 +40,9 @@ export async function createCustomTaskAction() {
 
   const isOpt = document.getElementById('mIsOptional') ? document.getElementById('mIsOptional').checked : false;
   const payload = {
-    subject: document.getElementById('mSubject') ? document.getElementById('mSubject').value : 'Analysis',
-    category: document.getElementById('mCategory') ? document.getElementById('mCategory').value : 'Hausaufgabe',
-    sheet: (document.getElementById('mSheet') ? document.getElementById('mSheet').value.trim() : '') || 'Blatt 01',
+    subject: document.getElementById('mSubject') ? document.getElementById('mSubject').value : 'General',
+    category: document.getElementById('mCategory') ? document.getElementById('mCategory').value : 'Homework',
+    sheet: (document.getElementById('mSheet') ? document.getElementById('mSheet').value.trim() : '') || 'Sheet 01',
     title,
     notes: document.getElementById('mNotes') ? document.getElementById('mNotes').value.trim() : '',
     is_optional: isOpt
@@ -62,16 +62,16 @@ export async function createCustomTaskAction() {
       state.tasks = data.tasks || [];
       state.ignoredTasks = data.ignored_tasks || [];
       notifySubscribers();
-      showToast('Aufgabe hinzugefügt');
+      showToast('Task added successfully');
     } else {
       state.tasks.push({ id: 'custom-' + Date.now(), ...payload, completed: false, is_custom: true });
-      localStorage.setItem('lmu_tasks_de_v2', JSON.stringify(state.tasks));
+      localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
       closeModal();
       notifySubscribers();
-      showToast('Aufgabe hinzugefügt (lokal)');
+      showToast('Task added (offline mode)');
     }
   } catch (err) {
-    showToast('Fehler: ' + err.message);
+    showToast('Error: ' + err.message);
   }
 }
 
@@ -87,7 +87,7 @@ export function openDeleteModal(id) {
   if (titleEl) titleEl.textContent = t.title;
 
   const pathEl = document.getElementById('delTaskPath');
-  if (pathEl) pathEl.textContent = t.file_path ? t.file_path.replace(/\\/g, '/') : 'Benutzerdefinierte Aufgabe';
+  if (pathEl) pathEl.textContent = t.file_path ? t.file_path.replace(/\\/g, '/') : 'Custom Task';
 
   const chkEl = document.getElementById('delFromDisk');
   if (chkEl) chkEl.checked = false;
@@ -122,15 +122,15 @@ export async function executeDeleteTaskAction() {
         state.ignoredTasks = data.ignored_tasks || [];
         notifySubscribers();
       }
-      showToast(deleteFromDisk ? 'Aufgabe und Datei dauerhaft gelöscht' : 'Aufgabe dauerhaft aus Tracker entfernt');
+      showToast(deleteFromDisk ? 'Task and file permanently deleted' : 'Task removed from tracker');
     } catch {
-      showToast('Fehler beim Löschen');
+      showToast('Error deleting task');
     }
   } else {
     state.tasks = state.tasks.filter(x => x.id !== id);
-    localStorage.setItem('lmu_tasks_de_v2', JSON.stringify(state.tasks));
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
     notifySubscribers();
-    showToast('Aufgabe lokal entfernt');
+    showToast('Task removed locally');
   }
 }
 
@@ -142,7 +142,7 @@ export function openIgnoredModal() {
   if (!container) return;
 
   if (!state.ignoredTasks || state.ignoredTasks.length === 0) {
-    container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">Keine ignorierten Aufgaben vorhanden.</div>';
+    container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">No ignored or deleted tasks found.</div>';
   } else {
     container.innerHTML = state.ignoredTasks.map(it => `
       <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--bg); border:1px solid var(--border); border-radius:6px; gap:8px;">
@@ -152,11 +152,11 @@ export function openIgnoredModal() {
           </div>
           <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${esc(it.file_path ? it.file_path.replace(/\\/g, '/') : '')}
-            ${it.deleted_from_disk ? ' · <span style="color:var(--warn);">Datei gelöscht</span>' : ''}
+            ${it.deleted_from_disk ? ' · <span style="color:var(--warn);">File deleted</span>' : ''}
           </div>
         </div>
         <button class="btn" style="height:25px; padding:0 8px; font-size:11.5px;" onclick="window.appActions.restoreTask('${esc(it.id)}')">
-          Wiederherstellen
+          Restore
         </button>
       </div>
     `).join('');
@@ -173,7 +173,7 @@ export function closeIgnoredModal() {
 
 export async function restoreTaskAction(id) {
   if (!state.isOnline) {
-    showToast('Wiederherstellung erfordert Serververbindung');
+    showToast('Restore requires an active server connection');
     return;
   }
   try {
@@ -189,14 +189,14 @@ export async function restoreTaskAction(id) {
       notifySubscribers();
     }
     openIgnoredModal();
-    showToast('Aufgabe wiederhergestellt');
+    showToast('Task restored successfully');
   } catch {
-    showToast('Serverfehler bei Wiederherstellung');
+    showToast('Server error during restore');
   }
 }
 
 // --------------------------------------------------------
-// 4. LMU FILENAME NORMALIZER MODAL
+// 4. FILENAME NORMALIZER MODAL
 // --------------------------------------------------------
 export async function checkNormalizeCandidates() {
   if (!state.isOnline) return;
@@ -218,7 +218,7 @@ export async function checkNormalizeCandidates() {
 
 export function openNormalizeModal() {
   if (state.normalizeCandidates.length === 0) {
-    showToast('Alle Dateinamen entsprechen bereits dem LMU-Standard!');
+    showToast('All file names already follow the standard schema!');
     return;
   }
 
@@ -247,7 +247,7 @@ export function renderNormalizeTable() {
     selAll.checked = state.pendingNormalizeSelections.size === state.normalizeCandidates.length && state.normalizeCandidates.length > 0;
   }
   if (sumText) {
-    sumText.textContent = `${state.pendingNormalizeSelections.size} von ${state.normalizeCandidates.length} Dateien ausgewählt`;
+    sumText.textContent = `${state.pendingNormalizeSelections.size} of ${state.normalizeCandidates.length} files selected`;
   }
   if (execBtn) {
     execBtn.disabled = state.pendingNormalizeSelections.size === 0;
@@ -255,6 +255,7 @@ export function renderNormalizeTable() {
 
   tbody.innerHTML = state.normalizeCandidates.map((c, idx) => {
     const isChecked = state.pendingNormalizeSelections.has(idx);
+    const displayType = c.isSolution ? 'Solution' : 'Assignment';
     return `
       <tr>
         <td style="text-align:center;">
@@ -270,7 +271,7 @@ export function renderNormalizeTable() {
         </td>
         <td>
           <span class="badge ${c.isSolution ? 'badge-loesung' : 'badge-abgabe'}" style="font-size:10px;">
-            ${esc(c.type)}
+            ${esc(displayType)}
           </span>
         </td>
         <td>
@@ -311,7 +312,7 @@ export async function executeNormalizeAction() {
 
   const items = Array.from(state.pendingNormalizeSelections).map(idx => state.normalizeCandidates[idx]);
   closeNormalizeModal();
-  showToast('Dateinamen werden standardisiert...');
+  showToast('Standardizing file names...');
 
   try {
     const result = await api.executeNormalize(items);
@@ -326,13 +327,13 @@ export async function executeNormalizeAction() {
         state.ignoredTasks = data.ignored_tasks || [];
         notifySubscribers();
       }
-      showToast(`${result.renamedCount} Dateinamen erfolgreich standardisiert ✓`);
+      showToast(`${result.renamedCount} file names standardized successfully ✓`);
       checkNormalizeCandidates();
     } else {
-      showToast('Fehler: ' + (result.errors || []).join(', '));
+      showToast('Error: ' + (result.errors || []).join(', '));
     }
   } catch (e) {
-    showToast('Serverfehler beim Standardisieren');
+    showToast('Server error during standardization');
   }
 }
 

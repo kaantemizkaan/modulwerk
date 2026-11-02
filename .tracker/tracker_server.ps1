@@ -15,7 +15,7 @@ $DbFile = Join-Path $WorkspaceRoot "homework_db.json"
 
 . $ScannerScript
 
-Write-Host ">>> Initialer Scan..." -ForegroundColor Cyan
+Write-Host ">>> Initial scan in progress..." -ForegroundColor Cyan
 $null = Get-HomeworkDatabase -WorkspaceRoot $WorkspaceRoot
 
 $port = 5050
@@ -35,15 +35,15 @@ while (-not $started -and $port -lt 5100) {
 }
 
 if (-not $started) {
-    Write-Error "Kein freier Port zwischen 5050 und 5100 gefunden."
+    Write-Error "No available port found between 5050 and 5100."
     exit 1
 }
 
 $url = "http://localhost:$port/"
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host "  Modulwerk LMU Server aktiv" -ForegroundColor Green
+Write-Host "  Modulwerk Server Active" -ForegroundColor Green
 Write-Host "  URL: $url" -ForegroundColor Yellow
-Write-Host "  Zum Beenden Fenster schliessen oder Strg+C druecken." -ForegroundColor Gray
+Write-Host "  Press Ctrl+C or close this window to stop." -ForegroundColor Gray
 Write-Host "==========================================================" -ForegroundColor Green
 
 if (-not $NoBrowser) {
@@ -443,7 +443,7 @@ try {
                                 $relSaved = $destFullPath.Substring($WorkspaceRoot.Length + 1) -replace '\\', '/'
                                 Send-JsonResponse $response @{
                                     success = $true
-                                    message = "Datei erfolgreich abgelegt: $cleanFileName"
+                                    message = "File saved successfully: $cleanFileName"
                                     path = $relSaved
                                     filename = $cleanFileName
                                     data = $freshDb
@@ -452,7 +452,7 @@ try {
                                 Send-JsonResponse $response @{ success = $false; error = $_.Exception.Message } 500
                             }
                         } else {
-                            Send-JsonResponse $response @{ success = $false; error = "Ungueltige Dateidaten" } 400
+                            Send-JsonResponse $response @{ success = $false; error = "Invalid file data" } 400
                         }
                     }
                 }
@@ -754,12 +754,12 @@ try {
 
                                 $jsonOut = $dbContent | ConvertTo-Json -Depth 6
                                 [System.IO.File]::WriteAllText($DbFile, $jsonOut, $utf8NoBom)
-                                Send-JsonResponse $response @{ success = $true; message = "Aufgabe dauerhaft gelöscht"; data = $dbContent }
+                                Send-JsonResponse $response @{ success = $true; message = "Task permanently deleted"; data = $dbContent }
                             } else {
-                                Send-JsonResponse $response @{ success = $false; error = "Aufgabe nicht gefunden" } 404
+                                Send-JsonResponse $response @{ success = $false; error = "Task not found" } 404
                             }
                         } else {
-                            Send-JsonResponse $response @{ success = $false; error = "Ungueltige Anfrage" } 400
+                            Send-JsonResponse $response @{ success = $false; error = "Invalid request" } 400
                         }
                     }
                 }
@@ -776,12 +776,12 @@ try {
                                 [System.IO.File]::WriteAllText($DbFile, $jsonOut, $utf8NoBom)
                                 . $ScannerScript
                                 $freshDb = Get-HomeworkDatabase -WorkspaceRoot $WorkspaceRoot
-                                Send-JsonResponse $response @{ success = $true; message = "Aufgabe wiederhergestellt"; data = $freshDb }
+                                Send-JsonResponse $response @{ success = $true; message = "Task restored successfully"; data = $freshDb }
                             } else {
-                                Send-JsonResponse $response @{ success = $false; error = "Keine ignorierten Aufgaben vorhanden" } 404
+                                Send-JsonResponse $response @{ success = $false; error = "No ignored tasks found" } 404
                             }
                         } else {
-                            Send-JsonResponse $response @{ success = $false; error = "ID erforderlich" } 400
+                            Send-JsonResponse $response @{ success = $false; error = "ID required" } 400
                         }
                     }
                 }
@@ -808,7 +808,7 @@ try {
                                 if ($prop -and $prop -ne $t.file_name) {
                                     $candidates += [PSCustomObject]@{
                                         taskId = $t.id
-                                        type = "Aufgabe"
+                                        type = "Assignment"
                                         subject = $t.subject
                                         category = $t.category
                                         sheet = $t.sheet
@@ -821,14 +821,14 @@ try {
                             }
 
                             # 2. Solution file
-                            if ($t.solution_path -and $t.solution_name -and ($t.solution_name -notmatch '(?i)Java-Dateien')) {
+                            if ($t.solution_path -and $t.solution_name -and ($t.solution_name -notmatch '(?i)Java files')) {
                                 $fullS = Resolve-SafePath $t.solution_path
                                 $parentDir = if ($fullS) { Split-Path $fullS -Parent } else { $null }
                                 $propSol = Get-ProposedStandardName -Subject $t.subject -Category $t.category -Sheet $t.sheet -IsSolution $true -CurrentFileName $t.solution_name -DirectoryPath $parentDir
                                 if ($propSol -and $propSol -ne $t.solution_name) {
                                     $candidates += [PSCustomObject]@{
                                         taskId = $t.id
-                                        type = "Lösung"
+                                        type = "Solution"
                                         subject = $t.subject
                                         category = $t.category
                                         sheet = $t.sheet
@@ -894,7 +894,7 @@ try {
                         foreach ($item in $itemsToRename) {
                             $srcResolved = Resolve-SafePath $item.currentRelPath
                             if (-not $srcResolved -or -not (Test-Path -LiteralPath $srcResolved)) {
-                                $errors += "Datei nicht gefunden: $($item.currentRelPath)"
+                                $errors += "File not found: $($item.currentRelPath)"
                                 continue
                             }
 
@@ -902,7 +902,7 @@ try {
                             $destPath = Join-Path $parent $item.proposedName
 
                             if ((Test-Path -LiteralPath $destPath) -and ($destPath.ToLower() -ne $srcResolved.ToLower())) {
-                                $errors += "Zieldatei existiert bereits: $($item.proposedName)"
+                                $errors += "Destination file already exists: $($item.proposedName)"
                                 continue
                             }
 
@@ -910,7 +910,7 @@ try {
                                 Move-Item -LiteralPath $srcResolved -Destination $destPath -Force
                                 $renamedCount++
                             } catch {
-                                $errors += "Fehler bei $($item.currentRelPath): $_"
+                                $errors += "Error renaming $($item.currentRelPath): $_"
                             }
                         }
 
@@ -921,7 +921,7 @@ try {
                             success = $true
                             renamedCount = $renamedCount
                             errors = $errors
-                            message = "$renamedCount Dateinamen erfolgreich standardisiert"
+                            message = "$renamedCount file names standardized successfully"
                             data = $freshDb
                         }
                     }

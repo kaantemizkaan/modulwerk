@@ -1,11 +1,19 @@
 // ========================================================
-// MATRIX VIEW (SEMESTER COMPLETION GRID - UNIVERSAL)
+// MATRIX VIEW (SEMESTER COMPLETION GRID - ENGLISH)
 // ========================================================
 
 import { state, notifySubscribers, showToast, getModuleColor } from '../state.js';
 import * as api from '../api.js';
 import { esc } from '../utils.js';
 import { checkNormalizeCandidates } from '../components/modals.js';
+
+const categoryLabels = {
+  'Hausaufgabe': 'Homework',
+  'Übungsblatt': 'Exercise Sheet',
+  'Präsenzübung': 'In-Class Lab',
+  'Praktikum': 'Lab / Project',
+  'Tutorium': 'Tutorial'
+};
 
 export function triggerMatrixSlotPicker(subject, sheet) {
   state.pendingMatrixSlot = { subject, sheet };
@@ -53,7 +61,7 @@ export async function handleMatrixSlotDrop(event, subject, sheet) {
 }
 
 export async function uploadMatrixFile(file, subject, sheet) {
-  showToast(`${file.name} wird zu ${subject} (${sheet}) hinzugefügt...`);
+  showToast(`Adding ${file.name} to ${subject} (${sheet})...`);
 
   try {
     const result = await api.uploadFile(file, null, false, subject, sheet);
@@ -67,20 +75,20 @@ export async function uploadMatrixFile(file, subject, sheet) {
         state.ignoredTasks = data.ignored_tasks || [];
         notifySubscribers();
       }
-      showToast(`Datei erfolgreich zu ${subject} (${sheet}) hinzugefügt`);
+      showToast(`File added to ${subject} (${sheet}) successfully`);
       checkNormalizeCandidates();
     } else {
-      showToast('Upload fehlgeschlagen: ' + (result.error || ''));
+      showToast('Upload failed: ' + (result.error || ''));
     }
   } catch (err) {
-    showToast('Fehler: ' + err.message);
+    showToast('Error: ' + err.message);
   }
 }
 
 export function renderMatrixView(filtered, modules) {
   const activeModules = modules.filter(m => state.tasks.some(t => t.subject === m));
   const otherTasks = state.tasks.filter(t => !modules.includes(t.subject));
-  if (otherTasks.length) activeModules.push('Sonstige');
+  if (otherTasks.length) activeModules.push('Other');
 
   // Collect all distinct sheet numbers across all tasks
   const sheetSet = new Set();
@@ -95,7 +103,7 @@ export function renderMatrixView(filtered, modules) {
   });
 
   if (allSheets.length === 0) {
-    allSheets.push('Blatt 01');
+    allSheets.push('Sheet 01');
   }
 
   // Build Table Header with column metrics
@@ -104,13 +112,14 @@ export function renderMatrixView(filtered, modules) {
     const sheetTasks = filtered.filter(t => t.sheet === sheet);
     const sDone = sheetTasks.filter(t => t.completed).length;
     const isAllDone = sheetTasks.length > 0 && sDone === sheetTasks.length;
+    const displaySheet = sheet.replace(/^Blatt\s*/i, 'Sheet ');
 
     return `
       <th class="matrix-th" style="${colWidthStyle}">
         <div class="matrix-col-header">
-          <span>${esc(sheet)}</span>
+          <span>${esc(displaySheet)}</span>
           ${sheetTasks.length > 0 ? `
-            <span class="matrix-col-pill ${isAllDone ? 'all-done' : ''}" title="${sDone}/${sheetTasks.length} erledigt">
+            <span class="matrix-col-pill ${isAllDone ? 'all-done' : ''}" title="${sDone}/${sheetTasks.length} completed">
               ${sDone}/${sheetTasks.length}${isAllDone ? ' ✓' : ''}
             </span>
           ` : ''}
@@ -128,7 +137,7 @@ export function renderMatrixView(filtered, modules) {
 
   // Build Module Rows
   const rowsHtml = activeModules.map(mod => {
-    const modTasks = filtered.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Sonstige'));
+    const modTasks = filtered.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
     const mMand = modTasks.filter(t => !t.is_optional);
     const mMandDone = mMand.filter(t => t.completed).length;
     const mTotalDone = modTasks.filter(t => t.completed).length;
@@ -136,8 +145,9 @@ export function renderMatrixView(filtered, modules) {
 
     const cellsHtml = allSheets.map(sheet => {
       const cellTasks = modTasks.filter(t => t.sheet === sheet);
-      const allModTasks = state.tasks.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Sonstige'));
+      const allModTasks = state.tasks.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
       const hasRealTasksInSheet = allModTasks.some(t => t.sheet === sheet);
+      const displaySheet = sheet.replace(/^Blatt\s*/i, 'Sheet ');
 
       if (cellTasks.length === 0) {
         if (isFilterActive || hasRealTasksInSheet) {
@@ -158,15 +168,15 @@ export function renderMatrixView(filtered, modules) {
               ondragover="window.appActions.handleMatrixSlotDragOver(event)"
               ondragleave="window.appActions.handleMatrixSlotDragLeave(event)"
               ondrop="window.appActions.handleMatrixSlotDrop(event, '${esc(mod)}', '${esc(sheet)}')"
-              title="${esc(mod)} ${esc(sheet)}: Noch nicht ausgegeben (Klicken oder Datei hier ablegen)"
+              title="${esc(mod)} ${esc(displaySheet)}: Pending (click or drop file here)"
             >
               <div class="slot-quiet">
                 <span style="opacity:0.4; font-weight:600;">—</span>
-                <span style="font-size:10.5px; opacity:0.6;">Ausstehend</span>
+                <span style="font-size:10.5px; opacity:0.6;">Pending</span>
               </div>
               <div class="slot-hover">
                 <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-                <span>Blatt hinzufügen</span>
+                <span>Add Sheet</span>
               </div>
             </div>
           </td>
@@ -175,49 +185,55 @@ export function renderMatrixView(filtered, modules) {
 
       const cardsHtml = cellTasks.map(t => {
         const isDone = !!t.completed;
-        const isAbgabe = t.category === 'Hausaufgabe' && !isDone;
+        const isAbgabe = (t.category === 'Hausaufgabe' || t.category === 'Homework') && !isDone;
         const isOpt = !!t.is_optional;
         const hasSolution = !!(t.solution_path || t.solution_note);
 
-        const assignName = t.file_name || (t.file_path ? t.file_path.split(/[\\\/]/).pop() : 'Aufgabe');
-        const assignSize = t.file_size || '';
+        const assignName = t.file_name || (t.file_path ? t.file_path.split(/[\\\/]/).pop() : 'Assignment');
+        const assignSize = t.file_size ? t.file_size.replace('Java-Dateien', 'Java Files').replace('Dateien', 'Files') : '';
         const assignExt = (t.file_ext || 'PDF').toUpperCase();
 
-        const solName = t.solution_name || (t.solution_path ? t.solution_path.split(/[\\\/]/).pop() : 'Lösung');
+        const solName = t.solution_name || (t.solution_path ? t.solution_path.split(/[\\\/]/).pop() : 'Solution');
         const solSize = t.solution_size || '';
 
-        let catClass = '';
-        if (t.category === 'Hausaufgabe') catClass = 'badge-abgabe';
-        else if (t.category.includes('Präsenz')) catClass = 'badge-praesenz';
-        else if (t.category === 'Praktikum') catClass = 'badge-praktikum';
-        else if (t.category === 'Tutorium') catClass = 'badge-tutorium';
+        const displayCategory = categoryLabels[t.category] || t.category;
 
-        let shortTitle = t.title;
+        let catClass = '';
+        if (t.category === 'Hausaufgabe' || t.category === 'Homework') catClass = 'badge-abgabe';
+        else if (t.category.includes('Präsenz') || t.category.includes('In-Class')) catClass = 'badge-praesenz';
+        else if (t.category === 'Praktikum' || t.category.includes('Lab')) catClass = 'badge-praktikum';
+        else if (t.category === 'Tutorium' || t.category === 'Tutorial') catClass = 'badge-tutorium';
+
+        let shortTitle = t.title || '';
+        shortTitle = shortTitle.replace(/\bBlatt\b/gi, 'Sheet');
+        shortTitle = shortTitle.replace(/\bUebungsblatt\b/gi, 'Exercise');
+        shortTitle = shortTitle.replace(/\bHausaufgabe\b/gi, 'Homework');
+        shortTitle = shortTitle.replace(/\bLoesung\b/gi, 'Solution');
         const subjRegex = new RegExp('^' + t.subject.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\s*', 'i');
         shortTitle = shortTitle.replace(subjRegex, '');
-        shortTitle = shortTitle.replace(/\s*\((?:blatt\s*)?0*(\d+)\)/i, ' $1').trim();
+        shortTitle = shortTitle.replace(/\s*\((?:(?:blatt|sheet)\s*)?0*(\d+)\)/i, ' $1').trim();
         if (!shortTitle) shortTitle = t.title;
 
         return `
           <div class="matrix-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}">
             <div class="matrix-card-top">
               <div style="display:flex; align-items:center; gap:6px; min-width:0; flex:1;">
-                <button class="cb-btn" style="width:17px;height:17px;min-width:17px;" onclick="window.appActions.toggleTask('${t.id}')" title="${isDone ? 'Als offen markieren' : 'Als erledigt markieren'}">
+                <button class="cb-btn" style="width:17px;height:17px;min-width:17px;" onclick="window.appActions.toggleTask('${t.id}')" title="${isDone ? 'Mark as pending' : 'Mark as completed'}">
                   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                 </button>
                 <span class="matrix-card-title" onclick="window.appActions.toggleTask('${t.id}')" title="${esc(t.title)}">${esc(shortTitle)}</span>
               </div>
-              <span class="badge ${catClass}" style="font-size:9.5px; padding:1px 5px;">${esc(t.category)}</span>
+              <span class="badge ${catClass}" style="font-size:9.5px; padding:1px 5px;">${esc(displayCategory)}</span>
             </div>
 
             <div class="matrix-pair-row">
               <span 
                 class="matrix-file-chip" 
                 onclick="window.appActions.openTaskFile('${t.id}')"
-                title="Aufgabe öffnen: ${esc(assignName)} (${esc(assignSize)})"
+                title="Open assignment: ${esc(assignName)} (${esc(assignSize)})"
               >
                 <span class="file-ext-badge" style="font-size:9px; padding:1px 3px;">${esc(assignExt)}</span>
-                <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(assignSize || 'Aufgabe')}</span>
+                <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(assignSize || 'Open')}</span>
               </span>
 
               <span style="color:var(--text-muted); font-size:10px;">➔</span>
@@ -226,10 +242,10 @@ export function renderMatrixView(filtered, modules) {
                 <span 
                   class="matrix-file-chip sol-done" 
                   onclick="window.appActions.openTaskSolution('${t.id}')"
-                  title="Lösung öffnen: ${esc(solName)} (${esc(solSize)})"
+                  title="Open solution: ${esc(solName)} (${esc(solSize)})"
                 >
                   <svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Lösung</span>
+                  <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Solution</span>
                 </span>
               ` : `
                 <span 
@@ -238,9 +254,9 @@ export function renderMatrixView(filtered, modules) {
                   ondragover="window.appActions.handleCardDragOver(event, '${t.id}')"
                   ondragleave="window.appActions.handleCardDragLeave(event, '${t.id}')"
                   ondrop="window.appActions.handleCardDrop(event, '${t.id}', true)"
-                  title="Lösung fehlt! Klicken oder Datei ablegen"
+                  title="No solution attached! Click or drop file here"
                 >
-                  <span>+ Lösung</span>
+                  <span>+ Solution</span>
                 </span>
               `}
             </div>
@@ -265,7 +281,7 @@ export function renderMatrixView(filtered, modules) {
             <span style="font-size:13px; font-weight:600; color:var(--text);">${esc(mod)}</span>
           </div>
           <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">
-            ${mMandDone}/${mMand.length} Pflicht · ${mTotalDone}/${modTasks.length} gesamt
+            ${mMandDone}/${mMand.length} required · ${mTotalDone}/${modTasks.length} total
           </div>
         </td>
         ${cellsHtml}
@@ -278,7 +294,7 @@ export function renderMatrixView(filtered, modules) {
       <table class="matrix-table">
         <thead>
           <tr>
-            <th class="matrix-th matrix-th-mod">Modul</th>
+            <th class="matrix-th matrix-th-mod">Module</th>
             ${thCols}
           </tr>
         </thead>

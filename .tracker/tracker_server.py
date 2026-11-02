@@ -203,14 +203,14 @@ def scan_workspace():
                         "title": f"{subj} {d_name.replace('_', ' ')}",
                         "file_path": rel_folder,
                         "file_name": d_name,
-                        "file_size": f"{len(code_files)} {primary_ext}-Dateien",
+                        "file_size": f"{len(code_files)} {primary_ext} files",
                         "file_ext": primary_ext,
                         "is_folder": True,
                         "solution_path": rel_folder,
-                        "solution_name": f"{len(code_files)} {primary_ext}-Dateien",
+                        "solution_name": f"{len(code_files)} {primary_ext} files",
                         "solution_size": size_formatted,
                         "solution_ext": primary_ext,
-                        "solution_note": f"{len(code_files)} {primary_ext}-Dateien ({size_formatted})",
+                        "solution_note": f"{len(code_files)} {primary_ext} files ({size_formatted})",
                         "auto_detected": auto_done,
                         "manual_status": manual_status,
                         "completed": is_completed,
@@ -484,7 +484,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                             "isSolution": is_sol,
                             "subject": t.get("subject"),
                             "sheet": t.get("sheet"),
-                            "type": "Lösung" if is_sol else "Aufgabe",
+                            "type": "Solution" if is_sol else "Assignment",
                             "currentName": f_name,
                             "proposedName": proposed,
                             "currentRelPath": rel_p
@@ -573,7 +573,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "error": "Missing file data"}, 400)
                 return
 
-            subj = body.get('targetSubject') or "Allgemein"
+            subj = body.get('targetSubject') or "General"
             sheet = body.get('targetSheet') or get_sheet_number(fn)
             is_sol = body.get('isSolution', False)
 
@@ -588,7 +588,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 with open(dest_file, 'wb') as f:
                     f.write(data_bytes)
                 db = scan_workspace()
-                self.send_json({"success": True, "message": f"{fn} gespeichert!", "data": db})
+                self.send_json({"success": True, "message": f"{fn} saved successfully!", "data": db})
             except Exception as e:
                 self.send_json({"success": False, "error": str(e)}, 500)
             return
@@ -640,10 +640,10 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
             t_id = f"custom-{int(datetime.now().timestamp() * 1000)}"
             new_task = {
                 "id": t_id,
-                "subject": body.get("subject", "Allgemein"),
-                "category": body.get("category", "Hausaufgabe"),
-                "sheet": body.get("sheet", "Blatt 01"),
-                "title": body.get("title", "Neue Aufgabe"),
+                "subject": body.get("subject", "General"),
+                "category": body.get("category", "Homework"),
+                "sheet": body.get("sheet", "Sheet 01"),
+                "title": body.get("title", "New Task"),
                 "notes": body.get("notes", ""),
                 "is_optional": bool(body.get("is_optional", False)),
                 "completed": False,

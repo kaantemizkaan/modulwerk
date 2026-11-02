@@ -190,14 +190,14 @@ function Get-HomeworkDatabase {
                 title = "$subj $($pd.Name -replace '_', ' ')"
                 file_path = $relFolder
                 file_name = $pd.Name
-                file_size = "$($codeFiles.Count) $primaryExt-Dateien"
+                file_size = "$($codeFiles.Count) $primaryExt files"
                 file_ext = $primaryExt
                 is_folder = $true
                 solution_path = $relFolder
-                solution_name = "$($codeFiles.Count) $primaryExt-Dateien"
+                solution_name = "$($codeFiles.Count) $primaryExt files"
                 solution_size = $sizeFormatted
                 solution_ext = $primaryExt
-                solution_note = "$($codeFiles.Count) $primaryExt-Dateien ($sizeFormatted)"
+                solution_note = "$($codeFiles.Count) $primaryExt files ($sizeFormatted)"
                 auto_detected = $autoDone
                 manual_status = $manualStatus
                 completed = $isCompleted
@@ -353,5 +353,5 @@ function Get-HomeworkDatabase {
 
 if ($MyInvocation.InvocationName -ne '.') {
     $res = Get-HomeworkDatabase
-    Write-Host "Gesamt: $($res.total_count) | Pflicht: $($res.mandatory_completed)/$($res.mandatory_count) | Optional: $($res.optional_completed)/$($res.optional_count)"
+    Write-Host "Total: $($res.total_count) | Required: $($res.mandatory_completed)/$($res.mandatory_count) | Optional: $($res.optional_completed)/$($res.optional_count)"
 }

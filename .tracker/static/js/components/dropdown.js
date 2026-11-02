@@ -1,9 +1,17 @@
 // ========================================================
-// CUSTOM FLOATING DROPDOWN COMPONENT (DYNAMIC ADAPTIVE UI)
+// CUSTOM FLOATING DROPDOWN COMPONENT (ENGLISH)
 // ========================================================
 
 import { state, getActiveModules, getActiveCategories, getModuleColor, notifySubscribers } from '../state.js';
 import { esc } from '../utils.js';
+
+const categoryLabels = {
+  'Hausaufgabe': 'Homework',
+  'Übungsblatt': 'Exercise Sheet',
+  'Präsenzübung': 'In-Class Lab',
+  'Praktikum': 'Lab / Project',
+  'Tutorium': 'Tutorial'
+};
 
 export function initDropdowns() {
   document.addEventListener('click', (e) => {
@@ -60,7 +68,7 @@ export function syncDropdownUI() {
   const lblSubj = document.getElementById('labelSubject');
   const menuSubj = document.getElementById('menuSubject');
   if (lblSubj) {
-    lblSubj.textContent = state.filterSubject === 'all' ? 'Alle Module' : state.filterSubject;
+    lblSubj.textContent = state.filterSubject === 'all' ? 'All Modules' : state.filterSubject;
     const trig = lblSubj.closest('.dropdown-trigger');
     if (trig) trig.classList.toggle('active-filter', state.filterSubject !== 'all');
   }
@@ -69,7 +77,7 @@ export function syncDropdownUI() {
     const isAll = state.filterSubject === 'all';
     let html = `
       <div class="dropdown-item ${isAll ? 'selected' : ''}" data-value="all" onclick="window.appActions.selectDropdown('Subject', 'all')">
-        <span>Alle Module</span>
+        <span>All Modules</span>
         <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
     `;
@@ -93,9 +101,9 @@ export function syncDropdownUI() {
   // 2. Sync Type Dropdown
   const lblType = document.getElementById('labelType');
   const typeLabels = {
-    'all': 'Pflicht & Freiwillig',
-    'mandatory': 'Nur Pflicht',
-    'optional': 'Freiwillig'
+    'all': 'All Types',
+    'mandatory': 'Required Only',
+    'optional': 'Optional Only'
   };
   if (lblType) {
     lblType.textContent = typeLabels[state.filterType] || state.filterType;
@@ -108,7 +116,8 @@ export function syncDropdownUI() {
   const lblCat = document.getElementById('labelCategory');
   const menuCat = document.getElementById('menuCategory');
   if (lblCat) {
-    lblCat.textContent = state.filterCategory === 'all' ? 'Alle Kategorien' : state.filterCategory;
+    const currentCatDisplay = state.filterCategory === 'all' ? 'All Categories' : (categoryLabels[state.filterCategory] || state.filterCategory);
+    lblCat.textContent = currentCatDisplay;
     const trig = lblCat.closest('.dropdown-trigger');
     if (trig) trig.classList.toggle('active-filter', state.filterCategory !== 'all');
   }
@@ -117,15 +126,16 @@ export function syncDropdownUI() {
     const isCatAll = state.filterCategory === 'all';
     let catHtml = `
       <div class="dropdown-item ${isCatAll ? 'selected' : ''}" data-value="all" onclick="window.appActions.selectDropdown('Category', 'all')">
-        <span>Alle Kategorien</span>
+        <span>All Categories</span>
         <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
     `;
     activeCategories.forEach(cat => {
       const isSel = state.filterCategory === cat;
+      const displayLabel = categoryLabels[cat] || cat;
       catHtml += `
         <div class="dropdown-item ${isSel ? 'selected' : ''}" data-value="${esc(cat)}" onclick="window.appActions.selectDropdown('Category', '${esc(cat)}')">
-          <span>${esc(cat)}</span>
+          <span>${esc(displayLabel)}</span>
           <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
       `;

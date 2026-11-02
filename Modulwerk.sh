@@ -9,8 +9,8 @@ set -e
 cd "$(dirname "$0")"
 
 echo "=========================================================="
-echo "  Modulwerk - Academic Workspace & Exercise Tracker"
-echo "  Starting server..."
+echo "  Modulwerk - Academic Workspace & Task Manager"
+echo "  Starting local server..."
 echo "=========================================================="
 echo ""
 

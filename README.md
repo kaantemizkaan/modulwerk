@@ -39,9 +39,9 @@ Unlike bloated web platforms, Modulwerk requires **no `npm`**, **no `node_module
   - Expanded file formats: `.pdf`, `.docx`, `.txt`, `.md`, `.java`, `.py`, `.c`, `.cpp`, `.ipynb`, `.zip`.
 - **📂 3 Viewing Modes**:
   - **List View**: Grouped by subject with progress fractions and dynamic color accents.
-  - **Tree View (Baumstruktur)**: Collapsible hierarchical folder tree (`Module → Sheet → Tasks`).
+  - **Tree View**: Collapsible hierarchical folder tree (`Module → Sheet → Tasks`).
   - **Matrix View**: High-level semester completion grid displaying all sheets across all modules side-by-side with interactive drop zones.
-- **🧩 Dual-Box Task Cards**: Distinguishes **Aufgabe / Exercise** and **Lösung / Solution** in a unified file-pair tile with instant in-browser viewing.
+- **🧩 Dual-Box Task Cards**: Distinguishes **Assignment / Problem Sheet** and **Solution** in a unified file-pair tile with instant in-browser viewing.
 - **🎯 Direct Drag & Drop**: Drop homework or solution sheets anywhere on the window or into specific matrix cells for instant auto-categorization.
 - **🧼 Filename Normalizer**: Built-in modal that scans for chaotic file naming and standardizes them into canonical schema (`[Subject]_[Category]_[Sheet].[ext]`).
 - **🎛️ Command Bar & Raycast Dropdowns**:

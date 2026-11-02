@@ -9,7 +9,7 @@ import { readFileAsBase64 } from './utils.js';
  */
 export async function fetchTasks() {
   const res = await fetch('/api/tasks');
-  if (!res.ok) throw new Error('Fehler beim Laden der Aufgaben');
+  if (!res.ok) throw new Error('Failed to load tasks');
   return await res.json();
 }
 
@@ -22,7 +22,7 @@ export async function toggleTaskStatus(id) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id })
   });
-  if (!res.ok) throw new Error('Status konnte nicht aktualisiert werden');
+  if (!res.ok) throw new Error('Failed to update task status');
   return await res.json();
 }
 
@@ -35,7 +35,7 @@ export async function toggleTaskOptional(id) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id })
   });
-  if (!res.ok) throw new Error('Pflichtstatus konnte nicht aktualisiert werden');
+  if (!res.ok) throw new Error('Failed to update requirement status');
   return await res.json();
 }
 
@@ -48,7 +48,7 @@ export async function saveTaskNote(id, notes) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, notes })
   });
-  if (!res.ok) throw new Error('Notiz konnte nicht gespeichert werden');
+  if (!res.ok) throw new Error('Failed to save note');
   return await res.json();
 }
 
@@ -61,7 +61,7 @@ export async function deleteTask(id, deleteFromDisk = false) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, deleteFromDisk })
   });
-  if (!res.ok) throw new Error('Löschen fehlgeschlagen');
+  if (!res.ok) throw new Error('Failed to delete task');
   return await res.json();
 }
 
@@ -74,7 +74,7 @@ export async function restoreTask(id) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id })
   });
-  if (!res.ok) throw new Error('Wiederherstellung fehlgeschlagen');
+  if (!res.ok) throw new Error('Failed to restore task');
   return await res.json();
 }
 
@@ -83,7 +83,7 @@ export async function restoreTask(id) {
  */
 export async function rescanWorkspace() {
   const res = await fetch('/api/rescan', { method: 'POST' });
-  if (!res.ok) throw new Error('Scan fehlgeschlagen');
+  if (!res.ok) throw new Error('Filesystem scan failed');
   return await res.json();
 }
 
@@ -96,7 +96,7 @@ export async function openFolderInExplorer(path, id = null) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ path, id })
   });
-  if (!res.ok) throw new Error('Ordner konnte nicht geöffnet werden');
+  if (!res.ok) throw new Error('Failed to open folder');
   return await res.json();
 }
 
@@ -123,7 +123,7 @@ export async function uploadFile(file, targetTaskId = null, isSolution = false, 
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || 'Upload fehlgeschlagen');
+    throw new Error(data.error || 'Upload failed');
   }
   return data;
 }
@@ -133,7 +133,7 @@ export async function uploadFile(file, targetTaskId = null, isSolution = false, 
  */
 export async function fetchNormalizePreview() {
   const res = await fetch('/api/normalize-preview');
-  if (!res.ok) throw new Error('Normalisierungs-Vorschau fehlgeschlagen');
+  if (!res.ok) throw new Error('Normalization preview failed');
   return await res.json();
 }
 
@@ -146,7 +146,7 @@ export async function executeNormalize(items) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ items })
   });
-  if (!res.ok) throw new Error('Umbenennung fehlgeschlagen');
+  if (!res.ok) throw new Error('Standardization failed');
   return await res.json();
 }
 
@@ -159,6 +159,6 @@ export async function createCustomTask(payload) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error('Aufgabe konnte nicht erstellt werden');
+  if (!res.ok) throw new Error('Failed to create task');
   return await res.json();
 }
