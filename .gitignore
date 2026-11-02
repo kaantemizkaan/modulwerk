@@ -1,0 +1,51 @@
+# ========================================================
+# Modulwerk - Git Ignore
+# Protect personal student data, solutions, and generated files
+# ========================================================
+
+# Generated Database (dynamically generated on launch)
+homework_db.json
+
+# Local Course & Subject Folders (User's lecture & homework files)
+Analysis/
+EiP/
+Lineare Algebra/
+Statistik/
+
+# Document & Solution Files
+*.pdf
+*.docx
+*.pptx
+*.xlsx
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# Programming Submissions & Binaries
+*.class
+*.jar
+*.pyc
+__pycache__/
+
+# Scratch & Backup Files
+*.backup.html
+*.bak
+*.tmp
+*.log
+.tracker/*.log
+.tracker/edge_*.txt
+.tracker/edge_*.log
+
+# Personal Agent Memory & Notes
+AGENTS.md
+MEMORY.md
+scratch/
+
+# Operating System & Editor Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp

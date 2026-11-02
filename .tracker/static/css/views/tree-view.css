@@ -1,0 +1,124 @@
+/* ======================================================== */
+/* TREE VIEW (BAUMSTRUKTUR - HIERARCHICAL FOLDER NODES)     */
+/* ======================================================== */
+
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tree-node-module {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tree-node-module[data-module="Analysis"] { border-top: 2.5px solid var(--mod-analysis); }
+.tree-node-module[data-module="EiP"] { border-top: 2.5px solid var(--mod-eip); }
+.tree-node-module[data-module="Lineare Algebra"] { border-top: 2.5px solid var(--mod-linalg); }
+.tree-node-module[data-module="Statistik"] { border-top: 2.5px solid var(--mod-statistik); }
+
+.tree-row-module {
+  display: flex;
+  align-items: center;
+  padding: 11px 16px;
+  gap: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.tree-row-module:hover {
+  background: var(--surface-hover);
+}
+
+.tree-chevron {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: transform 0.18s ease;
+  font-size: 11px;
+}
+
+.tree-chevron.open {
+  transform: rotate(90deg);
+}
+
+.tree-module-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.tree-badge-stat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--surface-active);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.tree-content-module {
+  border-top: 1px solid var(--border);
+  display: none;
+  background: var(--surface-subtle);
+  padding: 12px;
+}
+
+.tree-content-module.open {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tree-node-sheet {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.tree-row-sheet {
+  display: flex;
+  align-items: center;
+  padding: 9px 14px;
+  gap: 9px;
+  background: var(--surface);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.tree-row-sheet:hover {
+  background: var(--surface-hover);
+}
+
+.tree-sheet-title {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.tree-content-sheet {
+  display: none;
+  padding: 12px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg);
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tree-content-sheet.open {
+  display: flex;
+}

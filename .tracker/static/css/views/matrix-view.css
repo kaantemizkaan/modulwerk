@@ -1,0 +1,292 @@
+/* ======================================================== */
+/* MATRIX VIEW (SEMESTER-VOLLSTÄNDIGKEITS-MATRIX)           */
+/* ======================================================== */
+
+.matrix-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  margin-top: 4px;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.matrix-th {
+  background: var(--surface-subtle);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.matrix-th-mod {
+  min-width: 165px;
+  width: 165px;
+  max-width: 165px;
+  left: 0;
+  z-index: 10;
+  background: var(--surface-subtle);
+  border-right: 1px solid var(--border);
+}
+
+.matrix-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.matrix-col-pill {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-active);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.matrix-col-pill.all-done {
+  color: var(--done);
+  border-color: var(--done-border);
+  background: var(--done-bg);
+}
+
+.matrix-tr {
+  transition: background 0.1s;
+}
+
+.matrix-td-mod {
+  position: sticky;
+  left: 0;
+  background: var(--surface);
+  z-index: 4;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 14px;
+  vertical-align: top;
+  border-left: 3px solid transparent;
+  min-width: 165px;
+  width: 165px;
+  max-width: 165px;
+}
+
+.matrix-td-mod[data-module="Analysis"] { border-left-color: var(--mod-analysis); }
+.matrix-td-mod[data-module="EiP"] { border-left-color: var(--mod-eip); }
+.matrix-td-mod[data-module="Lineare Algebra"] { border-left-color: var(--mod-linalg); }
+.matrix-td-mod[data-module="Statistik"] { border-left-color: var(--mod-statistik); }
+
+.matrix-td {
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 8px;
+  vertical-align: top;
+  background: var(--surface);
+}
+
+.matrix-cell-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matrix-card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 3px solid var(--border);
+  transition: border-color 0.12s, background 0.12s, opacity 0.15s;
+}
+
+.matrix-card:hover {
+  background: var(--surface-hover);
+}
+
+.matrix-card.done {
+  border-left-color: var(--done);
+  opacity: 0.85;
+}
+
+.matrix-card.done:hover {
+  opacity: 1;
+}
+
+.matrix-card.card-pending-abgabe {
+  border-left-color: var(--warn);
+}
+
+.matrix-card.card-optional {
+  border-left-color: var(--opt);
+}
+
+.matrix-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.matrix-card-top .badge {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.matrix-card-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.matrix-card-title:hover {
+  text-decoration: underline;
+}
+
+.matrix-pair-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.matrix-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--surface-active);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  transition: border-color 0.1s, color 0.1s;
+  user-select: none;
+}
+
+.matrix-file-chip:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.matrix-file-chip.sol-done {
+  border-color: var(--done-border);
+  color: var(--done);
+  background: var(--done-bg);
+}
+
+.matrix-file-chip.sol-missing {
+  border: 1px dashed var(--opt-border);
+  color: var(--opt);
+  background: var(--opt-bg);
+}
+
+.matrix-file-chip.sol-missing:hover,
+.matrix-file-chip.sol-missing.drag-over {
+  border-color: var(--lmu-green);
+  color: var(--lmu-green);
+  background: var(--lmu-green-bg);
+}
+
+.matrix-empty-slot {
+  border: 1px dashed var(--border-subtle);
+  border-radius: 6px;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.01);
+  opacity: 0.55;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.matrix-empty-slot:hover {
+  opacity: 1;
+  border-color: var(--lmu-green-border);
+  background: var(--lmu-green-bg);
+  color: var(--lmu-green);
+}
+
+.matrix-empty-slot .slot-quiet {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.matrix-empty-slot .slot-hover {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lmu-green);
+}
+
+.matrix-empty-slot:hover .slot-quiet {
+  display: none;
+}
+
+.matrix-empty-slot:hover .slot-hover {
+  display: flex;
+}
+
+.matrix-empty-slot.drag-over {
+  opacity: 1;
+  border-color: var(--lmu-green);
+  background: var(--lmu-green-bg);
+  color: var(--lmu-green);
+  box-shadow: 0 0 10px var(--lmu-green-glow);
+}
+
+.matrix-empty-slot.drag-over .slot-quiet {
+  display: none;
+}
+
+.matrix-empty-slot.drag-over .slot-hover {
+  display: flex;
+}
+
+.matrix-cell-blank {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.matrix-blank-dash {
+  color: var(--text-muted);
+  opacity: 0.25;
+  font-size: 14px;
+  font-weight: 400;
+}

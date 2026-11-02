@@ -1,0 +1,200 @@
+/* ======================================================== */
+/* LMU INFORMATIK 26/27 — BASE DESIGN SYSTEM TOKENS & RESET */
+/* ======================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Base Neutrals (Dark) */
+  --bg: #09090b;
+  --surface: #111115;
+  --surface-hover: #17171d;
+  --surface-active: #1f1f27;
+  --surface-subtle: #131317;
+  --border: #26262e;
+  --border-subtle: #1b1b22;
+  --text: #f4f4f7;
+  --text-secondary: #a1a1aa;
+  --text-muted: #666674;
+  --primary: #f4f4f7;
+  --primary-fg: #09090b;
+
+  /* Sleek Scrollbar Tokens (Dark) */
+  --scrollbar-track: #0e0f12;
+  --scrollbar-thumb: #272a33;
+  --scrollbar-thumb-hover: #3d4352;
+
+  /* Core LMU Brand */
+  --lmu-green: #009640;
+  --lmu-green-bg: rgba(0, 150, 64, 0.12);
+  --lmu-green-border: rgba(0, 150, 64, 0.32);
+  --lmu-green-glow: rgba(0, 150, 64, 0.18);
+
+  /* Semantic Status Colors */
+  --warn: #f87171;
+  --warn-bg: rgba(248, 113, 113, 0.12);
+  --warn-border: rgba(248, 113, 113, 0.32);
+  --opt: #fbbf24;
+  --opt-bg: rgba(251, 191, 36, 0.10);
+  --opt-border: rgba(251, 191, 36, 0.28);
+  --done: #10b981;
+  --done-bg: rgba(16, 185, 129, 0.10);
+  --done-border: rgba(16, 185, 129, 0.30);
+  --done-glow: rgba(16, 185, 129, 0.16);
+
+  /* Dynamic Module Accent Tokens (Dark) */
+  --mod-analysis: #818cf8;             /* Indigo */
+  --mod-analysis-bg: rgba(99, 102, 241, 0.10);
+  --mod-analysis-border: rgba(99, 102, 241, 0.30);
+  --mod-analysis-glow: rgba(99, 102, 241, 0.16);
+
+  --mod-eip: #2dd4bf;                  /* Teal / Cyan */
+  --mod-eip-bg: rgba(20, 184, 166, 0.10);
+  --mod-eip-border: rgba(20, 184, 166, 0.30);
+  --mod-eip-glow: rgba(20, 184, 166, 0.16);
+
+  --mod-linalg: #fbbf24;               /* Amber / Gold */
+  --mod-linalg-bg: rgba(245, 158, 11, 0.10);
+  --mod-linalg-border: rgba(245, 158, 11, 0.30);
+  --mod-linalg-glow: rgba(245, 158, 11, 0.16);
+
+  --mod-statistik: #f43f5e;            /* Rose / Fuchsia */
+  --mod-statistik-bg: rgba(244, 63, 94, 0.10);
+  --mod-statistik-border: rgba(244, 63, 94, 0.30);
+  --mod-statistik-glow: rgba(244, 63, 94, 0.16);
+
+  /* File Type Badges */
+  --ext-pdf: #f43f5e;
+  --ext-pdf-bg: rgba(244, 63, 94, 0.12);
+  --ext-pdf-border: rgba(244, 63, 94, 0.30);
+
+  --ext-java: #f59e0b;
+  --ext-java-bg: rgba(245, 158, 11, 0.12);
+  --ext-java-border: rgba(245, 158, 11, 0.30);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Monaco, Inconsolata, "Liberation Mono", Consolas, monospace;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Base Neutrals (Light) */
+  --bg: #f8f9fc;
+  --surface: #ffffff;
+  --surface-hover: #f3f4f8;
+  --surface-active: #e9ecf2;
+  --surface-subtle: #fafbfd;
+  --border: #e1e3ea;
+  --border-subtle: #eceff5;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #8b95a5;
+  --primary: #0f172a;
+  --primary-fg: #ffffff;
+
+  /* Sleek Scrollbar Tokens (Light) */
+  --scrollbar-track: #eef1f6;
+  --scrollbar-thumb: #cbd2dc;
+  --scrollbar-thumb-hover: #9ca6b5;
+
+  --lmu-green: #00883a;
+  --lmu-green-bg: rgba(0, 136, 58, 0.08);
+  --lmu-green-border: rgba(0, 136, 58, 0.30);
+  --lmu-green-glow: rgba(0, 136, 58, 0.12);
+
+  --warn: #ef4444;
+  --warn-bg: rgba(239, 68, 68, 0.08);
+  --warn-border: rgba(239, 68, 68, 0.28);
+  --opt: #d97706;
+  --opt-bg: rgba(217, 119, 6, 0.08);
+  --opt-border: rgba(217, 119, 6, 0.26);
+  --done: #059669;
+  --done-bg: rgba(5, 150, 105, 0.08);
+  --done-border: rgba(5, 150, 105, 0.28);
+  --done-glow: rgba(5, 150, 105, 0.12);
+
+  /* Dynamic Module Accent Tokens (Light) */
+  --mod-analysis: #4f46e5;
+  --mod-analysis-bg: rgba(79, 70, 229, 0.07);
+  --mod-analysis-border: rgba(79, 70, 229, 0.25);
+  --mod-analysis-glow: rgba(79, 70, 229, 0.10);
+
+  --mod-eip: #0d9488;
+  --mod-eip-bg: rgba(13, 148, 136, 0.07);
+  --mod-eip-border: rgba(13, 148, 136, 0.25);
+  --mod-eip-glow: rgba(13, 148, 136, 0.10);
+
+  --mod-linalg: #d97706;
+  --mod-linalg-bg: rgba(217, 119, 6, 0.07);
+  --mod-linalg-border: rgba(217, 119, 6, 0.25);
+  --mod-linalg-glow: rgba(217, 119, 6, 0.10);
+
+  --mod-statistik: #e11d48;
+  --mod-statistik-bg: rgba(225, 29, 72, 0.07);
+  --mod-statistik-border: rgba(225, 29, 72, 0.25);
+  --mod-statistik-glow: rgba(225, 29, 72, 0.10);
+
+  --ext-pdf: #e11d48;
+  --ext-pdf-bg: rgba(225, 29, 72, 0.08);
+  --ext-pdf-border: rgba(225, 29, 72, 0.25);
+
+  --ext-java: #d97706;
+  --ext-java-bg: rgba(217, 119, 6, 0.08);
+  --ext-java-border: rgba(217, 119, 6, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 32px 24px 80px;
+}
+
+.layout {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* ======================================================== */
+/* MODERN ADAPTIVE SCROLLBAR (Cross-browser, Sleek, Zero Slop)*/
+/* ======================================================== */
+html, body, * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  border: 1.5px solid var(--scrollbar-track);
+  transition: background 0.15s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}

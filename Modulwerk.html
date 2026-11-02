@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modulwerk — LMU Informatik WS 26/27</title>
+
+  <!-- Favicon (Native SVG Icon) -->
+  <link rel="icon" type="image/svg+xml" href="/static/img/logo.svg">
+
+  <!-- Modular Design System Stylesheets -->
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/topbar.css">
+  <link rel="stylesheet" href="/static/css/command-bar.css">
+  <link rel="stylesheet" href="/static/css/dropdown.css">
+  <link rel="stylesheet" href="/static/css/task-card.css">
+  <link rel="stylesheet" href="/static/css/views/list-view.css">
+  <link rel="stylesheet" href="/static/css/views/tree-view.css">
+  <link rel="stylesheet" href="/static/css/views/matrix-view.css">
+  <link rel="stylesheet" href="/static/css/modals.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <!-- Modulwerk Vector Brand Logo -->
+        <div class="brand-logo" title="Modulwerk LMU">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mwGreenGrad" x1="16" y1="9.75" x2="23.25" y2="22.25" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#34d399"/>
+                <stop offset="100%" stop-color="#059669"/>
+              </linearGradient>
+              <linearGradient id="mwBgGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#16161b"/>
+                <stop offset="100%" stop-color="#0e0e12"/>
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="url(#mwBgGrad)"/>
+            <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="rgba(255, 255, 255, 0.08)"/>
+            <!-- Left Module (Aufgabe): Pure Crisp Neutral White -->
+            <path d="M 8.75 22.25 L 8.75 9.75 L 16 17.5" stroke="#f4f4f7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Right Module (Lösung): Radiant LMU Emerald Green -->
+            <path d="M 16 17.5 L 23.25 9.75 L 23.25 22.25" stroke="url(#mwGreenGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="17.5" r="1.75" fill="#34d399"/>
+          </svg>
+        </div>
+
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1>Modulwerk</h1>
+            <span class="lmu-mark">LMU</span>
+            <span class="term-badge">WS 26/27</span>
+          </div>
+          <div class="brand-subtitle-row">
+            <span>B.Sc. Informatik · Nebenfach Statistik</span>
+            <span class="sync-separator">·</span>
+            <div id="syncStatus" class="sync-indicator" title="Echtzeit-Synchronisation mit lokalem Dateisystem">
+              <span class="sync-dot"></span>
+              <span id="syncText">Synchronisiert</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- View Mode Switcher -->
+        <div class="segmented" id="viewModeGroup" title="Ansicht umschalten">
+          <button class="seg-btn active" data-view="list" onclick="window.appActions.setViewMode('list')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <span>Liste</span>
+          </button>
+          <button class="seg-btn" data-view="tree" onclick="window.appActions.setViewMode('tree')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><path d="M10 7h4"/><path d="M7 10v7h7"/></svg>
+            <span>Baum</span>
+          </button>
+          <button class="seg-btn" data-view="matrix" onclick="window.appActions.setViewMode('matrix')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            <span>Matrix</span>
+          </button>
+        </div>
+
+        <!-- Filename Normalizer Pill -->
+        <button class="btn btn-pill-accent" id="btnNormalize" onclick="window.appActions.openNormalizeModal()" style="display:none;" title="Dateinamen nach einheitlichem LMU-Schema standardisieren">
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span>Namen</span>
+          <span class="badge-count" id="cnt-normalize">0</span>
+        </button>
+
+        <!-- Managed Ignored / Deleted Tasks Pill -->
+        <button class="btn btn-pill-subtle" id="btnIgnored" onclick="window.appActions.openIgnoredModal()" style="display:none;" title="Dauerhaft ignorierte/gelöschte Aufgaben verwalten">
+          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+          <span>Gelöscht</span>
+          <span class="badge-count" id="cnt-ignored">0</span>
+        </button>
+
+        <!-- Tool Icons -->
+        <div class="btn-group">
+          <button class="btn btn-icon" id="btnScan" onclick="window.appActions.triggerRescan()" title="Verzeichnis neu scannen">
+            <svg viewBox="0 0 24 24" id="scanIcon"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+          </button>
+          <button class="btn btn-icon" onclick="window.appActions.toggleTheme()" title="Erscheinungsbild wechseln">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </button>
+        </div>
+
+        <button class="btn btn-primary" onclick="window.appActions.openModal()">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          <span>Aufgabe</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Progress Strip (Focused on Klausurzulassung / Pflichtaufgaben) -->
+    <section class="summary-strip">
+      <div class="summary-top">
+        <div class="summary-metrics">
+          <span class="summary-pct" id="statPct">0%</span>
+          <span class="summary-label" id="statFraction">0 von 0 Pflichtaufgaben erledigt</span>
+          <span class="summary-opt-label" id="statOptFraction">(+ 0 freiwillige Übungen)</span>
+        </div>
+        <!-- Adaptive Module Chips -->
+        <div class="module-breakdown" id="moduleStats"></div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </section>
+
+    <!-- Unified Command Bar -->
+    <section class="command-bar">
+      <!-- 1. Integrated Search Input -->
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Suchen nach Blatt, Datei, Notiz..." oninput="window.appActions.onSearch()">
+        <span class="kbd-hint">/</span>
+      </div>
+
+      <!-- Divider -->
+      <div class="bar-divider"></div>
+
+      <!-- 2. Status Segmented Toggle -->
+      <div class="segmented" id="statusFilterGroup" title="Nach Erledigungsstatus filtern">
+        <button class="seg-btn active" data-status="all" onclick="window.appActions.setStatus('all')">
+          Alle <span class="seg-count" id="cnt-all">0</span>
+        </button>
+        <button class="seg-btn" data-status="todo" onclick="window.appActions.setStatus('todo')">
+          Ausstehend <span class="seg-count" id="cnt-todo">0</span>
+        </button>
+        <button class="seg-btn" data-status="done" onclick="window.appActions.setStatus('done')">
+          Erledigt <span class="seg-count" id="cnt-done">0</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="bar-divider"></div>
+
+      <!-- 3. Modern Floating Filter Dropdowns -->
+      <div class="filter-dropdowns">
+        <!-- Module Dropdown -->
+        <div class="custom-dropdown" id="dropdownSubject">
+          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Subject', event)" title="Nach Modul filtern">
+            <span class="dropdown-label" id="labelSubject">Alle Module</span>
+            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-menu" id="menuSubject">
+            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Subject', 'all')">
+              <span>Alle Module</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Analysis" onclick="window.appActions.selectDropdown('Subject', 'Analysis')">
+              <span class="dropdown-opt-label">
+                <span class="mod-dot" style="background:var(--mod-analysis); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
+                Analysis
+              </span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="EiP" onclick="window.appActions.selectDropdown('Subject', 'EiP')">
+              <span class="dropdown-opt-label">
+                <span class="mod-dot" style="background:var(--mod-eip); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
+                EiP
+              </span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Lineare Algebra" onclick="window.appActions.selectDropdown('Subject', 'Lineare Algebra')">
+              <span class="dropdown-opt-label">
+                <span class="mod-dot" style="background:var(--mod-linalg); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
+                Lineare Algebra
+              </span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Statistik" onclick="window.appActions.selectDropdown('Subject', 'Statistik')">
+              <span class="dropdown-opt-label">
+                <span class="mod-dot" style="background:var(--mod-statistik); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
+                Statistik
+              </span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relevance Dropdown -->
+        <div class="custom-dropdown" id="dropdownType">
+          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Type', event)" title="Nach Relevanz filtern">
+            <span class="dropdown-label" id="labelType">Pflicht &amp; Freiwillig</span>
+            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-menu" id="menuType">
+            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Type', 'all')">
+              <span>Pflicht &amp; Freiwillig</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="mandatory" onclick="window.appActions.selectDropdown('Type', 'mandatory')">
+              <span>Nur Pflicht</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="optional" onclick="window.appActions.selectDropdown('Type', 'optional')">
+              <span>Freiwillig</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="custom-dropdown" id="dropdownCategory">
+          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Category', event)" title="Nach Kategorie filtern">
+            <span class="dropdown-label" id="labelCategory">Alle Kategorien</span>
+            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-menu" id="menuCategory">
+            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Category', 'all')">
+              <span>Alle Kategorien</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Hausaufgabe" onclick="window.appActions.selectDropdown('Category', 'Hausaufgabe')">
+              <span>Hausaufgabe</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Übungsblatt" onclick="window.appActions.selectDropdown('Category', 'Übungsblatt')">
+              <span>Übungsblatt</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Präsenzübung" onclick="window.appActions.selectDropdown('Category', 'Präsenzübung')">
+              <span>Präsenzübung</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Praktikum" onclick="window.appActions.selectDropdown('Category', 'Praktikum')">
+              <span>Praktikum</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="dropdown-item" data-value="Tutorium" onclick="window.appActions.selectDropdown('Category', 'Tutorium')">
+              <span>Tutorium</span>
+              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <button id="btnResetFilters" class="btn btn-reset" onclick="window.appActions.resetAllFilters()" style="display:none;" title="Alle Filter zurücksetzen">
+          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span>Reset</span>
+        </button>
+      </div>
+
+      <!-- 4. Tree View Actions -->
+      <div class="tree-actions" id="treeActionsBar">
+        <button class="btn btn-xs" onclick="window.appActions.expandAllTree()" title="Alle Zweige öffnen">
+          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 11 12 6 17 11"/><polyline points="7 18 12 13 17 18"/></svg>
+          <span>Ausklappen</span>
+        </button>
+        <button class="btn btn-xs" onclick="window.appActions.collapseAllTree()" title="Alle Zweige schließen">
+          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 6 12 11 17 6"/><polyline points="7 13 12 18 17 13"/></svg>
+          <span>Einklappen</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main View Container -->
+    <main id="viewContainer"></main>
+
+    <div id="emptyState" class="empty-box" style="display: none;">
+      Keine Aufgaben für die gewählten Filter gefunden.
+    </div>
+  </div>
+
+  <!-- Global Drag & Drop Overlay -->
+  <div class="drop-overlay" id="dropOverlay">
+    <div class="drop-box-prompt">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <h3>Datei hier ablegen</h3>
+      <p>Automatische Erkennung &amp; Einsortierung nach Modul, Blatt und Typ (Aufgabe oder Lösung).</p>
+    </div>
+  </div>
+
+  <!-- Hidden File Input for targeted Solution Upload -->
+  <input type="file" id="hiddenSolutionPicker" accept=".pdf,.java,.txt">
+
+  <!-- Add Custom Task Modal -->
+  <div class="modal-overlay" id="taskModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2>Neue Aufgabe erfassen</h2>
+        <button class="btn btn-icon" onclick="window.appActions.closeModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Modul</label>
+          <select id="mSubject" class="field-input">
+            <option value="Analysis">Analysis</option>
+            <option value="EiP">EiP</option>
+            <option value="Lineare Algebra">Lineare Algebra</option>
+            <option value="Statistik">Statistik</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Kategorie</label>
+          <select id="mCategory" class="field-input">
+            <option value="Hausaufgabe">Hausaufgabe (Pflicht)</option>
+            <option value="Übungsblatt">Übungsblatt</option>
+            <option value="Präsenzübung">Präsenzübung</option>
+            <option value="Praktikum">Praktikum</option>
+            <option value="Tutorium">Tutorium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Blatt / Nummer</label>
+          <input type="text" id="mSheet" class="field-input" placeholder="Blatt 03">
+        </div>
+        <div class="field">
+          <label>Bezeichnung</label>
+          <input type="text" id="mTitle" class="field-input" placeholder="z.B. Analysis Hausaufgabe 03">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notiz (optional)</label>
+        <input type="text" id="mNotes" class="field-input" placeholder="z.B. Abgabe bis Donnerstag 12:00 Uhr">
+      </div>
+
+      <div class="field">
+        <label class="field-checkbox">
+          <input type="checkbox" id="mIsOptional">
+          <span>Als freiwillige Übung markieren (ohne Abgabepflicht)</span>
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" onclick="window.appActions.closeModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="window.appActions.createCustomTask()">Hinzufügen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permanent Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-panel" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2 style="color:var(--warn); display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          Aufgabe dauerhaft löschen
+        </h2>
+        <button class="btn btn-icon" onclick="window.appActions.closeDeleteModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+        Möchtest du <strong id="delTaskTitle" style="color:var(--text);"></strong> dauerhaft aus dem Tracker entfernen?
+      </p>
+
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; margin-bottom: 14px; word-break: break-all;" id="delTaskPath">
+      </div>
+
+      <div class="field">
+        <label class="field-checkbox" style="align-items:flex-start; gap:8px;">
+          <input type="checkbox" id="delFromDisk" style="margin-top:2px;">
+          <div>
+            <span style="font-weight:600; color:var(--text);">Auch Datei von der Festplatte löschen</span>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+              Löscht die Datei physisch vom Datenträger. Andernfalls wird die Aufgabe nur dauerhaft im Tracker ignoriert.
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" onclick="window.appActions.closeDeleteModal()">Abbrechen</button>
+        <button class="btn" onclick="window.appActions.executeDeleteTask()" style="background:var(--warn); border-color:var(--warn); color:#fff; font-weight:600;">
+          Dauerhaft löschen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ignored / Deleted Tasks Modal -->
+  <div class="modal-overlay" id="ignoredModal">
+    <div class="modal-panel" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2>Ignorierte / Gelöschte Aufgaben</h2>
+        <button class="btn btn-icon" onclick="window.appActions.closeIgnoredModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div id="ignoredListContainer" style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+        <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">Keine ignorierten Aufgaben vorhanden.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="window.appActions.closeIgnoredModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filename Normalizer Modal -->
+  <div class="modal-overlay" id="normalizeModal">
+    <div class="modal-panel" style="max-width: 760px; width: 95%;">
+      <div class="modal-header">
+        <h2 style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          LMU Dateinamen standardisieren
+        </h2>
+        <button class="btn btn-icon" onclick="window.appActions.closeNormalizeModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+        Die folgenden Dateien weichen vom offiziellen LMU-Schema (<code style="font-family:var(--font-mono); font-size:11.5px; color:var(--text); background:var(--surface-active); padding:2px 5px; border-radius:3px;">[Fach]_[Kategorie]_[Blatt].[ext]</code>) ab. Wähle die Dateien aus, die standardisiert werden sollen:
+      </p>
+
+      <div style="max-height: 380px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--bg);">
+        <table class="norm-table">
+          <thead>
+            <tr>
+              <th style="width:36px; text-align:center;">
+                <input type="checkbox" id="normSelectAll" onchange="window.appActions.toggleAllNormalizeCandidates(this.checked)" checked>
+              </th>
+              <th style="width:90px;">Fach / Blatt</th>
+              <th style="width:70px;">Typ</th>
+              <th>Aktueller Name ➔ Neuer LMU-Standard</th>
+            </tr>
+          </thead>
+          <tbody id="normTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between; align-items: center;">
+        <span style="font-size: 12px; color: var(--text-muted);" id="normSummaryText">
+          0 von 0 ausgewählt
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="window.appActions.closeNormalizeModal()">Abbrechen</button>
+          <button class="btn btn-primary" id="btnExecuteNormalize" onclick="window.appActions.executeNormalize()">
+            Ausgewählte standardisieren
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Matrix Slot Picker -->
+  <input type="file" id="hiddenMatrixPicker" style="display:none;">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Application Entry Point (Native ES Modules) -->
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+/* ======================================================== */
+/* LIST / GROUPED VIEW (SEMESTER MODULE GROUPS)             */
+/* ======================================================== */
+
+.groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.module-group {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+/* Module Signature Top Accent Bars */
+.module-group[data-module="Analysis"] { border-top: 2.5px solid var(--mod-analysis); }
+.module-group[data-module="EiP"] { border-top: 2.5px solid var(--mod-eip); }
+.module-group[data-module="Lineare Algebra"] { border-top: 2.5px solid var(--mod-linalg); }
+.module-group[data-module="Statistik"] { border-top: 2.5px solid var(--mod-statistik); }
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.group-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-header-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.task-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
