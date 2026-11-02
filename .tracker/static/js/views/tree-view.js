@@ -1,22 +1,11 @@
 // ========================================================
-// TREE VIEW (BAUMSTRUKTUR: MODULE -> BLATT -> TASK CARDS)
+// TREE VIEW (DYNAMIC BAUMSTRUKTUR: MODULE -> BLATT -> CARDS)
 // ========================================================
 
-import { state, notifySubscribers } from '../state.js';
+import { state, notifySubscribers, getModuleColor } from '../state.js';
 import { esc } from '../utils.js';
 import { renderTaskCard } from '../components/task-card.js';
 
-const modClasses = {
-  'Analysis': 'analysis',
-  'EiP': 'eip',
-  'Lineare Algebra': 'linalg',
-  'Statistik': 'statistik'
-};
-
-/**
- * Toggle collapsed/expanded state of a tree node
- * @param {string} key 
- */
 export function toggleTreeNode(key) {
   if (state.collapsedNodes.has(key)) {
     state.collapsedNodes.delete(key);
@@ -26,20 +15,14 @@ export function toggleTreeNode(key) {
   notifySubscribers();
 }
 
-/**
- * Expand all tree nodes
- */
 export function expandAllTree() {
   state.collapsedNodes.clear();
   notifySubscribers();
 }
 
-/**
- * Collapse all tree nodes
- */
 export function collapseAllTree() {
-  const modules = ['Analysis', 'EiP', 'Lineare Algebra', 'Statistik', 'Sonstige'];
-  modules.forEach(m => {
+  const allModules = [...new Set(state.tasks.map(t => t.subject).filter(Boolean))];
+  allModules.forEach(m => {
     state.collapsedNodes.add(`mod-${m}`);
     state.tasks.filter(t => t.subject === m).forEach(t => {
       state.collapsedNodes.add(`sheet-${m}-${t.sheet}`);
@@ -48,12 +31,6 @@ export function collapseAllTree() {
   notifySubscribers();
 }
 
-/**
- * Render the full tree view
- * @param {Array} filtered 
- * @param {Array} modules 
- * @returns {string} HTML string
- */
 export function renderTreeView(filtered, modules) {
   const activeModules = modules.filter(m => filtered.some(t => t.subject === m));
   const otherTasks = filtered.filter(t => !modules.includes(t.subject));
@@ -67,7 +44,7 @@ export function renderTreeView(filtered, modules) {
     const mDone = modTasks.filter(t => t.completed).length;
     const mMand = modTasks.filter(t => !t.is_optional);
     const mMandDone = mMand.filter(t => t.completed).length;
-    const cls = modClasses[mod] || 'analysis';
+    const col = getModuleColor(mod);
 
     // Group tasks inside module by sheet
     const sheets = [...new Set(modTasks.map(t => t.sheet))].sort();
@@ -101,7 +78,7 @@ export function renderTreeView(filtered, modules) {
       <div class="tree-node-module" data-module="${esc(mod)}">
         <div class="tree-row-module" onclick="window.appActions.toggleTreeNode('${modKey}')">
           <span class="tree-chevron ${isModOpen ? 'open' : ''}">▸</span>
-          <span class="mod-dot ${cls}"></span>
+          <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
           <span class="tree-module-title">${esc(mod)}</span>
           <span class="tree-badge-stat">${mMandDone}/${mMand.length} Pflicht</span>
           <span class="tree-badge-stat" style="color:var(--text-muted);">${mDone}/${modTasks.length} gesamt</span>

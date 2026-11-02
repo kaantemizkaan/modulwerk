@@ -1,5 +1,5 @@
 // ========================================================
-// CENTRAL REACTIVE APPLICATION STATE STORE
+// CENTRAL REACTIVE APPLICATION STATE STORE (DYNAMIC & UNIVERSAL)
 // ========================================================
 
 const listeners = new Set();
@@ -8,14 +8,14 @@ export const state = {
   tasks: [],
   ignoredTasks: [],
   isOnline: false,
-  viewMode: localStorage.getItem('lmu_view_mode') || 'list',
-  theme: localStorage.getItem('lmu_theme') || 'dark',
+  viewMode: localStorage.getItem('modulwerk_view_mode') || localStorage.getItem('lmu_view_mode') || 'list',
+  theme: localStorage.getItem('modulwerk_theme') || localStorage.getItem('lmu_theme') || 'dark',
 
   // Filters
   filterStatus: 'all',      // 'all' | 'todo' | 'done'
   filterType: 'all',        // 'all' | 'mandatory' | 'optional'
-  filterSubject: 'all',     // 'all' | 'Analysis' | 'EiP' | 'Lineare Algebra' | 'Statistik'
-  filterCategory: 'all',    // 'all' | 'Hausaufgabe' | 'Übungsblatt' | 'Präsenzübung' | 'Praktikum' | 'Tutorium'
+  filterSubject: 'all',     // 'all' | any dynamic subject name
+  filterCategory: 'all',    // 'all' | any category
   searchQuery: '',
 
   // Tree View State
@@ -29,7 +29,32 @@ export const state = {
   pendingMatrixSlot: null
 };
 
-export const standardModules = ['Analysis', 'EiP', 'Lineare Algebra', 'Statistik'];
+// Beautiful, accessible, distinct palette for arbitrary subjects
+export const modulePalette = [
+  { name: 'indigo',  color: '#818cf8', bg: 'rgba(99, 102, 241, 0.12)', border: 'rgba(99, 102, 241, 0.32)' },
+  { name: 'emerald', color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)', border: 'rgba(52, 211, 153, 0.32)' },
+  { name: 'amber',   color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.32)' },
+  { name: 'sky',     color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)', border: 'rgba(56, 189, 248, 0.32)' },
+  { name: 'rose',    color: '#fb7185', bg: 'rgba(251, 113, 133, 0.12)', border: 'rgba(251, 113, 133, 0.32)' },
+  { name: 'violet',  color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.12)', border: 'rgba(167, 139, 250, 0.32)' },
+  { name: 'teal',    color: '#2dd4bf', bg: 'rgba(45, 212, 191, 0.12)', border: 'rgba(45, 212, 191, 0.32)' },
+  { name: 'orange',  color: '#fb923c', bg: 'rgba(251, 146, 60, 0.12)', border: 'rgba(251, 146, 60, 0.32)' }
+];
+
+/**
+ * Generate a consistent, stable color palette entry for ANY subject name
+ * @param {string} subject 
+ * @returns {Object}
+ */
+export function getModuleColor(subject) {
+  if (!subject) return modulePalette[0];
+  let hash = 0;
+  for (let i = 0; i < subject.length; i++) {
+    hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % modulePalette.length;
+  return modulePalette[idx];
+}
 
 /**
  * Subscribe to state changes
@@ -63,7 +88,7 @@ export function getFilteredTasks() {
     if (state.filterType === 'mandatory' && t.is_optional) return false;
     if (state.filterType === 'optional' && !t.is_optional) return false;
 
-    // 3. Module Filter
+    // 3. Module Filter (Dynamic subject matching)
     if (state.filterSubject !== 'all' && t.subject !== state.filterSubject) return false;
 
     // 4. Category Filter
@@ -87,13 +112,21 @@ export function getFilteredTasks() {
 }
 
 /**
- * Get active modules present in current tasks
+ * Dynamically extract all active modules present in current tasks
+ * Adapts automatically to ANY university course structure
  */
 export function getActiveModules() {
-  const active = standardModules.filter(m => state.tasks.some(t => t.subject === m));
-  const hasOther = state.tasks.some(t => !standardModules.includes(t.subject));
-  if (hasOther) active.push('Sonstige');
-  return active;
+  const detected = [...new Set(state.tasks.map(t => t.subject).filter(Boolean))].sort();
+  if (detected.length > 0) return detected;
+  return ['Allgemein'];
+}
+
+/**
+ * Dynamically extract all unique categories
+ */
+export function getActiveCategories() {
+  const detected = [...new Set(state.tasks.map(t => t.category).filter(Boolean))].sort();
+  return detected.length > 0 ? detected : ['Hausaufgabe', 'Übungsblatt', 'Präsenzübung', 'Praktikum', 'Tutorium'];
 }
 
 /**
@@ -105,7 +138,9 @@ export function getStats() {
   const optTasks = state.tasks.filter(t => t.is_optional);
   const optDone = optTasks.filter(t => t.completed).length;
 
-  const pct = mandTasks.length > 0 ? Math.round((mandDone / mandTasks.length) * 100) : 0;
+  const pct = mandTasks.length > 0 
+    ? Math.round((mandDone / mandTasks.length) * 100) 
+    : (state.tasks.length > 0 ? Math.round((state.tasks.filter(t => t.completed).length / state.tasks.length) * 100) : 0);
 
   return {
     mandTasks: mandTasks.length,

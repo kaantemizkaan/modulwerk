@@ -1,22 +1,12 @@
 // ========================================================
-// MATRIX VIEW (SEMESTER COMPLETION GRID)
+// MATRIX VIEW (SEMESTER COMPLETION GRID - UNIVERSAL)
 // ========================================================
 
-import { state, notifySubscribers, showToast } from '../state.js';
+import { state, notifySubscribers, showToast, getModuleColor } from '../state.js';
 import * as api from '../api.js';
 import { esc } from '../utils.js';
 import { checkNormalizeCandidates } from '../components/modals.js';
 
-const modClasses = {
-  'Analysis': 'analysis',
-  'EiP': 'eip',
-  'Lineare Algebra': 'linalg',
-  'Statistik': 'statistik'
-};
-
-/**
- * Trigger file picker for an empty matrix slot
- */
 export function triggerMatrixSlotPicker(subject, sheet) {
   state.pendingMatrixSlot = { subject, sheet };
   const picker = document.getElementById('hiddenMatrixPicker');
@@ -26,9 +16,6 @@ export function triggerMatrixSlotPicker(subject, sheet) {
   }
 }
 
-/**
- * Handle file selected via matrix hidden input
- */
 export async function handleMatrixPickedFile(event) {
   const file = event.target.files && event.target.files[0];
   if (!file || !state.pendingMatrixSlot) return;
@@ -38,27 +25,18 @@ export async function handleMatrixPickedFile(event) {
   await uploadMatrixFile(file, subject, sheet);
 }
 
-/**
- * Drag over empty matrix slot
- */
 export function handleMatrixSlotDragOver(event) {
   event.preventDefault();
   event.stopPropagation();
   event.currentTarget.classList.add('drag-over');
 }
 
-/**
- * Drag leave empty matrix slot
- */
 export function handleMatrixSlotDragLeave(event) {
   event.preventDefault();
   event.stopPropagation();
   event.currentTarget.classList.remove('drag-over');
 }
 
-/**
- * Drop file into empty matrix slot
- */
 export async function handleMatrixSlotDrop(event, subject, sheet) {
   event.preventDefault();
   event.stopPropagation();
@@ -74,9 +52,6 @@ export async function handleMatrixSlotDrop(event, subject, sheet) {
   await uploadMatrixFile(file, subject, sheet);
 }
 
-/**
- * Upload file designated for specific subject and sheet in matrix
- */
 export async function uploadMatrixFile(file, subject, sheet) {
   showToast(`${file.name} wird zu ${subject} (${sheet}) hinzugefügt...`);
 
@@ -102,12 +77,6 @@ export async function uploadMatrixFile(file, subject, sheet) {
   }
 }
 
-/**
- * Render the complete semester matrix view
- * @param {Array} filtered 
- * @param {Array} modules 
- * @returns {string} HTML string
- */
 export function renderMatrixView(filtered, modules) {
   const activeModules = modules.filter(m => state.tasks.some(t => t.subject === m));
   const otherTasks = state.tasks.filter(t => !modules.includes(t.subject));
@@ -163,7 +132,7 @@ export function renderMatrixView(filtered, modules) {
     const mMand = modTasks.filter(t => !t.is_optional);
     const mMandDone = mMand.filter(t => t.completed).length;
     const mTotalDone = modTasks.filter(t => t.completed).length;
-    const cls = modClasses[mod] || 'analysis';
+    const col = getModuleColor(mod);
 
     const cellsHtml = allSheets.map(sheet => {
       const cellTasks = modTasks.filter(t => t.sheet === sheet);
@@ -171,8 +140,6 @@ export function renderMatrixView(filtered, modules) {
       const hasRealTasksInSheet = allModTasks.some(t => t.sheet === sheet);
 
       if (cellTasks.length === 0) {
-        // When a filter is active OR if this sheet already has tasks in the DB (filtered out):
-        // Render only a calm, static empty dash without ANY button or dropzone!
         if (isFilterActive || hasRealTasksInSheet) {
           return `
             <td class="matrix-td matrix-td-empty" style="${colWidthStyle}">
@@ -183,7 +150,6 @@ export function renderMatrixView(filtered, modules) {
           `;
         }
 
-        // Genuinely unissued sheet when NO filter is active (e.g. Analysis Blatt 03)
         return `
           <td class="matrix-td" style="${colWidthStyle}">
             <div 
@@ -192,7 +158,7 @@ export function renderMatrixView(filtered, modules) {
               ondragover="window.appActions.handleMatrixSlotDragOver(event)"
               ondragleave="window.appActions.handleMatrixSlotDragLeave(event)"
               ondrop="window.appActions.handleMatrixSlotDrop(event, '${esc(mod)}', '${esc(sheet)}')"
-              title="${esc(mod)} ${esc(sheet)}: Noch nicht ausgegeben (Klicken oder PDF hier ablegen)"
+              title="${esc(mod)} ${esc(sheet)}: Noch nicht ausgegeben (Klicken oder Datei hier ablegen)"
             >
               <div class="slot-quiet">
                 <span style="opacity:0.4; font-weight:600;">—</span>
@@ -219,7 +185,6 @@ export function renderMatrixView(filtered, modules) {
 
         const solName = t.solution_name || (t.solution_path ? t.solution_path.split(/[\\\/]/).pop() : 'Lösung');
         const solSize = t.solution_size || '';
-        const solExt = (t.solution_ext || 'PDF').toUpperCase();
 
         let catClass = '';
         if (t.category === 'Hausaufgabe') catClass = 'badge-abgabe';
@@ -227,7 +192,6 @@ export function renderMatrixView(filtered, modules) {
         else if (t.category === 'Praktikum') catClass = 'badge-praktikum';
         else if (t.category === 'Tutorium') catClass = 'badge-tutorium';
 
-        // Clean title by removing redundant subject prefix inside module row
         let shortTitle = t.title;
         const subjRegex = new RegExp('^' + t.subject.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\s*', 'i');
         shortTitle = shortTitle.replace(subjRegex, '');
@@ -252,7 +216,7 @@ export function renderMatrixView(filtered, modules) {
                 onclick="window.appActions.openTaskFile('${t.id}')"
                 title="Aufgabe öffnen: ${esc(assignName)} (${esc(assignSize)})"
               >
-                <span class="file-ext-badge ${assignExt === 'PDF' ? 'pdf' : (assignExt === 'JAVA' ? 'java' : '')}" style="font-size:9px; padding:1px 3px;">${esc(assignExt)}</span>
+                <span class="file-ext-badge" style="font-size:9px; padding:1px 3px;">${esc(assignExt)}</span>
                 <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(assignSize || 'Aufgabe')}</span>
               </span>
 
@@ -274,7 +238,7 @@ export function renderMatrixView(filtered, modules) {
                   ondragover="window.appActions.handleCardDragOver(event, '${t.id}')"
                   ondragleave="window.appActions.handleCardDragLeave(event, '${t.id}')"
                   ondrop="window.appActions.handleCardDrop(event, '${t.id}', true)"
-                  title="Lösung fehlt! Klicken oder PDF ablegen"
+                  title="Lösung fehlt! Klicken oder Datei ablegen"
                 >
                   <span>+ Lösung</span>
                 </span>
@@ -297,7 +261,7 @@ export function renderMatrixView(filtered, modules) {
       <tr class="matrix-tr">
         <td class="matrix-td-mod" data-module="${esc(mod)}">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-            <span class="mod-dot ${cls}"></span>
+            <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
             <span style="font-size:13px; font-weight:600; color:var(--text);">${esc(mod)}</span>
           </div>
           <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">

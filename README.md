@@ -1,15 +1,15 @@
 <div align="center">
   <img src=".tracker/static/img/logo.svg" alt="Modulwerk Logo" width="84" height="84" />
   <h1>Modulwerk</h1>
-  <p><strong>A modern, privacy-first academic workspace and exercise tracking system.</strong></p>
+  <p><strong>A modern, universal, privacy-first academic workspace & exercise tracking system.</strong></p>
   <p>
-    <em>Built with Native ES Modules & PowerShell · Zero Dependencies · Zero Build Tools · 100% Local</em>
+    <em>Zero Dependencies · Zero Build Tools · 100% Local · Cross-Platform (Windows, macOS, Linux)</em>
   </p>
 
   <p>
     <a href="#features">Features</a> •
     <a href="#quick-start">Quick Start</a> •
-    <a href="#folder-structure">Folder Structure</a> •
+    <a href="#universal-folder-structure">Folder Structure</a> •
     <a href="#architecture">Architecture</a> •
     <a href="#license">License</a>
   </p>
@@ -19,27 +19,36 @@
 
 ## 🌟 Overview
 
-**Modulwerk** is an elegant, local-first academic homework and exercise manager designed for university students. Originally crafted for the Computer Science & Statistics curriculum at **LMU Munich** (*Ludwig-Maximilians-Universität München*), it is built to help students stay on top of weekly problem sheets (*Übungsblätter*), mandatory homework assignments (*Hausaufgaben*), and solutions (*Lösungen*).
+**Modulwerk** is a lightweight, local-first academic homework and exercise manager designed for university, college, and school students. Whether you are studying Computer Science, Mathematics, Physics, Engineering, or Medicine, Modulwerk helps you stay on top of weekly problem sheets (*Übungsblätter*), mandatory assignments (*Hausaufgaben*), and solutions (*Lösungen*).
 
-Unlike bloated web apps, Modulwerk requires **no `npm`**, **no `node_modules`**, and **no build steps**. A single click starts a local background micro-server and opens a sleek Linear/Raycast-inspired dashboard in your browser.
+Unlike bloated web platforms, Modulwerk requires **no `npm`**, **no `node_modules`**, and **no build steps**. A single command or double-click starts an instant local micro-server and opens a sleek Linear/Raycast-inspired dashboard in your default browser.
 
 ---
 
 ## ✨ Features
 
-- **⚡ Zero Build & Zero Dependencies**: Runs out of the box on Windows with PowerShell and any modern browser using native ES modules.
+- **🌐 100% Cross-Platform (Windows, macOS, Linux)**:
+  - **macOS & Linux**: Native Python 3 standard-library micro-server (`Modulwerk.sh`).
+  - **Windows**: Dual-engine runner (`Modulwerk.bat`) supporting built-in PowerShell or Python.
+  - Zero external package requirements (zero `npm`, zero `pip`).
+- **📁 Dynamic & Universal Course Detection**:
+  - Automatically discovers ANY subject directory (`Math`, `Algorithms`, `Physics`, `Analysis`, etc.).
+  - Adapts to nested sheets (`Subject/Sheet_01/`), flat folders (`Subject/HW1.pdf`), or root files.
+  - Flexible sheet numbering detection: `Sheet 01`, `Blatt 02`, `Week 03`, `HW 4`, `Assignment 5`, `Lab 6`.
+  - Multilingual solution pairing (English, German, French: `solution`, `loesung`, `musterloesung`, `sol`, `key`).
+  - Expanded file formats: `.pdf`, `.docx`, `.txt`, `.md`, `.java`, `.py`, `.c`, `.cpp`, `.ipynb`, `.zip`.
 - **📂 3 Viewing Modes**:
-  - **List View**: Clean module-grouped view with progress metrics and file cards.
+  - **List View**: Grouped by subject with progress fractions and dynamic color accents.
   - **Tree View (Baumstruktur)**: Collapsible hierarchical folder tree (`Module → Sheet → Tasks`).
   - **Matrix View**: High-level semester completion grid displaying all sheets across all modules side-by-side with interactive drop zones.
-- **🧩 Dual-Box Task Cards**: Distinguishes **Aufgabendatei** (Exercise) and **Lösungsdatei** (Solution) in a unified file-pair tile with one-click viewing.
-- **🎯 Drag & Drop Sorting**: Drop homework PDFs or solution sheets anywhere on the window or onto specific matrix slots for instant auto-categorization.
-- **🧼 Filename Normalizer**: Built-in modal that scans for chaotic file naming and standardizes them with one click into canonical LMU schema (`[Subject]_[Category]_[Sheet].[ext]`).
+- **🧩 Dual-Box Task Cards**: Distinguishes **Aufgabe / Exercise** and **Lösung / Solution** in a unified file-pair tile with instant in-browser viewing.
+- **🎯 Direct Drag & Drop**: Drop homework or solution sheets anywhere on the window or into specific matrix cells for instant auto-categorization.
+- **🧼 Filename Normalizer**: Built-in modal that scans for chaotic file naming and standardizes them into canonical schema (`[Subject]_[Category]_[Sheet].[ext]`).
 - **🎛️ Command Bar & Raycast Dropdowns**:
   - Global `/` hotkey for instant search across subjects, sheets, notes, and file names.
-  - Linear/Raycast-style floating dropdowns for Module, Category, and Relevance.
-  - Segmented status counters (`Alle`, `Ausstehend`, `Erledigt`).
-- **🔒 Privacy by Design**: 100% of your academic materials, homework submissions, and personal notes stay strictly on your local disk.
+  - Dynamic floating dropdowns for Module, Category, and Relevance.
+  - Segmented status counters (`All`, `Pending`, `Completed`).
+- **🔒 Privacy by Design**: 100% of your documents, code submissions, solutions, and notes stay strictly on your local disk.
 
 ---
 
@@ -47,45 +56,54 @@ Unlike bloated web apps, Modulwerk requires **no `npm`**, **no `node_modules`**,
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/modulwerk.git
+git clone https://github.com/kaantemizkaan/modulwerk.git
 cd modulwerk
 ```
 
 ### 2. Launch
-Double-click **`Modulwerk.bat`** (or execute in PowerShell):
-```powershell
-powershell -ExecutionPolicy Bypass -File .\.tracker\tracker_server.ps1
+
+#### On Windows:
+Double-click **`Modulwerk.bat`** (or run `powershell -ExecutionPolicy Bypass -File .\.tracker\tracker_server.ps1`).
+
+#### On macOS & Linux:
+Run the launcher script:
+```bash
+chmod +x Modulwerk.sh
+./Modulwerk.sh
 ```
-Modulwerk will automatically scan your directory, spin up the local server at `http://localhost:5050/`, and open your default browser.
+
+Modulwerk will automatically scan your course folders, launch the local server at `http://localhost:5050/`, and open your default browser.
 
 ---
 
-## 📁 Recommended Folder Structure
+## 📁 Universal Folder Structure
 
-Organize your university course folders in the root directory alongside `Modulwerk.bat`:
+Modulwerk works out of the box with any directory layout. Simply place your subject folders in the repository root:
 
 ```
 my-studies/
-├── Modulwerk.bat              # One-click launcher
+├── Modulwerk.bat              # Windows one-click launcher
+├── Modulwerk.sh               # macOS & Linux launcher
 ├── Modulwerk.html             # Semantic app shell
-├── .tracker/                  # Micro-server & static assets
+├── .tracker/                  # Micro-servers & static assets
 │
-├── Analysis/                  # Example Subject 1
-│   ├── Blatt_01/
-│   │   ├── Analysis_Hausaufgabe_01.pdf
-│   │   └── Analysis_Hausaufgabe_01_Loesung.pdf
-│   └── Blatt_02/
-│
-├── Computer Science/          # Example Subject 2
+├── Calculus/                  # Subject 1 (Nested format)
 │   ├── Sheet_01/
-│   │   └── Exercise_01.pdf
+│   │   ├── Calculus_Assignment_01.pdf
+│   │   └── Calculus_Assignment_01_Solution.pdf
+│   └── Sheet_02/
+│
+├── Computer Science/          # Subject 2 (Code & Project format)
+│   ├── Lab_01/
+│   │   ├── Problem.pdf
+│   │   └── solution.py
 │   └── ...
 │
-└── Linear Algebra/            # Example Subject 3
+└── Physics/                   # Subject 3 (Flat format)
+    ├── Physics_HW_01.pdf
+    ├── Physics_HW_01_Solution.pdf
     └── ...
 ```
-
-Modulwerk automatically detects module names, sheet numbers (`Blatt 01`, `Sheet 02`), categories (*Hausaufgabe*, *Übungsblatt*, *Präsenzübung*, *Tutorium*), and linked solutions.
 
 ---
 
@@ -93,12 +111,14 @@ Modulwerk automatically detects module names, sheet numbers (`Blatt 01`, `Sheet 
 
 ```
 modulwerk/
-├── Modulwerk.html            # Semantic HTML shell (~350 lines)
-├── Modulwerk.bat             # Windows launcher script
+├── Modulwerk.html            # Universal semantic HTML shell (~350 lines)
+├── Modulwerk.bat             # Windows dual-engine launcher (Python / PowerShell)
+├── Modulwerk.sh              # macOS & Linux launcher (POSIX / Python 3)
 └── .tracker/
-    ├── tracker_server.ps1    # PowerShell HTTP server & REST API
-    ├── scan_homework.ps1     # Intelligent filesystem analyzer
-    └── static/               # Modular frontend assets (Zero-build ES modules)
+    ├── tracker_server.py     # Cross-platform Python 3 micro-server (Zero dependencies)
+    ├── tracker_server.ps1    # Native Windows PowerShell micro-server (Built-in)
+    ├── scan_homework.ps1     # Dynamic Windows PowerShell workspace scanner
+    └── static/               # Zero-build modular frontend assets
         ├── css/
         │   ├── base.css          # Design tokens, themes & sleek 7px scrollbar
         │   ├── topbar.css        # Branding, stats strip & header
@@ -108,12 +128,12 @@ modulwerk/
         │   ├── modals.css        # Dialogs, toasts & normalizer
         │   └── views/            # list-view.css, tree-view.css, matrix-view.css
         ├── js/
-        │   ├── app.js            # Main orchestrator & global bindings
-        │   ├── state.js          # Central reactive store (Observer pattern)
-        │   ├── api.js            # REST API client
+        │   ├── app.js            # Main orchestrator & dynamic module dispatcher
+        │   ├── state.js          # Central reactive store & dynamic palette engine
+        │   ├── api.js            # Universal REST API client
         │   ├── utils.js          # Helpers & sanitizers
         │   ├── components/       # UI component controllers
-        │   └── views/            # View rendering engines
+        │   └── views/            # Dynamic view rendering engines
         └── img/
             ├── logo.svg          # Vector logo (M-Monogram)
             └── logo-mark.svg     # Favicon & icon mark
@@ -126,7 +146,7 @@ modulwerk/
 | Shortcut | Action |
 | :--- | :--- |
 | `/` | Focus search bar |
-| `Esc` | Close any active modal or dropdown |
+| `Esc` | Close any active modal, drawer, or dropdown |
 | `Space` | Toggle task completion (when focused) |
 
 ---
@@ -134,4 +154,4 @@ modulwerk/
 ## 📄 License
 
 This project is open-source under the [MIT License](LICENSE).
-Feel free to adapt it to your university or school workflow!
+Feel free to star ⭐️, fork, and adapt it to your university or school workflow!

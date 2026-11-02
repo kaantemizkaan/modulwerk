@@ -1,21 +1,15 @@
 // ========================================================
-// LIST VIEW (MODULE GROUPINGS + TASK CARDS)
+// LIST VIEW (DYNAMIC MODULE GROUPINGS + TASK CARDS)
 // ========================================================
 
 import { esc } from '../utils.js';
+import { getModuleColor } from '../state.js';
 import { renderTaskCard } from '../components/task-card.js';
 
-const modClasses = {
-  'Analysis': 'analysis',
-  'EiP': 'eip',
-  'Lineare Algebra': 'linalg',
-  'Statistik': 'statistik'
-};
-
 /**
- * Render the full list view
+ * Render the full list view dynamically adapting to any subject
  * @param {Array} filtered Tasks matching current active filters
- * @param {Array} modules List of all standard modules
+ * @param {Array} modules List of all detected modules
  * @returns {string} HTML string
  */
 export function renderListView(filtered, modules) {
@@ -28,15 +22,15 @@ export function renderListView(filtered, modules) {
     const gDone = groupItems.filter(t => t.completed).length;
     const gMand = groupItems.filter(t => !t.is_optional);
     const gMandDone = gMand.filter(t => t.completed).length;
-    const cls = modClasses[mod] || 'analysis';
+    const col = getModuleColor(mod);
 
     const cardsHtml = groupItems.map(t => renderTaskCard(t)).join('');
 
     return `
-      <section class="module-group" data-module="${esc(mod)}">
+      <section class="module-group" data-module="${esc(mod)}" style="border-left: 2px solid ${col.border};">
         <div class="group-header">
           <div class="group-header-left">
-            <span class="mod-dot ${cls}"></span>
+            <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
             <span>${esc(mod)}</span>
           </div>
           <span class="group-header-meta">${gMandDone}/${gMand.length} Pflichtaufgaben · ${gDone}/${groupItems.length} gesamt</span>

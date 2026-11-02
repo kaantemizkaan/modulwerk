@@ -4,9 +4,9 @@
 
 import {
   state,
-  standardModules,
-  getFilteredTasks,
   getActiveModules,
+  getModuleColor,
+  getFilteredTasks,
   getStats,
   subscribe,
   notifySubscribers,
@@ -409,18 +409,12 @@ export function render() {
     }
   }
 
-  // 4. Module chips in Top Summary Strip
-  const modClasses = {
-    'Analysis': 'analysis',
-    'EiP': 'eip',
-    'Lineare Algebra': 'linalg',
-    'Statistik': 'statistik'
-  };
-
+  // 4. Dynamic Module chips in Top Summary Strip
+  const activeModules = getActiveModules();
   const moduleStatsEl = document.getElementById('moduleStats');
   if (moduleStatsEl) {
-    moduleStatsEl.innerHTML = standardModules.map(m => {
-      const cls = modClasses[m] || 'analysis';
+    moduleStatsEl.innerHTML = activeModules.map(m => {
+      const col = getModuleColor(m);
       const mTasks = state.tasks.filter(t => t.subject === m);
       const mMandTasks = mTasks.filter(t => !t.is_optional);
       const mMandDone = mMandTasks.filter(t => t.completed).length;
@@ -428,8 +422,8 @@ export function render() {
       const isAct = state.filterSubject === m;
 
       return `
-        <span class="module-stat-chip ${cls} ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} Pflichtaufgaben (${mPct}%) ${isAct ? '· Filter aktiv' : '· Klicken zum Filtern'}">
-          <span class="mod-dot ${cls}"></span>
+        <span class="module-stat-chip ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} Pflichtaufgaben (${mPct}%) ${isAct ? '· Filter aktiv' : '· Klicken zum Filtern'}">
+          <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
           <span class="mod-name">${m}</span>
           <strong class="mod-fraction">${mMandDone}/${mMandTasks.length}</strong>
         </span>
@@ -453,11 +447,11 @@ export function render() {
 
   // 6. View delegation
   if (state.viewMode === 'tree') {
-    container.innerHTML = renderTreeView(filtered, standardModules);
+    container.innerHTML = renderTreeView(filtered, activeModules);
   } else if (state.viewMode === 'matrix') {
-    container.innerHTML = renderMatrixView(filtered, standardModules);
+    container.innerHTML = renderMatrixView(filtered, activeModules);
   } else {
-    container.innerHTML = renderListView(filtered, standardModules);
+    container.innerHTML = renderListView(filtered, activeModules);
   }
 }
 

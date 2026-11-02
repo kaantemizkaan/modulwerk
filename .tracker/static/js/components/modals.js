@@ -2,7 +2,7 @@
 // MODAL CONTROLLERS & POPUPS
 // ========================================================
 
-import { state, notifySubscribers, showToast } from '../state.js';
+import { state, notifySubscribers, showToast, getActiveModules } from '../state.js';
 import * as api from '../api.js';
 import { esc } from '../utils.js';
 
@@ -12,6 +12,16 @@ import { esc } from '../utils.js';
 export function openModal() {
   const modal = document.getElementById('taskModal');
   if (modal) {
+    const sel = document.getElementById('mSubject');
+    if (sel) {
+      const currentVal = sel.value;
+      const activeMods = getActiveModules();
+      sel.innerHTML = activeMods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+      if (currentVal && activeMods.includes(currentVal)) {
+        sel.value = currentVal;
+      }
+    }
+
     modal.classList.add('open');
     const input = document.getElementById('mTitle');
     if (input) input.focus();

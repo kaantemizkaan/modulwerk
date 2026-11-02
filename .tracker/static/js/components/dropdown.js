@@ -1,31 +1,9 @@
 // ========================================================
-// CUSTOM FLOATING DROPDOWN COMPONENT (Linear / Raycast UI)
+// CUSTOM FLOATING DROPDOWN COMPONENT (DYNAMIC ADAPTIVE UI)
 // ========================================================
 
-import { state, notifySubscribers } from '../state.js';
-
-const dropdownLabels = {
-  Subject: {
-    'all': 'Alle Module',
-    'Analysis': 'Analysis',
-    'EiP': 'EiP',
-    'Lineare Algebra': 'Lineare Algebra',
-    'Statistik': 'Statistik'
-  },
-  Type: {
-    'all': 'Pflicht & Freiwillig',
-    'mandatory': 'Nur Pflicht',
-    'optional': 'Freiwillig'
-  },
-  Category: {
-    'all': 'Alle Kategorien',
-    'Hausaufgabe': 'Hausaufgabe',
-    'Übungsblatt': 'Übungsblatt',
-    'Präsenzübung': 'Präsenzübung',
-    'Praktikum': 'Praktikum',
-    'Tutorium': 'Tutorium'
-  }
-};
+import { state, getActiveModules, getActiveCategories, getModuleColor, notifySubscribers } from '../state.js';
+import { esc } from '../utils.js';
 
 export function initDropdowns() {
   document.addEventListener('click', (e) => {
@@ -71,32 +49,88 @@ export function selectDropdown(name, val) {
   notifySubscribers();
 }
 
+/**
+ * Re-render dropdown items dynamically based on current modules & categories
+ */
 export function syncDropdownUI() {
-  // Sync Subject
+  const activeModules = getActiveModules();
+  const activeCategories = getActiveCategories();
+
+  // 1. Sync Subject Dropdown
   const lblSubj = document.getElementById('labelSubject');
+  const menuSubj = document.getElementById('menuSubject');
   if (lblSubj) {
-    lblSubj.textContent = dropdownLabels.Subject[state.filterSubject] || state.filterSubject;
+    lblSubj.textContent = state.filterSubject === 'all' ? 'Alle Module' : state.filterSubject;
     const trig = lblSubj.closest('.dropdown-trigger');
     if (trig) trig.classList.toggle('active-filter', state.filterSubject !== 'all');
-    syncDropdownMenuSelected('Subject', state.filterSubject);
   }
 
-  // Sync Type
+  if (menuSubj) {
+    const isAll = state.filterSubject === 'all';
+    let html = `
+      <div class="dropdown-item ${isAll ? 'selected' : ''}" data-value="all" onclick="window.appActions.selectDropdown('Subject', 'all')">
+        <span>Alle Module</span>
+        <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    `;
+
+    activeModules.forEach(mod => {
+      const isSel = state.filterSubject === mod;
+      const col = getModuleColor(mod);
+      html += `
+        <div class="dropdown-item ${isSel ? 'selected' : ''}" data-value="${esc(mod)}" onclick="window.appActions.selectDropdown('Subject', '${esc(mod)}')">
+          <span class="dropdown-opt-label">
+            <span class="mod-dot" style="background:${col.color}; width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
+            ${esc(mod)}
+          </span>
+          <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      `;
+    });
+    menuSubj.innerHTML = html;
+  }
+
+  // 2. Sync Type Dropdown
   const lblType = document.getElementById('labelType');
+  const typeLabels = {
+    'all': 'Pflicht & Freiwillig',
+    'mandatory': 'Nur Pflicht',
+    'optional': 'Freiwillig'
+  };
   if (lblType) {
-    lblType.textContent = dropdownLabels.Type[state.filterType] || state.filterType;
+    lblType.textContent = typeLabels[state.filterType] || state.filterType;
     const trig = lblType.closest('.dropdown-trigger');
     if (trig) trig.classList.toggle('active-filter', state.filterType !== 'all');
     syncDropdownMenuSelected('Type', state.filterType);
   }
 
-  // Sync Category
+  // 3. Sync Category Dropdown
   const lblCat = document.getElementById('labelCategory');
+  const menuCat = document.getElementById('menuCategory');
   if (lblCat) {
-    lblCat.textContent = dropdownLabels.Category[state.filterCategory] || state.filterCategory;
+    lblCat.textContent = state.filterCategory === 'all' ? 'Alle Kategorien' : state.filterCategory;
     const trig = lblCat.closest('.dropdown-trigger');
     if (trig) trig.classList.toggle('active-filter', state.filterCategory !== 'all');
-    syncDropdownMenuSelected('Category', state.filterCategory);
+  }
+
+  if (menuCat && activeCategories.length > 0) {
+    const isCatAll = state.filterCategory === 'all';
+    let catHtml = `
+      <div class="dropdown-item ${isCatAll ? 'selected' : ''}" data-value="all" onclick="window.appActions.selectDropdown('Category', 'all')">
+        <span>Alle Kategorien</span>
+        <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    `;
+    activeCategories.forEach(cat => {
+      const isSel = state.filterCategory === cat;
+      catHtml += `
+        <div class="dropdown-item ${isSel ? 'selected' : ''}" data-value="${esc(cat)}" onclick="window.appActions.selectDropdown('Category', '${esc(cat)}')">
+          <span>${esc(cat)}</span>
+          <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      `;
+    });
+    menuCat.innerHTML = catHtml;
   }
 }
 
@@ -104,6 +138,6 @@ function syncDropdownMenuSelected(name, val) {
   const menu = document.getElementById('menu' + name);
   if (!menu) return;
   menu.querySelectorAll('.dropdown-item').forEach(item => {
-    item.classList.toggle('selected', item.getAttribute('data-value') === val);
+    item.classList.toggle('selected', item.dataset.value === val);
   });
 }
