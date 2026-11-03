@@ -114,6 +114,10 @@
   gap: 6px;
   border-left: 3px solid var(--border);
   transition: transform 0.22s var(--ios-spring-soft), box-shadow 0.2s var(--ios-ease), border-color 0.2s var(--ios-ease), opacity 0.2s var(--ios-ease), background 0.2s var(--ios-ease);
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .matrix-card:hover {
@@ -174,6 +178,9 @@
   align-items: center;
   gap: 5px;
   font-size: 11px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .matrix-file-chip {
@@ -188,7 +195,26 @@
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 10px;
-  transition: border-color 0.1s, color 0.1s;
+  transition: border-color 0.1s, color 0.1s, background 0.15s;
+  user-select: none;
+  min-width: 0;
+  flex: 1 1 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.matrix-file-chip span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix-pair-arrow {
+  color: var(--text-muted);
+  font-size: 10px;
+  flex-shrink: 0;
+  opacity: 0.55;
   user-select: none;
 }
 

@@ -115,7 +115,8 @@ export function renderMatrixView(filtered, modules) {
   }
 
   // Build Table Header with column metrics
-  const colWidthStyle = `width: calc((100% - 165px) / ${allSheets.length});`;
+  const minColWidth = 220;
+  const colWidthStyle = `min-width:${minColWidth}px; width:max(${minColWidth}px, calc((100% - 170px) / ${allSheets.length}));`;
   const thCols = allSheets.map(sheet => {
     const sheetTasks = filtered.filter(t => getSheetDisplay(t.sheet) === sheet);
     const sDone = sheetTasks.filter(t => t.completed).length;
@@ -211,9 +212,10 @@ export function renderMatrixView(filtered, modules) {
         else if (t.category === 'Tutorium' || t.category === 'Tutorial') catClass = 'badge-tutorium';
 
         let shortTitle = t.title || '';
+        shortTitle = shortTitle.replace(/\b[UÜ]bungsblatt\b/gi, 'Exercise');
         shortTitle = shortTitle.replace(/\bBlatt\b/gi, 'Sheet');
-        shortTitle = shortTitle.replace(/\bUebungsblatt\b/gi, 'Exercise');
         shortTitle = shortTitle.replace(/\bHausaufgabe\b/gi, 'Homework');
+        shortTitle = shortTitle.replace(/\bPr[äa]senz[üu]bung\b/gi, 'In-Class');
         shortTitle = shortTitle.replace(/\bLoesung\b/gi, 'Solution');
         const subjRegex = new RegExp('^' + t.subject.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\s*', 'i');
         shortTitle = shortTitle.replace(subjRegex, '');
@@ -255,11 +257,11 @@ export function renderMatrixView(filtered, modules) {
                 onclick="window.appActions.openTaskFile('${t.id}')"
                 title="Open assignment: ${esc(assignName)} (${esc(assignSize)})"
               >
-                <span class="file-ext-badge" style="font-size:9px; padding:1px 3px;">${esc(assignExt)}</span>
-                <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(assignSize || 'Open')}</span>
+                <span class="file-ext-badge" style="font-size:9px; padding:1px 3px; flex-shrink:0;">${esc(assignExt)}</span>
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(assignSize || 'Open')}</span>
               </span>
 
-              <span style="color:var(--text-muted); font-size:10px;">➔</span>
+              <span class="matrix-pair-arrow">➔</span>
 
               ${hasSolution ? `
                 <span 
@@ -267,8 +269,8 @@ export function renderMatrixView(filtered, modules) {
                   onclick="window.appActions.openTaskSolution('${t.id}')"
                   title="Open solution: ${esc(solName)} (${esc(solSize)})"
                 >
-                  <svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span style="max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Solution</span>
+                  <svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Solution</span>
                 </span>
               ` : `
                 <span 
@@ -279,7 +281,7 @@ export function renderMatrixView(filtered, modules) {
                   ondrop="window.appActions.handleCardDrop(event, '${t.id}', true)"
                   title="No solution attached! Click or drop file here"
                 >
-                  <span>+ Solution</span>
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">+ Solution</span>
                 </span>
               `}
             </div>
@@ -327,7 +329,7 @@ export function renderMatrixView(filtered, modules) {
 
   return `
     <div class="matrix-wrapper">
-      <table class="matrix-table">
+      <table class="matrix-table" style="min-width: calc(170px + ${allSheets.length * minColWidth}px);">
         <thead>
           <tr>
             <th class="matrix-th matrix-th-mod">Module</th>

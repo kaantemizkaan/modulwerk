@@ -160,12 +160,21 @@
 }
 
 .matrix-td-mod {
-  background: rgba(255, 255, 255, 0.72) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
 }
 [data-theme="dark"] .matrix-td-mod {
-  background: rgba(18, 18, 23, 0.75) !important;
+  background: rgba(18, 18, 23, 0.96) !important;
+}
+
+.matrix-th-mod {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+[data-theme="dark"] .matrix-th-mod {
+  background: rgba(22, 22, 28, 0.96) !important;
 }
 
 .matrix-card {
