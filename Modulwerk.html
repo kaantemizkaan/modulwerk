@@ -10,6 +10,7 @@
 
   <!-- Modular Design System Stylesheets -->
   <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/sidebar.css">
   <link rel="stylesheet" href="/static/css/topbar.css">
   <link rel="stylesheet" href="/static/css/command-bar.css">
   <link rel="stylesheet" href="/static/css/dropdown.css">
@@ -20,286 +21,264 @@
   <link rel="stylesheet" href="/static/css/modals.css">
 </head>
 <body>
-  <div class="layout">
-    <!-- Top Header -->
-    <header class="topbar">
-      <div class="brand">
-        <!-- Modulwerk Vector Brand Logo -->
-        <div class="brand-logo" title="Modulwerk">
-          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="mwGreenGrad" x1="16" y1="9.75" x2="23.25" y2="22.25" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#34d399"/>
-                <stop offset="100%" stop-color="#059669"/>
-              </linearGradient>
-              <linearGradient id="mwBgGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#16161b"/>
-                <stop offset="100%" stop-color="#0e0e12"/>
-              </linearGradient>
-            </defs>
-            <rect width="32" height="32" rx="8" fill="url(#mwBgGrad)"/>
-            <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="rgba(255, 255, 255, 0.08)"/>
-            <!-- Left Module (Assignment): Pure Crisp Neutral White -->
-            <path d="M 8.75 22.25 L 8.75 9.75 L 16 17.5" stroke="#f4f4f7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Right Module (Solution): Radiant Emerald Green -->
-            <path d="M 16 17.5 L 23.25 9.75 L 23.25 22.25" stroke="url(#mwGreenGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="16" cy="17.5" r="1.75" fill="#34d399"/>
-          </svg>
-        </div>
-
-        <div class="brand-text">
-          <div class="brand-title-row">
-            <h1>Modulwerk</h1>
-            <span class="term-badge">Academic Workspace</span>
+  <!-- App Shell: Desktop Sidebar + Main Workspace -->
+  <div class="app-shell">
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar" id="appSidebar">
+      <!-- Sidebar Header (Brand & Collapse button) -->
+      <div class="sidebar-header">
+        <div class="sidebar-brand" onclick="window.appActions.resetAllFilters()" title="Modulwerk — Reset all filters">
+          <div class="brand-logo" title="Modulwerk">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="mwGreenGrad" x1="16" y1="9.75" x2="23.25" y2="22.25" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#34d399"/>
+                  <stop offset="100%" stop-color="#059669"/>
+                </linearGradient>
+                <linearGradient id="mwBgGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#16161b"/>
+                  <stop offset="100%" stop-color="#0e0e12"/>
+                </linearGradient>
+              </defs>
+              <rect width="32" height="32" rx="8" fill="url(#mwBgGrad)"/>
+              <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="rgba(255, 255, 255, 0.08)"/>
+              <path d="M 8.75 22.25 L 8.75 9.75 L 16 17.5" stroke="#f4f4f7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 16 17.5 L 23.25 9.75 L 23.25 22.25" stroke="url(#mwGreenGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="16" cy="17.5" r="1.75" fill="#34d399"/>
+            </svg>
           </div>
-          <div class="brand-subtitle-row">
-            <span>Coursework &amp; Task Manager</span>
-            <span class="sync-separator">·</span>
-            <div id="syncStatus" class="sync-indicator" title="Real-time synchronization with local filesystem">
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-title">Modulwerk</span>
+            <div class="sidebar-sync-row" id="syncStatus">
               <span class="sync-dot"></span>
               <span id="syncText">Synchronized</span>
             </div>
           </div>
         </div>
+        <button class="sidebar-collapse-btn" onclick="window.appActions.toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </button>
       </div>
 
-      <div class="topbar-actions">
-        <!-- View Mode Switcher -->
-        <div class="segmented" id="viewModeGroup" title="Switch view">
-          <button class="seg-btn active" data-view="list" onclick="window.appActions.setViewMode('list')">
-            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            <span>List</span>
-          </button>
-          <button class="seg-btn" data-view="tree" onclick="window.appActions.setViewMode('tree')">
-            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><path d="M10 7h4"/><path d="M7 10v7h7"/></svg>
-            <span>Tree</span>
-          </button>
-          <button class="seg-btn" data-view="matrix" onclick="window.appActions.setViewMode('matrix')">
-            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-            <span>Matrix</span>
-          </button>
+      <!-- Quick Action: New Task -->
+      <div class="sidebar-action-wrap">
+        <button class="btn btn-primary sidebar-new-btn" onclick="window.appActions.openModal()" title="Create custom task (N)">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            <span>New Task</span>
+          </div>
+          <span class="kbd-badge">N</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Navigation Area -->
+      <div class="sidebar-scrollable">
+        <!-- Views Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">VIEWS</div>
+          <div class="sidebar-nav" id="sidebarViewNav">
+            <button class="sidebar-nav-item active" data-view="list" onclick="window.appActions.setViewMode('list')">
+              <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              <span>List View</span>
+            </button>
+            <button class="sidebar-nav-item" data-view="tree" onclick="window.appActions.setViewMode('tree')">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><path d="M10 7h4"/><path d="M7 10v7h7"/></svg>
+              <span>Tree View</span>
+            </button>
+            <button class="sidebar-nav-item" data-view="matrix" onclick="window.appActions.setViewMode('matrix')">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+              <span>Matrix Grid</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Filename Normalizer Pill -->
-        <button class="btn btn-pill-accent" id="btnNormalize" onclick="window.appActions.openNormalizeModal()" style="display:none;" title="Standardize filenames according to uniform schema">
-          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          <span>Normalize</span>
-          <span class="badge-count" id="cnt-normalize">0</span>
-        </button>
+        <!-- Status Filters Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">STATUS</div>
+          <div class="sidebar-nav" id="sidebarStatusNav">
+            <button class="sidebar-nav-item active" data-status="all" onclick="window.appActions.setStatus('all')">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              <span>All Tasks</span>
+              <span class="nav-count" id="sb-cnt-all">0</span>
+            </button>
+            <button class="sidebar-nav-item" data-status="todo" onclick="window.appActions.setStatus('todo')">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+              <span>Pending</span>
+              <span class="nav-count" id="sb-cnt-todo">0</span>
+            </button>
+            <button class="sidebar-nav-item" data-status="done" onclick="window.appActions.setStatus('done')">
+              <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span>Completed</span>
+              <span class="nav-count" id="sb-cnt-done">0</span>
+            </button>
+          </div>
+        </div>
 
-        <!-- Managed Ignored / Deleted Tasks Pill -->
-        <button class="btn btn-pill-subtle" id="btnIgnored" onclick="window.appActions.openIgnoredModal()" style="display:none;" title="Manage permanently ignored/deleted tasks">
-          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
-          <span>Ignored</span>
-          <span class="badge-count" id="cnt-ignored">0</span>
-        </button>
+        <!-- Academic Modules Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>COURSES</span>
+            <button class="sidebar-reset-btn" id="sbBtnResetMod" onclick="window.appActions.setSubject('all')" title="Show all modules" style="display:none;">All</button>
+          </div>
+          <div class="sidebar-modules-list" id="sidebarModuleList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
 
-        <!-- Tool Icons -->
-        <div class="btn-group">
-          <button class="btn btn-icon" id="btnScan" onclick="window.appActions.triggerRescan()" title="Rescan directory">
+      <!-- Sidebar Footer Tools -->
+      <div class="sidebar-footer">
+        <div class="sidebar-tools-grid">
+          <button class="sidebar-tool-btn" id="btnScan" onclick="window.appActions.triggerRescan()" title="Rescan workspace files">
             <svg viewBox="0 0 24 24" id="scanIcon"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+            <span>Scan</span>
           </button>
-          <button class="btn btn-icon" onclick="window.appActions.toggleTheme()" title="Toggle theme">
+          <button class="sidebar-tool-btn" onclick="window.appActions.toggleTheme()" title="Toggle Dark/Light theme">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <span>Theme</span>
+          </button>
+          <button class="sidebar-tool-btn" id="btnNormalize" onclick="window.appActions.openNormalizeModal()" style="display:none;" title="Standardize filenames">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Fix</span>
+            <span class="badge-count" id="cnt-normalize">0</span>
+          </button>
+          <button class="sidebar-tool-btn" id="btnIgnored" onclick="window.appActions.openIgnoredModal()" style="display:none;" title="Manage ignored tasks">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+            <span>Ignored</span>
+            <span class="badge-count" id="cnt-ignored">0</span>
           </button>
         </div>
-
-        <button class="btn btn-primary" onclick="window.appActions.openModal()">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-          <span>New Task</span>
-        </button>
       </div>
-    </header>
+    </aside>
 
-    <!-- Progress Strip (Segmented Sparklines & Module Breakdown) -->
-    <section class="summary-strip">
-      <div class="summary-top">
-        <div class="summary-metrics">
-          <span class="summary-pct" id="statPct">0%</span>
-          <span class="summary-label" id="statFraction">0 of 0 required tasks completed</span>
-          <span class="summary-opt-label" id="statOptFraction">(+ 0 optional exercises)</span>
-          <span id="statMilestoneSeal"></span>
-        </div>
-        <!-- Adaptive Module Chips with Micro-Sparklines -->
-        <div class="module-breakdown" id="moduleStats"></div>
-      </div>
-
-      <!-- Segmented Sparkline Track -->
-      <div class="sparkline-wrapper">
-        <div class="sparkline-track" id="sparklineTrack" title="Semester Progress Breakdown">
-          <div class="sparkline-segment seg-done-mand" id="segDoneMand" style="width: 0%;"></div>
-          <div class="sparkline-segment seg-done-opt" id="segDoneOpt" style="width: 0%;"></div>
-          <div class="sparkline-segment seg-urgent" id="segUrgent" style="width: 0%;"></div>
-          <div class="sparkline-segment seg-overdue" id="segOverdue" style="width: 0%;"></div>
-          <div class="sparkline-segment seg-pending" id="segPending" style="width: 100%;"></div>
-        </div>
-
-        <!-- Legend and Breakdown -->
-        <div class="sparkline-footer">
-          <div class="sparkline-legend">
-            <span class="legend-item"><span class="legend-dot done-mand"></span> Required Done (<strong id="cntLegendDoneMand">0</strong>)</span>
-            <span class="legend-item"><span class="legend-dot done-opt"></span> Optional Done (<strong id="cntLegendDoneOpt">0</strong>)</span>
-            <span class="legend-item"><span class="legend-dot urgent"></span> Due Soon (<strong id="cntLegendUrgent">0</strong>)</span>
-            <span class="legend-item"><span class="legend-dot overdue"></span> Overdue (<strong id="cntLegendOverdue">0</strong>)</span>
-            <span class="legend-item"><span class="legend-dot pending"></span> Remaining (<strong id="cntLegendPending">0</strong>)</span>
+    <!-- Main Workspace Area -->
+    <div class="app-main">
+      <!-- Ultra-Compact Header (46px Height) -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="btn btn-icon sidebar-open-trigger" id="sidebarOpenTrigger" onclick="window.appActions.toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </button>
+          <div class="header-breadcrumb">
+            <span class="bc-title" id="activeViewTitle">All Tasks</span>
+            <span class="bc-badge" id="activeFilterBadge">All Courses</span>
           </div>
-          <span id="sparklineQuickStatus" style="font-weight: 500; color: var(--text);">Overall Track</span>
-        </div>
-      </div>
-    </section>
 
-    <!-- Unified Command Bar -->
-    <section class="command-bar">
-      <!-- 1. Integrated Search Input -->
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by sheet, file, notes..." oninput="window.appActions.onSearch()">
-        <span class="kbd-hint">/</span>
-      </div>
+          <div class="header-filters">
+            <!-- Relevance Dropdown -->
+            <div class="custom-dropdown" id="dropdownType">
+              <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Type', event)" title="Filter by requirement">
+                <span class="dropdown-label" id="labelType">All Types</span>
+                <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="dropdown-menu" id="menuType">
+                <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Type', 'all')">
+                  <span>All Types</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="mandatory" onclick="window.appActions.selectDropdown('Type', 'mandatory')">
+                  <span>Required Only</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="optional" onclick="window.appActions.selectDropdown('Type', 'optional')">
+                  <span>Optional Only</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
 
-      <!-- Divider -->
-      <div class="bar-divider"></div>
+            <!-- Category Dropdown -->
+            <div class="custom-dropdown" id="dropdownCategory">
+              <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Category', event)" title="Filter by category">
+                <span class="dropdown-label" id="labelCategory">All Categories</span>
+                <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="dropdown-menu" id="menuCategory">
+                <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Category', 'all')">
+                  <span>All Categories</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="Hausaufgabe" onclick="window.appActions.selectDropdown('Category', 'Hausaufgabe')">
+                  <span>Homework</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="Übungsblatt" onclick="window.appActions.selectDropdown('Category', 'Übungsblatt')">
+                  <span>Exercise Sheet</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="Präsenzübung" onclick="window.appActions.selectDropdown('Category', 'Präsenzübung')">
+                  <span>In-Class Lab</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="Praktikum" onclick="window.appActions.selectDropdown('Category', 'Praktikum')">
+                  <span>Lab / Project</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="dropdown-item" data-value="Tutorium" onclick="window.appActions.selectDropdown('Category', 'Tutorium')">
+                  <span>Tutorial</span>
+                  <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+            </div>
 
-      <!-- 2. Status Segmented Toggle -->
-      <div class="segmented" id="statusFilterGroup" title="Filter by completion status">
-        <button class="seg-btn active" data-status="all" onclick="window.appActions.setStatus('all')">
-          All <span class="seg-count" id="cnt-all">0</span>
-        </button>
-        <button class="seg-btn" data-status="todo" onclick="window.appActions.setStatus('todo')">
-          Pending <span class="seg-count" id="cnt-todo">0</span>
-        </button>
-        <button class="seg-btn" data-status="done" onclick="window.appActions.setStatus('done')">
-          Completed <span class="seg-count" id="cnt-done">0</span>
-        </button>
-      </div>
-
-      <!-- Divider -->
-      <div class="bar-divider"></div>
-
-      <!-- 3. Modern Floating Filter Dropdowns -->
-      <div class="filter-dropdowns">
-        <!-- Module Dropdown -->
-        <div class="custom-dropdown" id="dropdownSubject">
-          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Subject', event)" title="Filter by module">
-            <span class="dropdown-label" id="labelSubject">All Modules</span>
-            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="dropdown-menu" id="menuSubject">
-            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Subject', 'all')">
-              <span>All Modules</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Analysis" onclick="window.appActions.selectDropdown('Subject', 'Analysis')">
-              <span class="dropdown-opt-label">
-                <span class="mod-dot" style="background:var(--mod-analysis); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
-                Analysis
-              </span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="EiP" onclick="window.appActions.selectDropdown('Subject', 'EiP')">
-              <span class="dropdown-opt-label">
-                <span class="mod-dot" style="background:var(--mod-eip); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
-                EiP
-              </span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Lineare Algebra" onclick="window.appActions.selectDropdown('Subject', 'Lineare Algebra')">
-              <span class="dropdown-opt-label">
-                <span class="mod-dot" style="background:var(--mod-linalg); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
-                Lineare Algebra
-              </span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Statistik" onclick="window.appActions.selectDropdown('Subject', 'Statistik')">
-              <span class="dropdown-opt-label">
-                <span class="mod-dot" style="background:var(--mod-statistik); width:7px; height:7px; border-radius:50%; display:inline-block;"></span>
-                Statistik
-              </span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
+            <button id="btnResetFilters" class="btn btn-reset" onclick="window.appActions.resetAllFilters()" style="display:none;" title="Reset all filters">
+              <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <span>Reset</span>
+            </button>
           </div>
         </div>
 
-        <!-- Relevance Dropdown -->
-        <div class="custom-dropdown" id="dropdownType">
-          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Type', event)" title="Filter by requirement">
-            <span class="dropdown-label" id="labelType">All Types</span>
-            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="dropdown-menu" id="menuType">
-            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Type', 'all')">
-              <span>All Types</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="mandatory" onclick="window.appActions.selectDropdown('Type', 'mandatory')">
-              <span>Required Only</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="optional" onclick="window.appActions.selectDropdown('Type', 'optional')">
-              <span>Optional Only</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
+        <!-- Center: Integrated Search Input -->
+        <div class="header-center">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search sheets, files, notes..." oninput="window.appActions.onSearch()">
+            <span class="kbd-hint">/</span>
           </div>
         </div>
 
-        <!-- Category Dropdown -->
-        <div class="custom-dropdown" id="dropdownCategory">
-          <button type="button" class="dropdown-trigger" onclick="window.appActions.toggleDropdown('Category', event)" title="Filter by category">
-            <span class="dropdown-label" id="labelCategory">All Categories</span>
-            <svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="dropdown-menu" id="menuCategory">
-            <div class="dropdown-item selected" data-value="all" onclick="window.appActions.selectDropdown('Category', 'all')">
-              <span>All Categories</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <!-- Right: Progress Sparkline Capsule -->
+        <div class="header-right">
+          <div class="header-progress-wrap" id="headerProgressWrap" title="Semester Progress">
+            <div class="progress-mini-info">
+              <span class="pct-text" id="statPct">0%</span>
+              <span class="fraction-text" id="statFraction">0/0</span>
             </div>
-            <div class="dropdown-item" data-value="Hausaufgabe" onclick="window.appActions.selectDropdown('Category', 'Hausaufgabe')">
-              <span>Homework</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="sparkline-track mini" id="sparklineTrack">
+              <div class="sparkline-segment seg-done-mand" id="segDoneMand" style="width: 0%;"></div>
+              <div class="sparkline-segment seg-done-opt" id="segDoneOpt" style="width: 0%;"></div>
+              <div class="sparkline-segment seg-urgent" id="segUrgent" style="width: 0%;"></div>
+              <div class="sparkline-segment seg-overdue" id="segOverdue" style="width: 0%;"></div>
+              <div class="sparkline-segment seg-pending" id="segPending" style="width: 100%;"></div>
             </div>
-            <div class="dropdown-item" data-value="Übungsblatt" onclick="window.appActions.selectDropdown('Category', 'Übungsblatt')">
-              <span>Exercise Sheet</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Präsenzübung" onclick="window.appActions.selectDropdown('Category', 'Präsenzübung')">
-              <span>In-Class Lab</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Praktikum" onclick="window.appActions.selectDropdown('Category', 'Praktikum')">
-              <span>Lab / Project</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="dropdown-item" data-value="Tutorium" onclick="window.appActions.selectDropdown('Category', 'Tutorium')">
-              <span>Tutorial</span>
-              <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
+            <span id="statMilestoneSeal"></span>
           </div>
         </div>
+      </header>
 
-        <button id="btnResetFilters" class="btn btn-reset" onclick="window.appActions.resetAllFilters()" style="display:none;" title="Reset all filters">
-          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          <span>Reset</span>
-        </button>
+      <!-- App Content Area (Scrollable) -->
+      <div class="app-content">
+        <div class="layout-container" id="mainLayoutContainer">
+          <!-- Tree Actions Bar -->
+          <div class="tree-actions" id="treeActionsBar" style="margin-bottom:12px;">
+            <button class="btn btn-xs" onclick="window.appActions.expandAllTree()" title="Expand all branches">
+              <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 11 12 6 17 11"/><polyline points="7 18 12 13 17 18"/></svg>
+              <span>Expand All</span>
+            </button>
+            <button class="btn btn-xs" onclick="window.appActions.collapseAllTree()" title="Collapse all branches">
+              <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 6 12 11 17 6"/><polyline points="7 13 12 18 17 13"/></svg>
+              <span>Collapse All</span>
+            </button>
+          </div>
+
+          <!-- Main View Container -->
+          <main id="viewContainer"></main>
+
+          <div id="emptyState" class="empty-box" style="display: none;">
+            No tasks found for the selected filters.
+          </div>
+        </div>
       </div>
-
-      <!-- 4. Tree View Actions -->
-      <div class="tree-actions" id="treeActionsBar">
-        <button class="btn btn-xs" onclick="window.appActions.expandAllTree()" title="Expand all branches">
-          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 11 12 6 17 11"/><polyline points="7 18 12 13 17 18"/></svg>
-          <span>Expand All</span>
-        </button>
-        <button class="btn btn-xs" onclick="window.appActions.collapseAllTree()" title="Collapse all branches">
-          <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><polyline points="7 6 12 11 17 6"/><polyline points="7 13 12 18 17 13"/></svg>
-          <span>Collapse All</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Main View Container -->
-    <main id="viewContainer"></main>
-
-    <div id="emptyState" class="empty-box" style="display: none;">
-      No tasks found for the selected filters.
     </div>
   </div>
 

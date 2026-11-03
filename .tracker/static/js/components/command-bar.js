@@ -54,8 +54,8 @@ export function resetAllFilters() {
 }
 
 export function updateCommandBarUI() {
-  // Update Segmented Status Active State
-  document.querySelectorAll('#statusFilterGroup .seg-btn').forEach(b => {
+  // Update Segmented & Sidebar Status Active State
+  document.querySelectorAll('#statusFilterGroup .seg-btn, #sidebarStatusNav .sidebar-nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.status === state.filterStatus);
   });
 
@@ -70,6 +70,13 @@ export function updateCommandBarUI() {
   if (elTodo) elTodo.textContent = cntTodo;
   const elDone = document.getElementById('cnt-done');
   if (elDone) elDone.textContent = cntDone;
+
+  const sbAll = document.getElementById('sb-cnt-all');
+  if (sbAll) sbAll.textContent = cntAll;
+  const sbTodo = document.getElementById('sb-cnt-todo');
+  if (sbTodo) sbTodo.textContent = cntTodo;
+  const sbDone = document.getElementById('sb-cnt-done');
+  if (sbDone) sbDone.textContent = cntDone;
 
   // Sync Dropdown triggers
   syncDropdownUI();

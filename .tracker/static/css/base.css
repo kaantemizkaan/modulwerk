@@ -164,12 +164,15 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 32px 24px 80px;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .layout {
-  max-width: 1120px;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
 }
 
 /* ======================================================== */

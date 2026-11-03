@@ -264,13 +264,26 @@ function setViewMode(mode) {
 }
 
 function updateViewModeButtons() {
-  document.querySelectorAll('#viewModeGroup .seg-btn').forEach(b => {
+  document.querySelectorAll('#viewModeGroup .seg-btn, #sidebarViewNav .sidebar-nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.view === state.viewMode);
   });
   const treeBar = document.getElementById('treeActionsBar');
   if (treeBar) {
     treeBar.classList.toggle('visible', state.viewMode === 'tree');
   }
+  const layoutContainer = document.getElementById('mainLayoutContainer');
+  if (layoutContainer) {
+    layoutContainer.classList.toggle('layout-wide', state.viewMode === 'matrix');
+  }
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  const trigger = document.getElementById('sidebarOpenTrigger');
+  if (!sidebar) return;
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem('modulwerk_sidebar_collapsed', isCollapsed ? '1' : '0');
+  if (trigger) trigger.classList.toggle('visible', isCollapsed);
 }
 
 function setSubject(s) {
@@ -352,6 +365,16 @@ function setupKeyboardShortcuts() {
       if (searchInput && document.activeElement === searchInput) {
         searchInput.blur();
       }
+    }
+    // Toggle Sidebar: Ctrl+B or Cmd+B
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
+    // New Task: N (when not inside input/textarea)
+    if (e.key.toLowerCase() === 'n' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      openModal();
     }
   });
 }
@@ -485,21 +508,45 @@ export function render() {
     }
   }
 
-  // 4. Dynamic Module chips with Micro-Sparklines in Top Summary Strip
+  // 4. Update Header Breadcrumb Title & Active Filter Badge
+  const titleEl = document.getElementById('activeViewTitle');
+  const badgeEl = document.getElementById('activeFilterBadge');
+  if (titleEl) {
+    if (state.filterSubject !== 'all') {
+      titleEl.textContent = state.filterSubject;
+    } else if (state.viewMode === 'matrix') {
+      titleEl.textContent = 'Semester Matrix';
+    } else if (state.viewMode === 'tree') {
+      titleEl.textContent = 'Folder Tree';
+    } else {
+      titleEl.textContent = state.filterStatus === 'todo' ? 'Pending Tasks' : (state.filterStatus === 'done' ? 'Completed Tasks' : 'All Tasks');
+    }
+  }
+  if (badgeEl) {
+    if (state.filterSubject !== 'all') {
+      badgeEl.textContent = state.filterStatus === 'todo' ? 'To Do' : (state.filterStatus === 'done' ? 'Done' : 'All Tasks');
+    } else {
+      badgeEl.textContent = 'All Courses';
+    }
+  }
+
+  // 5. Dynamic Module list in Sidebar
   const activeModules = getActiveModules();
-  const moduleStatsEl = document.getElementById('moduleStats');
-  if (moduleStatsEl) {
-    moduleStatsEl.innerHTML = activeModules.map(m => {
+  const sbModuleList = document.getElementById('sidebarModuleList');
+  const sbResetMod = document.getElementById('sbBtnResetMod');
+  if (sbResetMod) {
+    sbResetMod.style.display = state.filterSubject !== 'all' ? 'inline-block' : 'none';
+  }
+  if (sbModuleList) {
+    sbModuleList.innerHTML = activeModules.map(m => {
       const col = getModuleColor(m);
       const mTasks = state.tasks.filter(t => t.subject === m);
       const mMandTasks = mTasks.filter(t => !t.is_optional);
       const mMandDone = mMandTasks.filter(t => t.completed).length;
-      const mPct = mMandTasks.length ? Math.round((mMandDone / mMandTasks.length) * 100) : 0;
       const isAct = state.filterSubject === m;
-      const isModuleCleared = mMandTasks.length > 0 && mMandDone === mMandTasks.length;
+      const isCleared = mMandTasks.length > 0 && mMandDone === mMandTasks.length;
 
-      // Micro-sparkline: 4-6 mini dots representing task completion
-      const sparkCount = Math.min(6, mMandTasks.length || 4);
+      const sparkCount = Math.min(5, mMandTasks.length || 3);
       const filledCount = Math.round((mMandDone / (mMandTasks.length || 1)) * sparkCount);
       let dotsHtml = '';
       for (let i = 0; i < sparkCount; i++) {
@@ -508,18 +555,26 @@ export function render() {
       }
 
       return `
-        <span class="module-stat-chip ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} required (${mPct}%) ${isAct ? '· Filter active' : '· Click to filter'}">
-          <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
-          <span class="mod-name">${m}</span>
-          <strong class="mod-fraction">${mMandDone}/${mMandTasks.length}</strong>
-          <div class="chip-sparkline" title="${mMandDone}/${mMandTasks.length} completed">${dotsHtml}</div>
-          ${isModuleCleared ? `<span class="all-clear-badge" style="font-size:8.5px; padding:1px 4px; gap:2px;">✓ Cleared</span>` : ''}
-        </span>
+        <button 
+          class="sidebar-mod-item ${isAct ? 'active' : ''}" 
+          onclick="window.appActions.setSubject('${m}')"
+          title="${m}: ${mMandDone}/${mMandTasks.length} required completed"
+        >
+          <div class="mod-item-left">
+            <span class="mod-dot" style="background:${col.color}; box-shadow:0 0 6px ${col.bg};"></span>
+            <span class="mod-item-name">${m}</span>
+          </div>
+          <div class="mod-item-right">
+            <div class="chip-sparkline">${dotsHtml}</div>
+            <span class="mod-item-count">${mMandDone}/${mMandTasks.length}</span>
+            ${isCleared ? '<span class="all-clear-badge" style="font-size:8px; padding:0 3px;">✓</span>' : ''}
+          </div>
+        </button>
       `;
     }).join('');
   }
 
-  // 5. Filter tasks
+  // 6. Filter tasks
   const filtered = getFilteredTasks();
   const container = document.getElementById('viewContainer');
   const emptyEl = document.getElementById('emptyState');
@@ -580,6 +635,7 @@ window.appActions = {
   setSubject,
   setStatus,
   setViewMode,
+  toggleSidebar,
   toggleTheme,
   triggerRescan,
   openModal,
@@ -620,6 +676,14 @@ export async function init() {
 
   state.viewMode = localStorage.getItem('modulwerk_view_mode') || localStorage.getItem('lmu_view_mode') || 'list';
   updateViewModeButtons();
+
+  // Restore sidebar collapsed state
+  if (localStorage.getItem('modulwerk_sidebar_collapsed') === '1') {
+    const sb = document.getElementById('appSidebar');
+    const tr = document.getElementById('sidebarOpenTrigger');
+    if (sb) sb.classList.add('collapsed');
+    if (tr) tr.classList.add('visible');
+  }
 
   initCommandBar();
   initDropdowns();

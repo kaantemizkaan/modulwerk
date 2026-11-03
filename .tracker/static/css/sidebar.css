@@ -1,0 +1,543 @@
+/* ======================================================== */
+/* MODULWERK DESKTOP SIDEBAR & COMPACT HEADER DESIGN SYSTEM */
+/* ======================================================== */
+
+/* 1. App Shell Layout */
+.app-shell {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+}
+
+/* 2. Left Desktop Sidebar */
+.app-sidebar {
+  width: 236px;
+  min-width: 236px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  user-select: none;
+  transition: width 0.28s var(--ios-spring-soft), transform 0.28s var(--ios-spring-soft), margin-left 0.28s var(--ios-spring-soft);
+}
+
+.app-sidebar.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  margin-left: -236px;
+  overflow: hidden !important;
+  border-right: 1px solid transparent;
+}
+
+/* Sidebar Header & Brand */
+.sidebar-header {
+  padding: 14px 14px 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sidebar-brand .brand-logo {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 7px;
+}
+
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-brand-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.sidebar-sync-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.sidebar-collapse-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.sidebar-collapse-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
+}
+
+/* Sidebar Quick Action (New Task Button) */
+.sidebar-action-wrap {
+  padding: 4px 14px 12px 14px;
+}
+
+.sidebar-new-btn {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.sidebar-new-btn .kbd-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .sidebar-new-btn .kbd-badge {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Scrollable Nav Area */
+.sidebar-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 10px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 4px 8px 6px 8px;
+  text-transform: uppercase;
+}
+
+.sidebar-reset-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--lmu-green);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.sidebar-reset-btn:hover {
+  text-decoration: underline;
+}
+
+/* Nav Item (Common button style) */
+.sidebar-nav-item {
+  width: 100%;
+  height: 30px;
+  padding: 0 9px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.sidebar-nav-item.active {
+  background: var(--surface-active);
+  color: var(--text);
+  font-weight: 600;
+  border-color: var(--border-subtle);
+}
+
+.sidebar-nav-item svg {
+  width: 13.5px;
+  height: 13.5px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.sidebar-nav-item.active svg {
+  opacity: 1;
+  color: var(--lmu-green);
+}
+
+.sidebar-nav-item .nav-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  background: var(--surface-subtle);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.sidebar-nav-item.active .nav-count {
+  color: var(--text);
+  background: var(--surface);
+}
+
+/* Dynamic Modules Navigation List */
+.sidebar-modules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-mod-item {
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.sidebar-mod-item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.sidebar-mod-item.active {
+  background: var(--surface-active);
+  color: var(--text);
+  font-weight: 600;
+  border-color: var(--border);
+}
+
+.mod-item-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mod-item-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mod-item-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.mod-item-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Sidebar Footer (Tool Bar) */
+.sidebar-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sidebar-tools-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.sidebar-tool-btn {
+  flex: 1;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.sidebar-tool-btn:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+  border-color: #3b3b47;
+}
+
+.sidebar-tool-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
+}
+
+/* 3. Main App Container */
+.app-main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* 4. Compact Main Header (Only 46px Height!) */
+.app-header {
+  height: 46px;
+  min-height: 46px;
+  padding: 0 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-open-trigger {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  display: none;
+}
+
+.sidebar-open-trigger.visible {
+  display: inline-flex;
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bc-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bc-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--surface-active);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.header-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+/* Header Center (Integrated Search Bar) */
+.header-center {
+  flex: 1.2;
+  max-width: 360px;
+  min-width: 160px;
+}
+
+.header-center .search-wrap {
+  width: 100%;
+}
+
+/* Header Right (Progress Sparkline Capsule) */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.header-progress-wrap:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-muted);
+}
+
+.progress-mini-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+}
+
+.progress-mini-info .pct-text {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.progress-mini-info .fraction-text {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.sparkline-track.mini {
+  width: 64px;
+  height: 5px;
+  background: var(--surface-active);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  gap: 1px;
+}
+
+/* 5. Main Content Scroll Area */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px 22px 60px 22px;
+}
+
+.layout-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.layout-container.layout-wide {
+  max-width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 860px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  }
+  .app-sidebar:not(.open-mobile) {
+    margin-left: -236px;
+  }
+  .sidebar-open-trigger {
+    display: inline-flex !important;
+  }
+  .header-filters {
+    display: none;
+  }
+}
