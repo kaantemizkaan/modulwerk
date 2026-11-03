@@ -353,11 +353,6 @@
   color: var(--accent) !important;
 }
 
-.sidebar-sync-row .sync-dot {
-  background: var(--accent) !important;
-  box-shadow: 0 0 8px var(--accent-glow) !important;
-}
-
 .dropdown-item.selected {
   background: var(--accent-bg) !important;
   color: var(--accent) !important;
