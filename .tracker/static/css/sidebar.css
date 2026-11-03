@@ -403,10 +403,6 @@
   color: var(--text);
   margin-left: 2px;
 }
-  stroke: currentColor;
-  stroke-width: 1.75;
-  fill: none;
-}
 
 /* 3. Main App Container */
 .app-main {
@@ -423,22 +419,22 @@
 .app-header {
   height: 46px;
   min-height: 46px;
-  padding: 0 18px;
+  padding: 0 14px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   z-index: 50;
+  overflow: hidden;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  flex: 1;
+  flex-shrink: 0;
 }
 
 .sidebar-open-trigger {
@@ -461,7 +457,7 @@
 .sidebar-open-trigger:hover {
   background: var(--surface-hover);
   color: var(--text);
-  border-color: var(--border-hover);
+  border-color: var(--border-hover, #3b3b47);
 }
 
 .sidebar-open-trigger svg {
@@ -472,8 +468,14 @@
   fill: none;
 }
 
-.sidebar-open-trigger.visible {
+/* Only display open trigger when sidebar is collapsed */
+.app-sidebar.collapsed ~ .app-main .sidebar-open-trigger {
   display: inline-flex !important;
+}
+
+/* NEVER display open trigger when sidebar is open */
+.app-sidebar:not(.collapsed) ~ .app-main .sidebar-open-trigger {
+  display: none !important;
 }
 
 .header-breadcrumb {
@@ -513,8 +515,8 @@
 /* Header Center (Integrated Search Bar) */
 .header-center {
   flex: 1;
-  max-width: 340px;
-  min-width: 130px;
+  max-width: 280px;
+  min-width: 90px;
 }
 
 .header-center .search-wrap {
@@ -525,8 +527,9 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .header-progress-wrap {

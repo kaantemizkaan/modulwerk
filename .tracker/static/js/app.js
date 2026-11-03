@@ -437,7 +437,7 @@ export function render() {
   if (elPct) elPct.textContent = stats.pct + '%';
 
   const elFraction = document.getElementById('statFraction');
-  if (elFraction) elFraction.textContent = `${stats.mandDone} of ${stats.mandTasks} required tasks completed`;
+  if (elFraction) elFraction.textContent = `${stats.mandDone}/${stats.mandTasks}`;
 
   const elOptFraction = document.getElementById('statOptFraction');
   if (elOptFraction) elOptFraction.textContent = `(+ ${stats.optDone} of ${stats.optTasks} optional exercises)`;
@@ -532,9 +532,10 @@ export function render() {
   }
   if (badgeEl) {
     if (state.filterSubject !== 'all') {
+      badgeEl.style.display = 'inline-block';
       badgeEl.textContent = state.filterStatus === 'todo' ? 'To Do' : (state.filterStatus === 'done' ? 'Done' : 'All Tasks');
     } else {
-      badgeEl.textContent = 'All Courses';
+      badgeEl.style.display = 'none';
     }
   }
 
