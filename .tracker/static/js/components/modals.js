@@ -485,3 +485,67 @@ export function saveCustomDueDate() {
 export function clearDueDate() {
   applyTaskDueDate(null);
 }
+
+// --------------------------------------------------------
+// 6. THEME & AURORA STUDIO MODAL
+// --------------------------------------------------------
+
+export function openThemeModal() {
+  const modal = document.getElementById('themeModal');
+  if (modal) {
+    modal.classList.add('active');
+    syncThemeModalUI();
+  }
+}
+
+export function closeThemeModal() {
+  const modal = document.getElementById('themeModal');
+  if (modal) modal.classList.remove('active');
+}
+
+export function selectThemeMode(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  localStorage.setItem('modulwerk_theme', mode);
+  state.theme = mode;
+  syncThemeModalUI();
+}
+
+export function selectPalette(palette) {
+  document.documentElement.setAttribute('data-palette', palette);
+  localStorage.setItem('modulwerk_palette', palette);
+  syncThemeModalUI();
+  showToast(`Palette changed to ${palette.charAt(0).toUpperCase() + palette.slice(1)}`);
+}
+
+export function toggleAuroraGlow() {
+  const cur = localStorage.getItem('modulwerk_aurora') !== '0';
+  const next = !cur;
+  localStorage.setItem('modulwerk_aurora', next ? '1' : '0');
+  const bg = document.getElementById('proceduralBg');
+  if (bg) bg.style.display = next ? 'block' : 'none';
+  syncThemeModalUI();
+}
+
+export function syncThemeModalUI() {
+  const curMode = document.documentElement.getAttribute('data-theme') || 'dark';
+  const curPalette = document.documentElement.getAttribute('data-palette') || 'emerald';
+  const auroraActive = localStorage.getItem('modulwerk_aurora') !== '0';
+
+  // Mode segments
+  document.querySelectorAll('#themeModeSegmented .mode-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === curMode);
+  });
+
+  // Palette cards
+  document.querySelectorAll('#palettesGrid .palette-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.palette === curPalette);
+  });
+
+  // Aurora toggle button
+  const btnAurora = document.getElementById('btnToggleAurora');
+  if (btnAurora) {
+    btnAurora.textContent = auroraActive ? 'Active' : 'Disabled';
+    btnAurora.style.color = auroraActive ? 'var(--accent)' : 'var(--text-muted)';
+    btnAurora.style.borderColor = auroraActive ? 'var(--accent-border)' : 'var(--border)';
+  }
+}

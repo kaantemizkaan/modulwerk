@@ -11,6 +11,7 @@
   <!-- Modular Design System Stylesheets -->
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/sidebar.css">
+  <link rel="stylesheet" href="/static/css/aurora.css">
   <link rel="stylesheet" href="/static/css/topbar.css">
   <link rel="stylesheet" href="/static/css/command-bar.css">
   <link rel="stylesheet" href="/static/css/dropdown.css">
@@ -21,6 +22,14 @@
   <link rel="stylesheet" href="/static/css/modals.css">
 </head>
 <body>
+  <!-- Procedural Grainy Aurora Mesh Background (macOS Sequoia Style) -->
+  <div class="procedural-aurora-bg" id="proceduralBg" aria-hidden="true">
+    <div class="aurora-orb aurora-orb-1"></div>
+    <div class="aurora-orb aurora-orb-2"></div>
+    <div class="aurora-orb aurora-orb-3"></div>
+    <div class="aurora-noise-layer"></div>
+  </div>
+
   <!-- App Shell: Desktop Sidebar + Main Workspace -->
   <div class="app-shell">
     <!-- Left Navigation Sidebar -->
@@ -133,7 +142,7 @@
             <svg viewBox="0 0 24 24" id="scanIcon"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
             <span>Scan</span>
           </button>
-          <button class="sidebar-tool-btn" onclick="window.appActions.toggleTheme()" title="Toggle Dark/Light theme">
+          <button class="sidebar-tool-btn" id="btnTheme" onclick="window.appActions.openThemeModal()" title="Theme & Aurora Palettes">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
             <span>Theme</span>
           </button>
@@ -296,6 +305,102 @@
 
   <!-- Hidden File Input for targeted Solution Upload -->
   <input type="file" id="hiddenSolutionPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">
+
+  <!-- Theme & Aurora Studio Modal -->
+  <div class="modal-overlay" id="themeModal" onclick="if(event.target===this)window.appActions.closeThemeModal()">
+    <div class="modal-panel theme-modal-panel">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="theme-brand-pip" id="themeStudioPip"></div>
+          <h2>Theme &amp; Aurora Studio</h2>
+        </div>
+        <button class="btn btn-icon" onclick="window.appActions.closeThemeModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Mode Switch (Dark / Light) -->
+      <div class="theme-section">
+        <label class="theme-section-label">APPEARANCE</label>
+        <div class="theme-segmented-mode" id="themeModeSegmented">
+          <button type="button" class="mode-seg-btn active" data-mode="dark" onclick="window.appActions.selectThemeMode('dark')">
+            <svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Dark Atmosphere</span>
+          </button>
+          <button type="button" class="mode-seg-btn" data-mode="light" onclick="window.appActions.selectThemeMode('light')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <span>Light Clean</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Aurora Palette Grid -->
+      <div class="theme-section" style="margin-top:16px;">
+        <label class="theme-section-label">AURORA COLOR PALETTE</label>
+        <div class="palettes-grid" id="palettesGrid">
+          <!-- 1. Emerald -->
+          <div class="palette-card active" data-palette="emerald" onclick="window.appActions.selectPalette('emerald')">
+            <div class="palette-preview emerald-preview"></div>
+            <div class="palette-info">
+              <span class="palette-name">Emerald</span>
+              <span class="palette-desc">Classic LMU Academic</span>
+            </div>
+          </div>
+          <!-- 2. Midnight -->
+          <div class="palette-card" data-palette="midnight" onclick="window.appActions.selectPalette('midnight')">
+            <div class="palette-preview midnight-preview"></div>
+            <div class="palette-info">
+              <span class="palette-name">Midnight</span>
+              <span class="palette-desc">macOS Sequoia Indigo</span>
+            </div>
+          </div>
+          <!-- 3. Obsidian -->
+          <div class="palette-card" data-palette="obsidian" onclick="window.appActions.selectPalette('obsidian')">
+            <div class="palette-preview obsidian-preview"></div>
+            <div class="palette-info">
+              <span class="palette-name">Obsidian</span>
+              <span class="palette-desc">Linear Warm Sunset</span>
+            </div>
+          </div>
+          <!-- 4. Cyberpunk -->
+          <div class="palette-card" data-palette="cyberpunk" onclick="window.appActions.selectPalette('cyberpunk')">
+            <div class="palette-preview cyberpunk-preview"></div>
+            <div class="palette-info">
+              <span class="palette-name">Cyberpunk</span>
+              <span class="palette-desc">Raycast Electric Cyan</span>
+            </div>
+          </div>
+          <!-- 5. Sakura -->
+          <div class="palette-card" data-palette="sakura" onclick="window.appActions.selectPalette('sakura')">
+            <div class="palette-preview sakura-preview"></div>
+            <div class="palette-info">
+              <span class="palette-name">Sakura</span>
+              <span class="palette-desc">Tokyo Night Velvet Rose</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aurora Atmosphere Switch -->
+      <div class="theme-section" style="margin-top:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--surface-subtle); border:1px solid var(--border); border-radius:8px;">
+          <div>
+            <div style="font-size:12px; font-weight:600; color:var(--text);">Procedural Aurora Glow</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Dynamic animated radial mesh with film grain</div>
+          </div>
+          <button type="button" class="btn btn-xs" id="btnToggleAurora" onclick="window.appActions.toggleAuroraGlow()" style="font-family:var(--font-mono); font-size:11px;">
+            Active
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="margin-top:20px;">
+        <button type="button" class="btn btn-primary" onclick="window.appActions.closeThemeModal()" style="width:100%; justify-content:center;">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Add Custom Task Modal -->
   <div class="modal-overlay" id="taskModal">

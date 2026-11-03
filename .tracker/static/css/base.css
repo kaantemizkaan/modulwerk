@@ -7,12 +7,12 @@
 
   /* Base Neutrals (Dark) */
   --bg: #09090b;
-  --surface: #111115;
-  --surface-hover: #17171d;
-  --surface-active: #1f1f27;
-  --surface-subtle: #131317;
-  --border: #26262e;
-  --border-subtle: #1b1b22;
+  --surface: rgba(17, 17, 21, 0.78);
+  --surface-hover: rgba(23, 23, 29, 0.88);
+  --surface-active: rgba(31, 31, 39, 0.94);
+  --surface-subtle: rgba(19, 19, 23, 0.65);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
   --text: #f4f4f7;
   --text-secondary: #a1a1aa;
   --text-muted: #666674;
@@ -87,12 +87,12 @@
 
   /* Base Neutrals (Light) */
   --bg: #f8f9fc;
-  --surface: #ffffff;
-  --surface-hover: #f3f4f8;
-  --surface-active: #e9ecf2;
-  --surface-subtle: #fafbfd;
-  --border: #e1e3ea;
-  --border-subtle: #eceff5;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-hover: rgba(243, 244, 248, 0.90);
+  --surface-active: rgba(233, 236, 242, 0.95);
+  --surface-subtle: rgba(250, 251, 253, 0.70);
+  --border: rgba(0, 0, 0, 0.09);
+  --border-subtle: rgba(0, 0, 0, 0.05);
   --text: #0f172a;
   --text-secondary: #475569;
   --text-muted: #8b95a5;

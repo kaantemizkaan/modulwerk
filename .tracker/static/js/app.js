@@ -50,7 +50,12 @@ import {
   closeDueModal,
   setDuePreset,
   saveCustomDueDate,
-  clearDueDate
+  clearDueDate,
+  openThemeModal,
+  closeThemeModal,
+  selectThemeMode,
+  selectPalette,
+  toggleAuroraGlow
 } from './components/modals.js';
 
 import { renderListView } from './views/list-view.js';
@@ -367,6 +372,7 @@ function setupKeyboardShortcuts() {
       closeDeleteModal();
       closeIgnoredModal();
       closeNormalizeModal();
+      closeThemeModal();
       const overlay = document.getElementById('dropOverlay');
       if (overlay) overlay.classList.remove('active');
       const searchInput = document.getElementById('searchInput');
@@ -655,6 +661,11 @@ window.appActions = {
   setDuePreset,
   saveCustomDueDate,
   clearDueDate,
+  openThemeModal,
+  closeThemeModal,
+  selectThemeMode,
+  selectPalette,
+  toggleAuroraGlow,
   expandAllTree,
   collapseAllTree,
   toggleTreeNode,
@@ -680,8 +691,15 @@ Object.assign(window, window.appActions);
 
 export async function init() {
   const savedTheme = localStorage.getItem('modulwerk_theme') || localStorage.getItem('lmu_theme') || 'dark';
+  const savedPalette = localStorage.getItem('modulwerk_palette') || 'emerald';
+  const auroraActive = localStorage.getItem('modulwerk_aurora') !== '0';
+
   document.documentElement.setAttribute('data-theme', savedTheme);
+  document.documentElement.setAttribute('data-palette', savedPalette);
   state.theme = savedTheme;
+
+  const bg = document.getElementById('proceduralBg');
+  if (bg) bg.style.display = auroraActive ? 'block' : 'none';
 
   state.viewMode = localStorage.getItem('modulwerk_view_mode') || localStorage.getItem('lmu_view_mode') || 'list';
   updateViewModeButtons();
