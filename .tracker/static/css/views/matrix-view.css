@@ -95,7 +95,7 @@
   border-bottom: 1px solid var(--border-subtle);
   padding: 8px;
   vertical-align: top;
-  background: var(--surface);
+  background: transparent;
 }
 
 .matrix-cell-stack {

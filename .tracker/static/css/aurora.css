@@ -16,12 +16,19 @@
   transition: background-color 0.4s ease;
 }
 
+[data-theme="light"] .procedural-aurora-bg {
+  background-color: #f7f8fb;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(209, 250, 229, 0.55) 0px, transparent 60%),
+    radial-gradient(at 100% 100%, rgba(224, 231, 255, 0.55) 0px, transparent 60%);
+}
+
 /* Floating Aurora Orbs */
 .aurora-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(85px);
-  opacity: var(--aurora-opacity, 0.65);
+  filter: blur(80px);
+  opacity: var(--aurora-opacity, 0.75);
   mix-blend-mode: screen;
   will-change: transform;
   pointer-events: none;
@@ -29,36 +36,36 @@
 }
 
 [data-theme="light"] .aurora-orb {
-  mix-blend-mode: multiply;
-  filter: blur(95px);
-  opacity: var(--aurora-opacity-light, 0.42);
+  mix-blend-mode: normal !important;
+  filter: blur(85px) !important;
+  opacity: var(--aurora-opacity-light, 0.55) !important;
 }
 
 .aurora-orb-1 {
-  width: 680px;
-  height: 680px;
-  top: -160px;
+  width: 720px;
+  height: 720px;
+  top: -140px;
   left: 5%;
   background: radial-gradient(circle, var(--aurora-1) 0%, transparent 70%);
-  animation: aurora-float-1 24s ease-in-out infinite alternate;
+  animation: aurora-float-1 22s ease-in-out infinite alternate;
 }
 
 .aurora-orb-2 {
-  width: 780px;
-  height: 780px;
-  top: 10%;
-  right: -120px;
+  width: 820px;
+  height: 820px;
+  top: 15%;
+  right: -100px;
   background: radial-gradient(circle, var(--aurora-2) 0%, transparent 70%);
-  animation: aurora-float-2 30s ease-in-out infinite alternate;
+  animation: aurora-float-2 28s ease-in-out infinite alternate;
 }
 
 .aurora-orb-3 {
-  width: 580px;
-  height: 580px;
-  bottom: -120px;
-  left: 30%;
+  width: 650px;
+  height: 650px;
+  bottom: -100px;
+  left: 25%;
   background: radial-gradient(circle, var(--aurora-3) 0%, transparent 70%);
-  animation: aurora-float-3 26s ease-in-out infinite alternate;
+  animation: aurora-float-3 24s ease-in-out infinite alternate;
 }
 
 /* Organic procedural motion */
@@ -89,8 +96,12 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.045'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 180px 180px;
-  opacity: var(--aurora-noise-opacity, 0.7);
+  opacity: var(--aurora-noise-opacity, 0.65);
   pointer-events: none;
+}
+
+[data-theme="light"] .aurora-noise-layer {
+  opacity: 0.035;
 }
 
 /* Glassmorphism Surface Enhancements */
@@ -105,23 +116,93 @@
 }
 
 .app-sidebar {
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(255, 255, 255, 0.68) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+}
+[data-theme="dark"] .app-sidebar {
+  background: rgba(15, 15, 18, 0.78) !important;
 }
 
 .app-header {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.70) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+}
+[data-theme="dark"] .app-header {
+  background: rgba(15, 15, 18, 0.74) !important;
 }
 
-.task-card {
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
+/* Semester Matrix View Glassmorphism */
 .matrix-wrapper {
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.58) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.04) !important;
+}
+[data-theme="dark"] .matrix-wrapper {
+  background: rgba(16, 16, 20, 0.65) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.40) !important;
+}
+
+.matrix-td {
+  background: transparent !important;
+}
+
+.matrix-th {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+[data-theme="dark"] .matrix-th {
+  background: rgba(22, 22, 28, 0.72) !important;
+}
+
+.matrix-td-mod {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+[data-theme="dark"] .matrix-td-mod {
+  background: rgba(18, 18, 23, 0.75) !important;
+}
+
+.matrix-card {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+[data-theme="dark"] .matrix-card {
+  background: rgba(26, 26, 33, 0.75) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+.matrix-card:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+[data-theme="dark"] .matrix-card:hover {
+  background: rgba(34, 34, 43, 0.88) !important;
+}
+
+/* List & Tree View Glassmorphism */
+.task-card {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+}
+[data-theme="dark"] .task-card {
+  background: rgba(20, 20, 25, 0.72) !important;
+}
+
+.tree-view-wrapper {
+  background: rgba(255, 255, 255, 0.60) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+}
+[data-theme="dark"] .tree-view-wrapper {
+  background: rgba(16, 16, 20, 0.65) !important;
 }
 
 /* ======================================================== */
@@ -136,10 +217,10 @@
   --accent-bg: rgba(16, 185, 129, 0.12);
   --accent-border: rgba(16, 185, 129, 0.32);
   --accent-glow: rgba(16, 185, 129, 0.22);
-  --aurora-1: rgba(16, 185, 129, 0.25);
-  --aurora-2: rgba(99, 102, 241, 0.16);
-  --aurora-3: rgba(20, 184, 166, 0.18);
-  --aurora-opacity: 0.65;
+  --aurora-1: rgba(16, 185, 129, 0.32);
+  --aurora-2: rgba(99, 102, 241, 0.22);
+  --aurora-3: rgba(20, 184, 166, 0.24);
+  --aurora-opacity: 0.75;
   --aurora-noise-opacity: 0.65;
 }
 [data-theme="light"], [data-theme="light"][data-palette="emerald"] {
@@ -148,11 +229,11 @@
   --accent-fg: #ffffff;
   --accent-bg: rgba(5, 150, 105, 0.08);
   --accent-border: rgba(5, 150, 105, 0.28);
-  --accent-glow: rgba(5, 150, 105, 0.14);
-  --aurora-1: rgba(16, 185, 129, 0.16);
-  --aurora-2: rgba(99, 102, 241, 0.09);
-  --aurora-3: rgba(20, 184, 166, 0.10);
-  --aurora-opacity-light: 0.45;
+  --accent-glow: rgba(5, 150, 105, 0.16);
+  --aurora-1: rgba(16, 185, 129, 0.35);
+  --aurora-2: rgba(99, 102, 241, 0.26);
+  --aurora-3: rgba(20, 184, 166, 0.28);
+  --aurora-opacity-light: 0.55;
 }
 
 /* 2. Midnight (macOS Sequoia / Indigo Focus) */
@@ -163,9 +244,9 @@
   --accent-bg: rgba(99, 102, 241, 0.14);
   --accent-border: rgba(99, 102, 241, 0.34);
   --accent-glow: rgba(99, 102, 241, 0.26);
-  --aurora-1: rgba(99, 102, 241, 0.28);
-  --aurora-2: rgba(168, 85, 247, 0.20);
-  --aurora-3: rgba(59, 130, 246, 0.18);
+  --aurora-1: rgba(99, 102, 241, 0.36);
+  --aurora-2: rgba(168, 85, 247, 0.26);
+  --aurora-3: rgba(59, 130, 246, 0.24);
 }
 [data-theme="light"][data-palette="midnight"] {
   --accent: #4f46e5;
@@ -173,10 +254,10 @@
   --accent-fg: #ffffff;
   --accent-bg: rgba(79, 70, 229, 0.09);
   --accent-border: rgba(79, 70, 229, 0.28);
-  --accent-glow: rgba(79, 70, 229, 0.14);
-  --aurora-1: rgba(99, 102, 241, 0.16);
-  --aurora-2: rgba(168, 85, 247, 0.10);
-  --aurora-3: rgba(59, 130, 246, 0.09);
+  --accent-glow: rgba(79, 70, 229, 0.16);
+  --aurora-1: rgba(99, 102, 241, 0.36);
+  --aurora-2: rgba(168, 85, 247, 0.28);
+  --aurora-3: rgba(59, 130, 246, 0.26);
 }
 
 /* 3. Obsidian (Linear Amber / Warm Sunset) */
@@ -187,9 +268,9 @@
   --accent-bg: rgba(245, 158, 11, 0.14);
   --accent-border: rgba(245, 158, 11, 0.34);
   --accent-glow: rgba(245, 158, 11, 0.24);
-  --aurora-1: rgba(245, 158, 11, 0.24);
-  --aurora-2: rgba(244, 63, 94, 0.18);
-  --aurora-3: rgba(234, 88, 12, 0.16);
+  --aurora-1: rgba(245, 158, 11, 0.32);
+  --aurora-2: rgba(244, 63, 94, 0.24);
+  --aurora-3: rgba(234, 88, 12, 0.22);
 }
 [data-theme="light"][data-palette="obsidian"] {
   --accent: #d97706;
@@ -197,10 +278,10 @@
   --accent-fg: #ffffff;
   --accent-bg: rgba(217, 119, 6, 0.09);
   --accent-border: rgba(217, 119, 6, 0.28);
-  --accent-glow: rgba(217, 119, 6, 0.14);
-  --aurora-1: rgba(245, 158, 11, 0.15);
-  --aurora-2: rgba(244, 63, 94, 0.09);
-  --aurora-3: rgba(234, 88, 12, 0.08);
+  --accent-glow: rgba(217, 119, 6, 0.16);
+  --aurora-1: rgba(245, 158, 11, 0.34);
+  --aurora-2: rgba(244, 63, 94, 0.26);
+  --aurora-3: rgba(234, 88, 12, 0.24);
 }
 
 /* 4. Cyberpunk (Raycast Neon / Electric Cyan) */
@@ -211,9 +292,9 @@
   --accent-bg: rgba(6, 182, 212, 0.14);
   --accent-border: rgba(6, 182, 212, 0.34);
   --accent-glow: rgba(6, 182, 212, 0.26);
-  --aurora-1: rgba(6, 182, 212, 0.26);
-  --aurora-2: rgba(236, 72, 153, 0.20);
-  --aurora-3: rgba(139, 92, 246, 0.16);
+  --aurora-1: rgba(6, 182, 212, 0.35);
+  --aurora-2: rgba(236, 72, 153, 0.26);
+  --aurora-3: rgba(139, 92, 246, 0.22);
 }
 [data-theme="light"][data-palette="cyberpunk"] {
   --accent: #0891b2;
@@ -221,10 +302,10 @@
   --accent-fg: #ffffff;
   --accent-bg: rgba(8, 145, 178, 0.09);
   --accent-border: rgba(8, 145, 178, 0.28);
-  --accent-glow: rgba(8, 145, 178, 0.14);
-  --aurora-1: rgba(6, 182, 212, 0.15);
-  --aurora-2: rgba(236, 72, 153, 0.09);
-  --aurora-3: rgba(139, 92, 246, 0.08);
+  --accent-glow: rgba(8, 145, 178, 0.16);
+  --aurora-1: rgba(6, 182, 212, 0.36);
+  --aurora-2: rgba(236, 72, 153, 0.28);
+  --aurora-3: rgba(139, 92, 246, 0.26);
 }
 
 /* 5. Sakura (Tokyo Night / Velvet Rose) */
@@ -235,9 +316,9 @@
   --accent-bg: rgba(244, 63, 94, 0.14);
   --accent-border: rgba(244, 63, 94, 0.34);
   --accent-glow: rgba(244, 63, 94, 0.26);
-  --aurora-1: rgba(244, 63, 94, 0.25);
-  --aurora-2: rgba(168, 85, 247, 0.18);
-  --aurora-3: rgba(236, 72, 153, 0.16);
+  --aurora-1: rgba(244, 63, 94, 0.34);
+  --aurora-2: rgba(168, 85, 247, 0.24);
+  --aurora-3: rgba(236, 72, 153, 0.22);
 }
 [data-theme="light"][data-palette="sakura"] {
   --accent: #e11d48;
@@ -245,10 +326,10 @@
   --accent-fg: #ffffff;
   --accent-bg: rgba(225, 29, 72, 0.09);
   --accent-border: rgba(225, 29, 72, 0.28);
-  --accent-glow: rgba(225, 29, 72, 0.14);
-  --aurora-1: rgba(244, 63, 94, 0.14);
-  --aurora-2: rgba(168, 85, 247, 0.09);
-  --aurora-3: rgba(236, 72, 153, 0.08);
+  --accent-glow: rgba(225, 29, 72, 0.16);
+  --aurora-1: rgba(244, 63, 94, 0.36);
+  --aurora-2: rgba(168, 85, 247, 0.28);
+  --aurora-3: rgba(236, 72, 153, 0.26);
 }
 
 /* Connect Core UI Components to Active --accent */
@@ -306,14 +387,32 @@
 /* 3. THEME & AURORA STUDIO MODAL STYLES                    */
 /* ======================================================== */
 
+/* Ensure modal overlays display seamlessly with both .open and .active */
+.modal-overlay.open,
+.modal-overlay.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.modal-overlay.open .modal-panel,
+.modal-overlay.active .modal-panel {
+  transform: scale(1) translateY(0) !important;
+  opacity: 1 !important;
+}
+
 .theme-modal-panel {
   max-width: 480px !important;
-  background: var(--surface) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
   border: 1px solid var(--border) !important;
   border-radius: 14px !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25) !important;
+}
+[data-theme="dark"] .theme-modal-panel {
+  background: rgba(18, 18, 23, 0.88) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65) !important;
 }
 
 .theme-brand-pip {

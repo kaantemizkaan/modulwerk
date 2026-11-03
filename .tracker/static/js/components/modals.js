@@ -493,6 +493,7 @@ export function clearDueDate() {
 export function openThemeModal() {
   const modal = document.getElementById('themeModal');
   if (modal) {
+    modal.classList.add('open');
     modal.classList.add('active');
     syncThemeModalUI();
   }
@@ -500,7 +501,10 @@ export function openThemeModal() {
 
 export function closeThemeModal() {
   const modal = document.getElementById('themeModal');
-  if (modal) modal.classList.remove('active');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.classList.remove('active');
+  }
 }
 
 export function selectThemeMode(mode) {
