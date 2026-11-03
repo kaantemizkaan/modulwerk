@@ -74,6 +74,12 @@
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "SF Mono", Monaco, Inconsolata, "Liberation Mono", Consolas, monospace;
+
+  /* Apple iOS Fluid Easing Curves & Springs */
+  --ios-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --ios-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ios-spring-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ios-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.15);
 }
 
 [data-theme="light"] {
@@ -197,4 +203,29 @@ html, body, * {
 
 ::-webkit-scrollbar-corner {
   background: var(--scrollbar-track);
+}
+
+/* ======================================================== */
+/* APPLE IOS TACTILE ACTIVE COMPRESSION & FLUID PHYSICS     */
+/* ======================================================== */
+button, .btn, .seg-btn, .file-btn, .cb-btn, .dropdown-trigger, .module-stat-chip, .due-pill, .btn-preset {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s var(--ios-spring), background 0.18s var(--ios-ease), border-color 0.18s var(--ios-ease), box-shadow 0.18s var(--ios-ease), color 0.15s ease;
+}
+
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.seg-btn:active,
+.file-btn:active,
+.dropdown-trigger:active,
+.module-stat-chip:active,
+.due-pill:active,
+.btn-preset:active {
+  transform: scale(0.96) !important;
+}
+
+/* Smooth selection */
+::selection {
+  background: var(--lmu-green-border);
+  color: var(--text);
 }

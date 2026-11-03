@@ -296,12 +296,25 @@ export function renderMatrixView(filtered, modules) {
       `;
     }).join('');
 
+    const isModCleared = mMand.length > 0 && mMandDone === mMand.length;
+    const mSparkCount = 6;
+    const mFilled = Math.round((mMandDone / (mMand.length || 1)) * mSparkCount);
+    let mDots = '';
+    for (let i = 0; i < mSparkCount; i++) {
+      const isF = i < mFilled;
+      mDots += `<span class="chip-seg ${isF ? 'filled' : ''}" style="${isF ? `background:${col.color}; color:${col.color};` : ''}"></span>`;
+    }
+
     return `
       <tr class="matrix-tr">
         <td class="matrix-td-mod" data-module="${esc(mod)}">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
             <span style="font-size:13px; font-weight:600; color:var(--text);">${esc(mod)}</span>
+            ${isModCleared ? '<span class="all-clear-badge" style="font-size:8.5px; padding:0 4px;">✓</span>' : ''}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <div class="chip-sparkline" title="${mMandDone}/${mMand.length} required completed">${mDots}</div>
           </div>
           <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">
             ${mMandDone}/${mMand.length} required · ${mTotalDone}/${modTasks.length} total

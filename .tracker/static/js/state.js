@@ -149,7 +149,7 @@ export function getActiveCategories() {
 }
 
 /**
- * Calculate progress statistics (mandatory vs optional)
+ * Calculate progress statistics (mandatory vs optional, segmented sparklines)
  */
 export function getStats() {
   const mandTasks = state.tasks.filter(t => !t.is_optional);
@@ -157,9 +157,23 @@ export function getStats() {
   const optTasks = state.tasks.filter(t => t.is_optional);
   const optDone = optTasks.filter(t => t.completed).length;
 
+  const now = Date.now();
+  const overdueTasks = state.tasks.filter(t => !t.completed && t.due_date && new Date(t.due_date).getTime() < now);
+  const urgentTasks = state.tasks.filter(t => {
+    if (t.completed || !t.due_date) return false;
+    const diff = new Date(t.due_date).getTime() - now;
+    return diff >= 0 && diff < 24 * 3600 * 1000;
+  });
+
+  const total = state.tasks.length;
+  const totalDone = mandDone + optDone;
+  const overdueCount = overdueTasks.length;
+  const urgentCount = urgentTasks.length;
+  const remaining = Math.max(0, total - totalDone - overdueCount - urgentCount);
+
   const pct = mandTasks.length > 0 
     ? Math.round((mandDone / mandTasks.length) * 100) 
-    : (state.tasks.length > 0 ? Math.round((state.tasks.filter(t => t.completed).length / state.tasks.length) * 100) : 0);
+    : (total > 0 ? Math.round((totalDone / total) * 100) : 0);
 
   return {
     mandTasks: mandTasks.length,
@@ -167,8 +181,11 @@ export function getStats() {
     optTasks: optTasks.length,
     optDone,
     pct,
-    total: state.tasks.length,
-    totalDone: state.tasks.filter(t => t.completed).length
+    total,
+    totalDone,
+    overdueCount,
+    urgentCount,
+    remaining
   };
 }
 

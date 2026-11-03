@@ -7,8 +7,28 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s var(--ios-spring-soft), border-color 0.2s var(--ios-ease), box-shadow 0.2s var(--ios-ease), opacity 0.25s var(--ios-ease);
   position: relative;
+  animation: ios-card-enter 0.28s var(--ios-spring-soft) both;
+}
+
+@keyframes ios-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.task-card:hover {
+  transform: translateY(-1.5px);
+}
+
+.task-card:active {
+  transform: scale(0.995);
 }
 
 /* Adaptive Left Accent Line based on Status & Urgency */
@@ -67,9 +87,9 @@
 }
 
 .cb-btn {
-  width: 17px;
-  height: 17px;
-  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
   border: 1.5px solid var(--text-muted);
   background: transparent;
   display: inline-flex;
@@ -77,12 +97,18 @@
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all 0.22s var(--ios-spring), border-color 0.15s ease;
   padding: 0;
+  position: relative;
 }
 
 .cb-btn:hover {
   border-color: var(--text);
+  transform: scale(1.08);
+}
+
+.cb-btn:active {
+  transform: scale(0.85);
 }
 
 .cb-btn svg {
@@ -90,23 +116,43 @@
   height: 11px;
   stroke: #ffffff;
   stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   fill: none;
   opacity: 0;
-  transform: scale(0.7);
-  transition: all 0.15s ease;
+  transform: scale(0.6);
+  transition: opacity 0.18s ease, transform 0.25s var(--ios-spring);
+}
+
+.cb-btn svg polyline {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+  transition: stroke-dashoffset 0.26s var(--ios-spring-soft);
 }
 
 .task-card.done .cb-btn,
 .matrix-card.done .cb-btn {
   background: var(--done);
   border-color: var(--done);
-  box-shadow: 0 0 8px var(--done-glow);
+  box-shadow: 0 0 10px var(--done-glow);
+  animation: cb-spring 0.32s var(--ios-spring);
 }
 
 .task-card.done .cb-btn svg,
 .matrix-card.done .cb-btn svg {
   opacity: 1;
   transform: scale(1);
+}
+
+.task-card.done .cb-btn svg polyline,
+.matrix-card.done .cb-btn svg polyline {
+  stroke-dashoffset: 0;
+}
+
+@keyframes cb-spring {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.22); }
+  100% { transform: scale(1); }
 }
 
 /* Module-Adaptive Sheet Badges */
@@ -521,16 +567,23 @@
   fill: none;
 }
 
-/* Note Drawer */
+/* Note Drawer (Smooth iOS Accordion) */
 .note-drawer {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-subtle);
-  display: none;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 1px solid transparent;
+  transition: max-height 0.3s var(--ios-spring-soft), opacity 0.22s var(--ios-ease), margin-top 0.25s var(--ios-ease), padding-top 0.25s var(--ios-ease), border-color 0.25s ease;
 }
 
 .note-drawer.open {
-  display: block;
+  max-height: 70px;
+  opacity: 1;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-color: var(--border-subtle);
 }
 
 .note-input {

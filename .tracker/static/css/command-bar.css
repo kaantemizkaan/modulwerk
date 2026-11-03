@@ -21,6 +21,15 @@
   align-items: center;
   flex: 1;
   min-width: 180px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.22s var(--ios-ease);
+}
+
+.search-wrap:focus-within {
+  background: var(--surface-hover);
+  border-color: var(--lmu-green-border);
+  box-shadow: 0 0 0 3px var(--lmu-green-glow);
 }
 
 .search-wrap svg {

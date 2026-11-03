@@ -391,16 +391,62 @@ export function render() {
   const elOptFraction = document.getElementById('statOptFraction');
   if (elOptFraction) elOptFraction.textContent = `(+ ${stats.optDone} of ${stats.optTasks} optional exercises)`;
 
-  // Dynamic progress bar
-  const progressFill = document.getElementById('progressFill');
-  if (progressFill) {
-    progressFill.style.width = stats.pct + '%';
-    if (stats.pct >= 80) {
-      progressFill.style.background = 'linear-gradient(90deg, #009640, #10b981)';
-    } else if (stats.pct >= 40) {
-      progressFill.style.background = 'linear-gradient(90deg, #d97706, #f59e0b)';
+  // Milestone Seal
+  const sealEl = document.getElementById('statMilestoneSeal');
+  if (sealEl) {
+    if (stats.mandDone > 0 && stats.mandDone === stats.mandTasks) {
+      sealEl.innerHTML = `
+        <span class="all-clear-badge" title="All mandatory coursework for the semester is complete!">
+          <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+          Semester Target Cleared
+        </span>
+      `;
     } else {
-      progressFill.style.background = 'linear-gradient(90deg, #dc2626, #f87171)';
+      sealEl.innerHTML = '';
+    }
+  }
+
+  // Segmented Sparkline Track
+  if (stats.total > 0) {
+    const wMand = ((stats.mandDone / stats.total) * 100);
+    const wOpt = ((stats.optDone / stats.total) * 100);
+    const wUrgent = ((stats.urgentCount / stats.total) * 100);
+    const wOverdue = ((stats.overdueCount / stats.total) * 100);
+    const wPending = Math.max(0, 100 - (wMand + wOpt + wUrgent + wOverdue));
+
+    const segMand = document.getElementById('segDoneMand');
+    if (segMand) segMand.style.width = wMand.toFixed(1) + '%';
+    const segOpt = document.getElementById('segDoneOpt');
+    if (segOpt) segOpt.style.width = wOpt.toFixed(1) + '%';
+    const segUrg = document.getElementById('segUrgent');
+    if (segUrg) segUrg.style.width = wUrgent.toFixed(1) + '%';
+    const segOver = document.getElementById('segOverdue');
+    if (segOver) segOver.style.width = wOverdue.toFixed(1) + '%';
+    const segPend = document.getElementById('segPending');
+    if (segPend) segPend.style.width = wPending.toFixed(1) + '%';
+
+    // Tooltip / Title on hover
+    const track = document.getElementById('sparklineTrack');
+    if (track) {
+      track.title = `${stats.mandDone} Required Done · ${stats.optDone} Optional Done · ${stats.urgentCount} Due Soon · ${stats.overdueCount} Overdue · ${stats.remaining} Remaining (${stats.pct}%)`;
+    }
+
+    // Legend Counts
+    const lMand = document.getElementById('cntLegendDoneMand');
+    if (lMand) lMand.textContent = stats.mandDone;
+    const lOpt = document.getElementById('cntLegendDoneOpt');
+    if (lOpt) lOpt.textContent = stats.optDone;
+    const lUrg = document.getElementById('cntLegendUrgent');
+    if (lUrg) lUrg.textContent = stats.urgentCount;
+    const lOver = document.getElementById('cntLegendOverdue');
+    if (lOver) lOver.textContent = stats.overdueCount;
+    const lPend = document.getElementById('cntLegendPending');
+    if (lPend) lPend.textContent = stats.remaining;
+
+    const quickStatus = document.getElementById('sparklineQuickStatus');
+    if (quickStatus) {
+      quickStatus.textContent = stats.overdueCount > 0 ? `${stats.overdueCount} Overdue Action Needed` : (stats.urgentCount > 0 ? `${stats.urgentCount} Due Within 24h` : `On Track · ${stats.pct}% Complete`);
+      quickStatus.style.color = stats.overdueCount > 0 ? 'var(--warn)' : (stats.urgentCount > 0 ? '#ea580c' : 'var(--done)');
     }
   }
 
@@ -419,7 +465,7 @@ export function render() {
     }
   }
 
-  // 4. Dynamic Module chips in Top Summary Strip
+  // 4. Dynamic Module chips with Micro-Sparklines in Top Summary Strip
   const activeModules = getActiveModules();
   const moduleStatsEl = document.getElementById('moduleStats');
   if (moduleStatsEl) {
@@ -430,12 +476,24 @@ export function render() {
       const mMandDone = mMandTasks.filter(t => t.completed).length;
       const mPct = mMandTasks.length ? Math.round((mMandDone / mMandTasks.length) * 100) : 0;
       const isAct = state.filterSubject === m;
+      const isModuleCleared = mMandTasks.length > 0 && mMandDone === mMandTasks.length;
+
+      // Micro-sparkline: 4-6 mini dots representing task completion
+      const sparkCount = Math.min(6, mMandTasks.length || 4);
+      const filledCount = Math.round((mMandDone / (mMandTasks.length || 1)) * sparkCount);
+      let dotsHtml = '';
+      for (let i = 0; i < sparkCount; i++) {
+        const isFilled = i < filledCount;
+        dotsHtml += `<span class="chip-seg ${isFilled ? 'filled' : ''}" style="${isFilled ? `background:${col.color}; color:${col.color};` : ''}"></span>`;
+      }
 
       return `
         <span class="module-stat-chip ${isAct ? 'active' : ''}" onclick="window.appActions.setSubject('${m}')" title="${m}: ${mMandDone}/${mMandTasks.length} required (${mPct}%) ${isAct ? '· Filter active' : '· Click to filter'}">
           <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
           <span class="mod-name">${m}</span>
           <strong class="mod-fraction">${mMandDone}/${mMandTasks.length}</strong>
+          <div class="chip-sparkline" title="${mMandDone}/${mMandTasks.length} completed">${dotsHtml}</div>
+          ${isModuleCleared ? `<span class="all-clear-badge" style="font-size:8.5px; padding:1px 4px; gap:2px;">✓ Cleared</span>` : ''}
         </span>
       `;
     }).join('');

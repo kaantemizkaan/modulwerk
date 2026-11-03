@@ -65,56 +65,81 @@
   font-size: 13px;
 }
 
-/* Toast Notifications */
+/* Toast Notifications (Apple Dynamic Island Capsule) */
 .toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface);
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(24px) scale(0.9);
+  background: rgba(18, 18, 22, 0.94);
   color: var(--text);
-  border: 1px solid var(--border);
-  padding: 9px 14px;
-  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 18px;
+  border-radius: 9999px;
   font-size: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.18s ease;
+  transition: transform 0.38s var(--ios-spring), opacity 0.22s var(--ios-ease);
   pointer-events: none;
   z-index: 2000;
-  max-width: 400px;
+  max-width: 90vw;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .toast {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .toast.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* Modal Dialog System */
+/* Modal Dialog System (Apple iOS Sheet Physics) */
 .modal-overlay {
-  display: none;
+  display: flex;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   align-items: center;
   justify-content: center;
   z-index: 500;
   padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.24s var(--ios-ease), visibility 0.24s;
 }
 
 .modal-overlay.open {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .modal-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   width: 100%;
   max-width: 440px;
-  padding: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transform: scale(0.93) translateY(18px);
+  opacity: 0;
+  transition: transform 0.32s var(--ios-spring), opacity 0.22s var(--ios-ease);
+}
+
+.modal-overlay.open .modal-panel {
+  transform: scale(1) translateY(0);
+  opacity: 1;
 }
 
 .modal-header {

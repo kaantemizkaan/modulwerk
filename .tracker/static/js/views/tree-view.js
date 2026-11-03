@@ -64,14 +64,26 @@ export function renderTreeView(filtered, modules) {
       const sMandDone = sMand.filter(t => t.completed).length;
 
       const cardsHtml = sheetTasks.map(t => renderTaskCard(t)).join('');
+      const isSheetCleared = sMand.length > 0 && sMandDone === sMand.length;
+
+      // Micro-sparkline for sheet
+      const sSparkCount = Math.min(5, sMand.length || 3);
+      const sFilled = Math.round((sMandDone / (sMand.length || 1)) * sSparkCount);
+      let sDots = '';
+      for (let i = 0; i < sSparkCount; i++) {
+        const isF = i < sFilled;
+        sDots += `<span class="chip-seg ${isF ? 'filled' : ''}" style="${isF ? `background:${col.color}; color:${col.color};` : ''}"></span>`;
+      }
 
       return `
         <div class="tree-node-sheet">
           <div class="tree-row-sheet" onclick="window.appActions.toggleTreeNode('${sheetKey}')">
             <span class="tree-chevron ${isSheetOpen ? 'open' : ''}">▸</span>
             <span class="tree-sheet-title">${esc(sheet)}</span>
+            <div class="chip-sparkline" title="${sMandDone}/${sMand.length} required completed">${sDots}</div>
             <span class="tree-badge-stat">${sMandDone}/${sMand.length} required</span>
             <span class="tree-badge-stat" style="color:var(--text-muted);">${sDone}/${sheetTasks.length} total</span>
+            ${isSheetCleared ? '<span class="all-clear-badge" style="font-size:8.5px; padding:0 4px;">✓</span>' : ''}
           </div>
           <div class="tree-content-sheet ${isSheetOpen ? 'open' : ''}" id="children-${sheetKey}">
             ${cardsHtml}
@@ -80,14 +92,26 @@ export function renderTreeView(filtered, modules) {
       `;
     }).join('');
 
+    const isModCleared = mMand.length > 0 && mMandDone === mMand.length;
+    // Micro-sparkline for module
+    const mSparkCount = 6;
+    const mFilled = Math.round((mMandDone / (mMand.length || 1)) * mSparkCount);
+    let mDots = '';
+    for (let i = 0; i < mSparkCount; i++) {
+      const isF = i < mFilled;
+      mDots += `<span class="chip-seg ${isF ? 'filled' : ''}" style="${isF ? `background:${col.color}; color:${col.color};` : ''}"></span>`;
+    }
+
     return `
       <div class="tree-node-module" data-module="${esc(mod)}">
         <div class="tree-row-module" onclick="window.appActions.toggleTreeNode('${modKey}')">
           <span class="tree-chevron ${isModOpen ? 'open' : ''}">▸</span>
           <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
           <span class="tree-module-title">${esc(mod)}</span>
+          <div class="chip-sparkline" title="${mMandDone}/${mMand.length} required completed">${mDots}</div>
           <span class="tree-badge-stat">${mMandDone}/${mMand.length} required</span>
           <span class="tree-badge-stat" style="color:var(--text-muted);">${mDone}/${modTasks.length} total</span>
+          ${isModCleared ? '<span class="all-clear-badge">✓ Cleared</span>' : ''}
         </div>
         <div class="tree-content-module ${isModOpen ? 'open' : ''}" id="children-${modKey}">
           ${sheetsHtml}

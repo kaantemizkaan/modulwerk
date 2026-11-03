@@ -111,19 +111,40 @@
       </div>
     </header>
 
-    <!-- Progress Strip (Focused on Requirements / Mandatory tasks) -->
+    <!-- Progress Strip (Segmented Sparklines & Module Breakdown) -->
     <section class="summary-strip">
       <div class="summary-top">
         <div class="summary-metrics">
           <span class="summary-pct" id="statPct">0%</span>
           <span class="summary-label" id="statFraction">0 of 0 required tasks completed</span>
           <span class="summary-opt-label" id="statOptFraction">(+ 0 optional exercises)</span>
+          <span id="statMilestoneSeal"></span>
         </div>
-        <!-- Adaptive Module Chips -->
+        <!-- Adaptive Module Chips with Micro-Sparklines -->
         <div class="module-breakdown" id="moduleStats"></div>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
+
+      <!-- Segmented Sparkline Track -->
+      <div class="sparkline-wrapper">
+        <div class="sparkline-track" id="sparklineTrack" title="Semester Progress Breakdown">
+          <div class="sparkline-segment seg-done-mand" id="segDoneMand" style="width: 0%;"></div>
+          <div class="sparkline-segment seg-done-opt" id="segDoneOpt" style="width: 0%;"></div>
+          <div class="sparkline-segment seg-urgent" id="segUrgent" style="width: 0%;"></div>
+          <div class="sparkline-segment seg-overdue" id="segOverdue" style="width: 0%;"></div>
+          <div class="sparkline-segment seg-pending" id="segPending" style="width: 100%;"></div>
+        </div>
+
+        <!-- Legend and Breakdown -->
+        <div class="sparkline-footer">
+          <div class="sparkline-legend">
+            <span class="legend-item"><span class="legend-dot done-mand"></span> Required Done (<strong id="cntLegendDoneMand">0</strong>)</span>
+            <span class="legend-item"><span class="legend-dot done-opt"></span> Optional Done (<strong id="cntLegendDoneOpt">0</strong>)</span>
+            <span class="legend-item"><span class="legend-dot urgent"></span> Due Soon (<strong id="cntLegendUrgent">0</strong>)</span>
+            <span class="legend-item"><span class="legend-dot overdue"></span> Overdue (<strong id="cntLegendOverdue">0</strong>)</span>
+            <span class="legend-item"><span class="legend-dot pending"></span> Remaining (<strong id="cntLegendPending">0</strong>)</span>
+          </div>
+          <span id="sparklineQuickStatus" style="font-weight: 500; color: var(--text);">Overall Track</span>
+        </div>
       </div>
     </section>
 

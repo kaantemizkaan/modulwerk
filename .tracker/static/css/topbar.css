@@ -377,3 +377,150 @@
   border-radius: 2px;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.35s ease;
 }
+
+/* ======================================================== */
+/* CRAFT SEGMENTED SPARKLINES & MILESTONE SEALS             */
+/* ======================================================== */
+
+.sparkline-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.sparkline-track {
+  width: 100%;
+  height: 7px;
+  background: var(--surface-active);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  gap: 2px;
+  padding: 1px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: height 0.2s var(--ios-spring);
+}
+
+.sparkline-track:hover {
+  height: 9px;
+}
+
+.sparkline-segment {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.45s var(--ios-spring), opacity 0.2s var(--ios-ease);
+  position: relative;
+  min-width: 0;
+}
+
+.sparkline-segment.seg-done-mand {
+  background: linear-gradient(90deg, #059669, #10b981);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.sparkline-segment.seg-done-opt {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.3);
+}
+
+.sparkline-segment.seg-urgent {
+  background: linear-gradient(90deg, #ea580c, #f97316);
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.35);
+}
+
+.sparkline-segment.seg-overdue {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.sparkline-segment.seg-pending {
+  background: var(--border);
+  opacity: 0.55;
+}
+
+/* Tooltip & Legend below sparkline */
+.sparkline-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.sparkline-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.legend-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.legend-dot.done-mand { background: var(--done); box-shadow: 0 0 5px var(--done); }
+.legend-dot.done-opt { background: var(--opt); box-shadow: 0 0 5px var(--opt); }
+.legend-dot.urgent { background: #ea580c; box-shadow: 0 0 5px #ea580c; }
+.legend-dot.overdue { background: var(--warn); box-shadow: 0 0 5px var(--warn); }
+.legend-dot.pending { background: var(--border); }
+
+/* Chip Micro-Sparkline (Inside Module Stat Chip) */
+.chip-sparkline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 5px;
+  margin-left: 2px;
+}
+
+.chip-seg {
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 1px;
+  background: var(--border);
+  transition: all 0.25s var(--ios-spring);
+}
+
+.chip-seg.filled {
+  background: currentColor;
+  box-shadow: 0 0 4px currentColor;
+}
+
+/* Milestone All Clear Badge */
+.all-clear-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  user-select: none;
+  animation: shimmer 2.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.95; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(0.98); }
+}

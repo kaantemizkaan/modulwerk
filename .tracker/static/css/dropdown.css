@@ -63,24 +63,29 @@
   position: absolute;
   top: calc(100% + 5px);
   left: 0;
-  min-width: 165px;
+  min-width: 170px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  border-radius: 9px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
   padding: 4px;
   z-index: 100;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 1px;
   opacity: 0;
-  transform: translateY(-4px) scale(0.98);
-  transition: opacity 0.12s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px) scale(0.92);
+  transform-origin: top left;
+  transition: opacity 0.18s var(--ios-ease), transform 0.24s var(--ios-spring), visibility 0.18s;
+  backdrop-filter: blur(12px);
 }
 
 .custom-dropdown.open .dropdown-menu {
-  display: flex;
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0) scale(1);
 }
 

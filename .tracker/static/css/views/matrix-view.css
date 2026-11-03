@@ -113,11 +113,17 @@
   flex-direction: column;
   gap: 6px;
   border-left: 3px solid var(--border);
-  transition: border-color 0.12s, background 0.12s, opacity 0.15s;
+  transition: transform 0.22s var(--ios-spring-soft), box-shadow 0.2s var(--ios-ease), border-color 0.2s var(--ios-ease), opacity 0.2s var(--ios-ease), background 0.2s var(--ios-ease);
 }
 
 .matrix-card:hover {
   background: var(--surface-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+.matrix-card:active {
+  transform: scale(0.985);
 }
 
 .matrix-card.done {

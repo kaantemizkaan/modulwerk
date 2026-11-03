@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  transition: transform 0.18s ease;
+  transition: transform 0.22s var(--ios-spring);
   font-size: 11px;
 }
 
