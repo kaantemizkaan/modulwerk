@@ -448,6 +448,12 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_error(404, f"File {abs_p} not found on disk")
             return
 
+        # API: Scan / Rescan
+        if path in ('/api/scan', '/api/rescan'):
+            data = scan_workspace()
+            self.send_json({"success": True, "data": data})
+            return
+
         # API: Tasks
         if path == '/api/tasks':
             if not DB_FILE.exists():
@@ -455,6 +461,15 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
             with open(DB_FILE, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             self.send_json(data)
+            return
+
+        # API: Ignored Tasks
+        if path == '/api/ignored-tasks':
+            if not DB_FILE.exists():
+                scan_workspace()
+            with open(DB_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            self.send_json({"success": True, "ignored_tasks": data.get("ignored_tasks", [])})
             return
 
         # API: Normalize Preview
@@ -504,7 +519,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
         except Exception:
             body = {}
 
-        if path == '/api/scan':
+        if path in ('/api/scan', '/api/rescan'):
             data = scan_workspace()
             self.send_json({"success": True, "data": data})
             return

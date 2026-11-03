@@ -82,7 +82,10 @@ export async function restoreTask(id) {
  * Trigger filesystem rescan on the server
  */
 export async function rescanWorkspace() {
-  const res = await fetch('/api/rescan', { method: 'POST' });
+  let res = await fetch('/api/rescan', { method: 'POST' });
+  if (!res.ok) {
+    res = await fetch('/api/scan', { method: 'POST' });
+  }
   if (!res.ok) throw new Error('Filesystem scan failed');
   return await res.json();
 }

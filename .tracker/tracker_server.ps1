@@ -334,12 +334,10 @@ try {
                     }
                 }
 
-                '^/api/scan$' {
-                    if ($method -eq "POST") {
-                        . $ScannerScript
-                        $data = Get-HomeworkDatabase -WorkspaceRoot $WorkspaceRoot
-                        Send-JsonResponse $response @{ success = $true; data = $data }
-                    }
+                '^/api/(scan|rescan)$' {
+                    . $ScannerScript
+                    $data = Get-HomeworkDatabase -WorkspaceRoot $WorkspaceRoot
+                    Send-JsonResponse $response @{ success = $true; data = $data }
                 }
 
                 '^/api/upload$' {
