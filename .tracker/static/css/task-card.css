@@ -7,20 +7,8 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px;
-  transition: transform 0.25s var(--ios-spring-soft), border-color 0.2s var(--ios-ease), box-shadow 0.2s var(--ios-ease), opacity 0.25s var(--ios-ease);
+  transition: transform 0.22s var(--ios-spring-soft), border-color 0.2s var(--ios-ease), box-shadow 0.2s var(--ios-ease), opacity 0.2s var(--ios-ease);
   position: relative;
-  animation: ios-card-enter 0.28s var(--ios-spring-soft) both;
-}
-
-@keyframes ios-card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .task-card:hover {
@@ -127,7 +115,6 @@
 .cb-btn svg polyline {
   stroke-dasharray: 22;
   stroke-dashoffset: 22;
-  transition: stroke-dashoffset 0.26s var(--ios-spring-soft);
 }
 
 .task-card.done .cb-btn,
@@ -135,7 +122,6 @@
   background: var(--done);
   border-color: var(--done);
   box-shadow: 0 0 10px var(--done-glow);
-  animation: cb-spring 0.32s var(--ios-spring);
 }
 
 .task-card.done .cb-btn svg,
@@ -149,8 +135,22 @@
   stroke-dashoffset: 0;
 }
 
+/* User-Triggered Interactive Spring & Checkmark Draw */
+.cb-btn.cb-pop {
+  animation: cb-spring 0.34s var(--ios-spring);
+}
+
+.cb-btn.cb-pop svg polyline {
+  animation: checkmark-draw 0.28s var(--ios-spring-soft);
+}
+
+@keyframes checkmark-draw {
+  from { stroke-dashoffset: 22; }
+  to { stroke-dashoffset: 0; }
+}
+
 @keyframes cb-spring {
-  0% { transform: scale(0.8); }
+  0% { transform: scale(0.82); }
   50% { transform: scale(1.22); }
   100% { transform: scale(1); }
 }

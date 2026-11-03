@@ -26,7 +26,8 @@ export const state = {
   pendingDeleteTaskId: null,
   normalizeCandidates: [],
   pendingNormalizeSelections: new Set(),
-  pendingMatrixSlot: null
+  pendingMatrixSlot: null,
+  justToggledTaskId: null
 };
 
 // Beautiful, accessible, distinct palette for arbitrary subjects

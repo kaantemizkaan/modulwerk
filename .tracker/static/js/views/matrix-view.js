@@ -226,7 +226,7 @@ export function renderMatrixView(filtered, modules) {
           <div class="matrix-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}">
             <div class="matrix-card-top">
               <div style="display:flex; align-items:center; gap:6px; min-width:0; flex:1;">
-                <button class="cb-btn" style="width:17px;height:17px;min-width:17px;" onclick="window.appActions.toggleTask('${t.id}')" title="${isDone ? 'Mark as pending' : 'Mark as completed'}">
+                <button class="cb-btn ${state.justToggledTaskId === t.id ? 'cb-pop' : ''}" style="width:17px;height:17px;min-width:17px;" onclick="window.appActions.toggleTask('${t.id}')" title="${isDone ? 'Mark as pending' : 'Mark as completed'}">
                   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                 </button>
                 <span class="matrix-card-title" onclick="window.appActions.toggleTask('${t.id}')" title="${esc(t.title)}">${esc(shortTitle)}</span>

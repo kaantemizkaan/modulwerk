@@ -3,6 +3,7 @@
 // ========================================================
 
 import { esc } from '../utils.js';
+import { state } from '../state.js';
 
 const categoryLabels = {
   'Hausaufgabe': 'Homework',
@@ -161,6 +162,8 @@ export function renderTaskCard(t) {
     </span>
   ` : '';
 
+  const isJustToggled = state.justToggledTaskId === t.id;
+
   return `
     <article 
       class="task-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}" 
@@ -172,7 +175,7 @@ export function renderTaskCard(t) {
       <div class="card-top">
         <div class="card-title-group">
           <button 
-            class="cb-btn" 
+            class="cb-btn ${isJustToggled ? 'cb-pop' : ''}" 
             onclick="window.appActions.toggleTask('${t.id}')"
             title="${isDone ? 'Mark as pending' : 'Mark as completed'}"
           >

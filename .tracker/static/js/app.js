@@ -73,7 +73,14 @@ async function toggleTask(id) {
   if (!t) return;
   t.completed = !t.completed;
   t.manual_status = t.completed;
+  state.justToggledTaskId = id;
   notifySubscribers();
+
+  setTimeout(() => {
+    if (state.justToggledTaskId === id) {
+      state.justToggledTaskId = null;
+    }
+  }, 450);
 
   if (state.isOnline) {
     try {
@@ -296,8 +303,21 @@ function updateSyncBadge(online) {
 async function loadTasks(isBackground = false) {
   try {
     const data = await api.fetchTasks();
-    state.tasks = data.tasks || [];
-    state.ignoredTasks = Array.isArray(data.ignored_tasks) ? data.ignored_tasks : (data.ignored_tasks ? [data.ignored_tasks] : []);
+    const newTasks = data.tasks || [];
+    const newIgnored = Array.isArray(data.ignored_tasks) ? data.ignored_tasks : (data.ignored_tasks ? [data.ignored_tasks] : []);
+
+    // If background polling, only re-render if data has ACTUALLY changed on disk!
+    if (isBackground) {
+      const isTasksSame = JSON.stringify(newTasks) === JSON.stringify(state.tasks);
+      const isIgnoredSame = JSON.stringify(newIgnored) === JSON.stringify(state.ignoredTasks);
+      if (isTasksSame && isIgnoredSame) {
+        updateSyncBadge(true);
+        return;
+      }
+    }
+
+    state.tasks = newTasks;
+    state.ignoredTasks = newIgnored;
     updateSyncBadge(true);
     localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
     notifySubscribers();
