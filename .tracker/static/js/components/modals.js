@@ -12,13 +12,21 @@ import { esc } from '../utils.js';
 export function openModal() {
   const modal = document.getElementById('taskModal');
   if (modal) {
-    const sel = document.getElementById('mSubject');
-    if (sel) {
-      const currentVal = sel.value;
-      const activeMods = getActiveModules();
-      sel.innerHTML = activeMods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
-      if (currentVal && activeMods.includes(currentVal)) {
-        sel.value = currentVal;
+    const activeMods = getActiveModules();
+    const dlist = document.getElementById('mSubjectList');
+    if (dlist) {
+      dlist.innerHTML = activeMods.map(m => `<option value="${esc(m)}"></option>`).join('');
+    }
+    const subjInput = document.getElementById('mSubject');
+    if (subjInput) {
+      if (subjInput.tagName === 'SELECT') {
+        const currentVal = subjInput.value;
+        subjInput.innerHTML = activeMods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+        if (currentVal && activeMods.includes(currentVal)) {
+          subjInput.value = currentVal;
+        }
+      } else if (!subjInput.value && activeMods.length > 0 && activeMods[0] !== 'General') {
+        subjInput.value = activeMods[0];
       }
     }
 

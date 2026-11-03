@@ -292,7 +292,7 @@
   </div>
 
   <!-- Hidden File Input for targeted Solution Upload -->
-  <input type="file" id="hiddenSolutionPicker" accept=".pdf,.java,.txt">
+  <input type="file" id="hiddenSolutionPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">
 
   <!-- Add Custom Task Modal -->
   <div class="modal-overlay" id="taskModal">
@@ -307,12 +307,13 @@
       <div class="field-row">
         <div class="field">
           <label>Module</label>
-          <select id="mSubject" class="field-input">
-            <option value="Analysis">Analysis</option>
-            <option value="EiP">EiP</option>
-            <option value="Lineare Algebra">Lineare Algebra</option>
-            <option value="Statistik">Statistik</option>
-          </select>
+          <input type="text" id="mSubject" list="mSubjectList" class="field-input" placeholder="e.g. Analysis, CS, Math...">
+          <datalist id="mSubjectList">
+            <option value="Analysis"></option>
+            <option value="EiP"></option>
+            <option value="Lineare Algebra"></option>
+            <option value="Statistik"></option>
+          </datalist>
         </div>
         <div class="field">
           <label>Category</label>
@@ -465,7 +466,7 @@
   </div>
 
   <!-- Hidden Matrix Slot Picker -->
-  <input type="file" id="hiddenMatrixPicker" style="display:none;">
+  <input type="file" id="hiddenMatrixPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">
 
   <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
@@ -476,7 +477,7 @@
 </html>
 
   <!-- Hidden Matrix Slot Picker -->
-  <input type="file" id="hiddenMatrixPicker" style="display:none;">
+  <input type="file" id="hiddenMatrixPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">
 
   <!-- Toast Notification -->
   <div id="toast" class="toast"></div>

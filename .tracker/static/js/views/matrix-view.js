@@ -9,10 +9,15 @@ import { checkNormalizeCandidates } from '../components/modals.js';
 
 const categoryLabels = {
   'Hausaufgabe': 'Homework',
+  'Homework': 'Homework',
   'Übungsblatt': 'Exercise Sheet',
+  'Exercise Sheet': 'Exercise Sheet',
   'Präsenzübung': 'In-Class Lab',
+  'In-Class Lab': 'In-Class Lab',
   'Praktikum': 'Lab / Project',
-  'Tutorium': 'Tutorial'
+  'Lab / Project': 'Lab / Project',
+  'Tutorium': 'Tutorial',
+  'Tutorial': 'Tutorial'
 };
 
 export function triggerMatrixSlotPicker(subject, sheet) {
@@ -90,10 +95,12 @@ export function renderMatrixView(filtered, modules) {
   const otherTasks = state.tasks.filter(t => !modules.includes(t.subject));
   if (otherTasks.length) activeModules.push('Other');
 
+  const getSheetDisplay = (s) => (s || '').replace(/^Blatt\s*/i, 'Sheet ');
+
   // Collect all distinct sheet numbers across all tasks
   const sheetSet = new Set();
   state.tasks.forEach(t => {
-    if (t.sheet) sheetSet.add(t.sheet);
+    if (t.sheet) sheetSet.add(getSheetDisplay(t.sheet));
   });
 
   const allSheets = [...sheetSet].sort((a, b) => {
@@ -109,15 +116,14 @@ export function renderMatrixView(filtered, modules) {
   // Build Table Header with column metrics
   const colWidthStyle = `width: calc((100% - 165px) / ${allSheets.length});`;
   const thCols = allSheets.map(sheet => {
-    const sheetTasks = filtered.filter(t => t.sheet === sheet);
+    const sheetTasks = filtered.filter(t => getSheetDisplay(t.sheet) === sheet);
     const sDone = sheetTasks.filter(t => t.completed).length;
     const isAllDone = sheetTasks.length > 0 && sDone === sheetTasks.length;
-    const displaySheet = sheet.replace(/^Blatt\s*/i, 'Sheet ');
 
     return `
       <th class="matrix-th" style="${colWidthStyle}">
         <div class="matrix-col-header">
-          <span>${esc(displaySheet)}</span>
+          <span>${esc(sheet)}</span>
           ${sheetTasks.length > 0 ? `
             <span class="matrix-col-pill ${isAllDone ? 'all-done' : ''}" title="${sDone}/${sheetTasks.length} completed">
               ${sDone}/${sheetTasks.length}${isAllDone ? ' ✓' : ''}
@@ -144,10 +150,9 @@ export function renderMatrixView(filtered, modules) {
     const col = getModuleColor(mod);
 
     const cellsHtml = allSheets.map(sheet => {
-      const cellTasks = modTasks.filter(t => t.sheet === sheet);
+      const cellTasks = modTasks.filter(t => getSheetDisplay(t.sheet) === sheet);
       const allModTasks = state.tasks.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
-      const hasRealTasksInSheet = allModTasks.some(t => t.sheet === sheet);
-      const displaySheet = sheet.replace(/^Blatt\s*/i, 'Sheet ');
+      const hasRealTasksInSheet = allModTasks.some(t => getSheetDisplay(t.sheet) === sheet);
 
       if (cellTasks.length === 0) {
         if (isFilterActive || hasRealTasksInSheet) {

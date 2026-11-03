@@ -6,10 +6,15 @@ import { esc } from '../utils.js';
 
 const categoryLabels = {
   'Hausaufgabe': 'Homework',
+  'Homework': 'Homework',
   'Übungsblatt': 'Exercise Sheet',
+  'Exercise Sheet': 'Exercise Sheet',
   'Präsenzübung': 'In-Class Lab',
+  'In-Class Lab': 'In-Class Lab',
   'Praktikum': 'Lab / Project',
-  'Tutorium': 'Tutorial'
+  'Lab / Project': 'Lab / Project',
+  'Tutorium': 'Tutorial',
+  'Tutorial': 'Tutorial'
 };
 
 /**

@@ -581,6 +581,21 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
             self.send_json({"success": True})
             return
 
+        if path == '/api/open-file':
+            task_id = body.get('id')
+            is_sol = body.get('type') == 'solution'
+            rel_p = body.get('path', '')
+            if task_id and DB_FILE.exists():
+                with open(DB_FILE, 'r', encoding='utf-8') as f:
+                    db = json.load(f)
+                t = next((x for x in db.get("tasks", []) if x.get("id") == task_id), None)
+                if t:
+                    rel_p = t.get("solution_path" if is_sol else "file_path") or rel_p
+            abs_p = (WORKSPACE_ROOT / rel_p).resolve() if rel_p else WORKSPACE_ROOT
+            open_in_system_explorer(abs_p)
+            self.send_json({"success": True})
+            return
+
         if path == '/api/upload':
             fn = body.get('filename')
             b64 = body.get('dataBase64')
@@ -588,14 +603,46 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "error": "Missing file data"}, 400)
                 return
 
-            subj = body.get('targetSubject') or "General"
-            sheet = body.get('targetSheet') or get_sheet_number(fn)
             is_sol = body.get('isSolution', False)
+            dest_dir = None
+            target_task_id = body.get('targetTaskId')
 
-            # Clean sheet folder name
-            sheet_folder = re.sub(r'[^a-zA-Z0-9_-]', '_', sheet)
-            dest_dir = WORKSPACE_ROOT / subj / sheet_folder
+            if target_task_id and DB_FILE.exists():
+                try:
+                    with open(DB_FILE, 'r', encoding='utf-8') as f:
+                        db_temp = json.load(f)
+                    matched_task = next((t for t in db_temp.get("tasks", []) if t.get("id") == target_task_id), None)
+                    if matched_task:
+                        rel_base = matched_task.get("file_path") or matched_task.get("solution_path")
+                        if rel_base:
+                            full_p = (WORKSPACE_ROOT / rel_base).resolve()
+                            dest_dir = full_p if matched_task.get("is_folder") else full_p.parent
+                except Exception:
+                    pass
+
+            if not dest_dir:
+                subj = body.get('targetSubject') or "General"
+                sheet = body.get('targetSheet') or get_sheet_number(fn)
+                sheet_folder = re.sub(r'[^a-zA-Z0-9_-]', '_', sheet)
+
+                subj_path = WORKSPACE_ROOT / subj
+                ueb_dir = subj_path / "Uebungen"
+                ex_dir = subj_path / "Exercises"
+                if ueb_dir.is_dir():
+                    dest_dir = ueb_dir / sheet_folder
+                elif ex_dir.is_dir():
+                    dest_dir = ex_dir / sheet_folder
+                else:
+                    dest_dir = subj_path / sheet_folder
+
             dest_dir.mkdir(parents=True, exist_ok=True)
+
+            # If intended as solution and filename does not contain solution keyword, append _Solution
+            if is_sol and not SOL_REGEX.search(fn):
+                f_stem = Path(fn).stem
+                f_ext = Path(fn).suffix
+                fn = f"{f_stem}_Solution{f_ext}"
+
             dest_file = dest_dir / fn
 
             try:

@@ -19,6 +19,13 @@ export function renderListView(filtered, modules) {
 
   const groupsHtml = activeModules.map(mod => {
     const groupItems = filtered.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
+    groupItems.sort((a, b) => {
+      const sa = parseInt((a.sheet || '').replace(/\D/g, '') || '0', 10);
+      const sb = parseInt((b.sheet || '').replace(/\D/g, '') || '0', 10);
+      if (sa !== sb) return sa - sb;
+      return (a.title || '').localeCompare(b.title || '');
+    });
+
     const gDone = groupItems.filter(t => t.completed).length;
     const gMand = groupItems.filter(t => !t.is_optional);
     const gMandDone = gMand.filter(t => t.completed).length;

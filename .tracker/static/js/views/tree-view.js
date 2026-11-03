@@ -46,25 +46,30 @@ export function renderTreeView(filtered, modules) {
     const mMandDone = mMand.filter(t => t.completed).length;
     const col = getModuleColor(mod);
 
-    // Group tasks inside module by sheet
-    const sheets = [...new Set(modTasks.map(t => t.sheet))].sort();
+    const getSheetDisplay = (s) => (s || '').replace(/^Blatt\s*/i, 'Sheet ');
+
+    // Group tasks inside module by normalized sheet
+    const sheets = [...new Set(modTasks.map(t => getSheetDisplay(t.sheet)))].sort((a, b) => {
+      const na = parseInt(a.replace(/\D/g, '') || '0', 10);
+      const nb = parseInt(b.replace(/\D/g, '') || '0', 10);
+      return na - nb;
+    });
 
     const sheetsHtml = sheets.map(sheet => {
-      const sheetKey = `sheet-${mod}-${sheet}`;
+      const sheetKey = `sheet-${mod}-${sheet.replace(/\s+/g, '_')}`;
       const isSheetOpen = !state.collapsedNodes.has(sheetKey);
-      const sheetTasks = modTasks.filter(t => t.sheet === sheet);
+      const sheetTasks = modTasks.filter(t => getSheetDisplay(t.sheet) === sheet);
       const sDone = sheetTasks.filter(t => t.completed).length;
       const sMand = sheetTasks.filter(t => !t.is_optional);
       const sMandDone = sMand.filter(t => t.completed).length;
 
-      const displaySheet = sheet.replace(/^Blatt\s*/i, 'Sheet ');
       const cardsHtml = sheetTasks.map(t => renderTaskCard(t)).join('');
 
       return `
         <div class="tree-node-sheet">
           <div class="tree-row-sheet" onclick="window.appActions.toggleTreeNode('${sheetKey}')">
             <span class="tree-chevron ${isSheetOpen ? 'open' : ''}">▸</span>
-            <span class="tree-sheet-title">${esc(displaySheet)}</span>
+            <span class="tree-sheet-title">${esc(sheet)}</span>
             <span class="tree-badge-stat">${sMandDone}/${sMand.length} required</span>
             <span class="tree-badge-stat" style="color:var(--text-muted);">${sDone}/${sheetTasks.length} total</span>
           </div>

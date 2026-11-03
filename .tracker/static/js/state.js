@@ -74,6 +74,20 @@ export function notifySubscribers() {
 }
 
 /**
+ * Normalize category name for resilient comparison across German & English
+ */
+export function normalizeCategory(cat) {
+  if (!cat) return '';
+  const c = cat.toLowerCase();
+  if (c.includes('hausaufgabe') || c.includes('homework')) return 'homework';
+  if (c.includes('uebung') || c.includes('übung') || c.includes('exercise')) return 'exercise';
+  if (c.includes('praesenz') || c.includes('präsenz') || c.includes('in-class')) return 'in-class';
+  if (c.includes('praktikum') || c.includes('lab') || c.includes('project')) return 'lab';
+  if (c.includes('tutorium') || c.includes('tutorial')) return 'tutorial';
+  return c;
+}
+
+/**
  * Filter tasks based on all active criteria
  */
 export function getFilteredTasks() {
@@ -91,8 +105,12 @@ export function getFilteredTasks() {
     // 3. Module Filter (Dynamic subject matching)
     if (state.filterSubject !== 'all' && t.subject !== state.filterSubject) return false;
 
-    // 4. Category Filter
-    if (state.filterCategory !== 'all' && t.category !== state.filterCategory) return false;
+    // 4. Category Filter (Resilient bilingual match)
+    if (state.filterCategory !== 'all') {
+      if (normalizeCategory(t.category) !== normalizeCategory(state.filterCategory)) {
+        return false;
+      }
+    }
 
     // 5. Search Text Filter
     if (query) {
@@ -100,7 +118,8 @@ export function getFilteredTasks() {
       const matchFile = (t.file_name || '').toLowerCase().includes(query);
       const matchSol = (t.solution_name || '').toLowerCase().includes(query);
       const matchNotes = (t.notes || '').toLowerCase().includes(query);
-      const matchSheet = (t.sheet || '').toLowerCase().includes(query);
+      const displaySheet = (t.sheet || '').replace(/^Blatt\s*/i, 'Sheet ');
+      const matchSheet = (t.sheet || '').toLowerCase().includes(query) || displaySheet.toLowerCase().includes(query);
       const matchSubj = (t.subject || '').toLowerCase().includes(query);
       if (!matchTitle && !matchFile && !matchSol && !matchNotes && !matchSheet && !matchSubj) {
         return false;

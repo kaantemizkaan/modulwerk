@@ -294,6 +294,7 @@ async function loadTasks(isBackground = false) {
     state.tasks = data.tasks || [];
     state.ignoredTasks = Array.isArray(data.ignored_tasks) ? data.ignored_tasks : (data.ignored_tasks ? [data.ignored_tasks] : []);
     updateSyncBadge(true);
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
     notifySubscribers();
     if (!isBackground) checkNormalizeCandidates();
     return;
@@ -302,7 +303,7 @@ async function loadTasks(isBackground = false) {
   }
 
   updateSyncBadge(false);
-  const cached = localStorage.getItem('lmu_tasks_de_v2');
+  const cached = localStorage.getItem('modulwerk_tasks') || localStorage.getItem('lmu_tasks_de_v2');
   if (cached) {
     try { state.tasks = JSON.parse(cached); } catch {}
   }
@@ -322,6 +323,10 @@ function setupKeyboardShortcuts() {
       closeNormalizeModal();
       const overlay = document.getElementById('dropOverlay');
       if (overlay) overlay.classList.remove('active');
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput && document.activeElement === searchInput) {
+        searchInput.blur();
+      }
     }
   });
 }
@@ -521,11 +526,11 @@ Object.assign(window, window.appActions);
 // ========================================================
 
 export async function init() {
-  const savedTheme = localStorage.getItem('lmu_theme') || 'dark';
+  const savedTheme = localStorage.getItem('modulwerk_theme') || localStorage.getItem('lmu_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   state.theme = savedTheme;
 
-  state.viewMode = localStorage.getItem('lmu_view_mode') || 'list';
+  state.viewMode = localStorage.getItem('modulwerk_view_mode') || localStorage.getItem('lmu_view_mode') || 'list';
   updateViewModeButtons();
 
   initCommandBar();
