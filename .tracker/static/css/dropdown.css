@@ -57,6 +57,10 @@
   transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.15s ease;
 }
 
+.custom-dropdown.open {
+  z-index: 200;
+}
+
 .custom-dropdown.open .dropdown-chevron {
   transform: rotate(180deg);
   stroke: var(--lmu-green);
@@ -78,7 +82,7 @@
   border-radius: 9px;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
   padding: 4px;
-  z-index: 100;
+  z-index: 250;
   display: flex;
   flex-direction: column;
   gap: 1px;
