@@ -9,15 +9,11 @@ echo   Starting local server...
 echo ==========================================================
 echo.
 
-:: 1. Attempt to launch via Python standard-library engine
-where python >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    python -c "import sys; sys.exit(0 if sys.version_info >= (3, 6) else 1)" >nul 2>&1
-    if %ERRORLEVEL% equ 0 (
-        echo [OK] Python detected. Launching cross-platform engine...
-        python .tracker\tracker_server.py
-        goto :eof
-    )
+:: 1. Attempt to launch via Python standard-library engine (only if real Python 3 is functional)
+python -c "import sys; sys.exit(0 if sys.version_info >= (3, 6) else 1)" 2>nul && (
+    echo [OK] Python 3 detected. Launching cross-platform engine...
+    python .tracker\tracker_server.py
+    exit /b
 )
 
 :: 2. Fallback to Windows built-in PowerShell micro-server
