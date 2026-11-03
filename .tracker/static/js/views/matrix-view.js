@@ -173,7 +173,7 @@ export function renderMatrixView(filtered, modules) {
               ondragover="window.appActions.handleMatrixSlotDragOver(event)"
               ondragleave="window.appActions.handleMatrixSlotDragLeave(event)"
               ondrop="window.appActions.handleMatrixSlotDrop(event, '${esc(mod)}', '${esc(sheet)}')"
-              title="${esc(mod)} ${esc(displaySheet)}: Pending (click or drop file here)"
+              title="${esc(mod)} ${esc(sheet)}: Pending (click or drop file here)"
             >
               <div class="slot-quiet">
                 <span style="opacity:0.4; font-weight:600;">—</span>
