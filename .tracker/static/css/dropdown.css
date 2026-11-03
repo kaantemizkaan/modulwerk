@@ -24,6 +24,15 @@
   user-select: none;
   transition: all 0.15s ease;
   outline: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dropdown-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }
 
 .dropdown-trigger:hover {
