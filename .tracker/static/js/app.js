@@ -280,10 +280,18 @@ function updateViewModeButtons() {
 function toggleSidebar() {
   const sidebar = document.getElementById('appSidebar');
   const trigger = document.getElementById('sidebarOpenTrigger');
+  const backdrop = document.getElementById('sidebarBackdrop');
   if (!sidebar) return;
-  const isCollapsed = sidebar.classList.toggle('collapsed');
-  localStorage.setItem('modulwerk_sidebar_collapsed', isCollapsed ? '1' : '0');
-  if (trigger) trigger.classList.toggle('visible', isCollapsed);
+
+  const isMobile = window.innerWidth <= 860;
+  if (isMobile) {
+    const isOpen = sidebar.classList.toggle('open-mobile');
+    if (backdrop) backdrop.classList.toggle('active', isOpen);
+  } else {
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    localStorage.setItem('modulwerk_sidebar_v2_collapsed', isCollapsed ? '1' : '0');
+    if (trigger) trigger.classList.toggle('visible', isCollapsed);
+  }
 }
 
 function setSubject(s) {
@@ -677,8 +685,12 @@ export async function init() {
   state.viewMode = localStorage.getItem('modulwerk_view_mode') || localStorage.getItem('lmu_view_mode') || 'list';
   updateViewModeButtons();
 
-  // Restore sidebar collapsed state
-  if (localStorage.getItem('modulwerk_sidebar_collapsed') === '1') {
+  // Clear legacy broken state if present
+  localStorage.removeItem('modulwerk_sidebar_collapsed');
+
+  // Restore sidebar collapsed state (default is open)
+  const isMobile = window.innerWidth <= 860;
+  if (!isMobile && localStorage.getItem('modulwerk_sidebar_v2_collapsed') === '1') {
     const sb = document.getElementById('appSidebar');
     const tr = document.getElementById('sidebarOpenTrigger');
     if (sb) sb.classList.add('collapsed');

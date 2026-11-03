@@ -5,7 +5,7 @@
 /* 1. App Shell Layout */
 .app-shell {
   display: flex;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
@@ -16,6 +16,7 @@
 .app-sidebar {
   width: 236px;
   min-width: 236px;
+  max-width: 236px;
   height: 100vh;
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -23,15 +24,26 @@
   flex-direction: column;
   z-index: 100;
   user-select: none;
-  transition: width 0.28s var(--ios-spring-soft), transform 0.28s var(--ios-spring-soft), margin-left 0.28s var(--ios-spring-soft);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              min-width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              max-width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              opacity 0.18s ease;
 }
 
 .app-sidebar.collapsed {
   width: 0 !important;
   min-width: 0 !important;
-  margin-left: -236px;
+  max-width: 0 !important;
+  margin-left: 0 !important;
+  padding: 0 !important;
+  border-right: 1px solid transparent !important;
   overflow: hidden !important;
-  border-right: 1px solid transparent;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Sidebar Header & Brand */
@@ -398,12 +410,35 @@
   width: 28px;
   height: 28px;
   min-width: 28px;
-  padding: 0;
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.sidebar-open-trigger:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.sidebar-open-trigger svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
 }
 
 .sidebar-open-trigger.visible {
-  display: inline-flex;
+  display: inline-flex !important;
 }
 
 .header-breadcrumb {
@@ -523,16 +558,44 @@
 }
 
 /* Responsive adjustments */
+.sidebar-backdrop {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .app-sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.28s var(--ios-spring-soft);
+    margin-left: 0 !important;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
   }
-  .app-sidebar:not(.open-mobile) {
-    margin-left: -236px;
+  .app-sidebar.open-mobile {
+    transform: translateX(0);
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+  }
+  .sidebar-backdrop.active {
+    display: block;
   }
   .sidebar-open-trigger {
     display: inline-flex !important;
