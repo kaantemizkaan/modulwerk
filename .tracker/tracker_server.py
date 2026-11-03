@@ -574,6 +574,23 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "error": "DB not found"}, 404)
             return
 
+        if path == '/api/due-date':
+            task_id = body.get('id')
+            due_date = body.get('due_date')
+            if DB_FILE.exists():
+                with open(DB_FILE, 'r', encoding='utf-8') as f:
+                    db = json.load(f)
+                for t in db.get("tasks", []):
+                    if t.get("id") == task_id:
+                        t["due_date"] = due_date if due_date else None
+                        break
+                with open(DB_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(db, f, indent=2, ensure_ascii=False)
+                self.send_json({"success": True, "data": db})
+            else:
+                self.send_json({"success": False, "error": "DB not found"}, 404)
+            return
+
         if path == '/api/open-folder':
             rel_p = body.get('path', '')
             abs_p = (WORKSPACE_ROOT / rel_p).resolve() if rel_p else WORKSPACE_ROOT

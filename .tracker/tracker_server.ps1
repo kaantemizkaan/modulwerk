@@ -572,10 +572,36 @@ try {
                                 [System.IO.File]::WriteAllText($DbFile, $jsonOut, $utf8NoBom)
                                 Send-JsonResponse $response @{ success = $true }
                             } else {
-                                Send-JsonResponse $response @{ success = $false; error = "Aufgabe nicht gefunden" } 404
+                                Send-JsonResponse $response @{ success = $false; error = "Task not found" } 404
                             }
                         } else {
-                            Send-JsonResponse $response @{ success = $false; error = "Ungueltige Anfrage" } 400
+                            Send-JsonResponse $response @{ success = $false; error = "Invalid request" } 400
+                        }
+                    }
+                }
+
+                '^/api/due-date$' {
+                    if ($method -eq "POST") {
+                        $body = Read-RequestBody $request
+                        if ($body -and $body.id) {
+                            $dbContent = [System.IO.File]::ReadAllText($DbFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+                            $found = $false
+                            foreach ($t in $dbContent.tasks) {
+                                if ($t.id -eq $body.id) {
+                                    $t.due_date = if ($body.due_date) { [string]$body.due_date } else { $null }
+                                    $found = $true
+                                    break
+                                }
+                            }
+                            if ($found) {
+                                $jsonOut = $dbContent | ConvertTo-Json -Depth 6
+                                [System.IO.File]::WriteAllText($DbFile, $jsonOut, $utf8NoBom)
+                                Send-JsonResponse $response @{ success = $true; data = $dbContent }
+                            } else {
+                                Send-JsonResponse $response @{ success = $false; error = "Task not found" } 404
+                            }
+                        } else {
+                            Send-JsonResponse $response @{ success = $false; error = "Invalid request" } 400
                         }
                     }
                 }

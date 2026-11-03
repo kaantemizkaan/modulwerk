@@ -45,7 +45,12 @@ import {
   toggleNormalizeCandidate,
   toggleAllNormalizeCandidates,
   executeNormalizeAction,
-  toggleNoteDrawer
+  toggleNoteDrawer,
+  openDueModal,
+  closeDueModal,
+  setDuePreset,
+  saveCustomDueDate,
+  clearDueDate
 } from './components/modals.js';
 
 import { renderListView } from './views/list-view.js';
@@ -502,6 +507,11 @@ window.appActions = {
   openModal,
   closeModal,
   createCustomTask: createCustomTaskAction,
+  openDueModal,
+  closeDueModal,
+  setDuePreset,
+  saveCustomDueDate,
+  clearDueDate,
   expandAllTree,
   collapseAllTree,
   toggleTreeNode,

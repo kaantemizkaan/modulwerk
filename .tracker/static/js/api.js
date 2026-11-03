@@ -53,6 +53,19 @@ export async function saveTaskNote(id, notes) {
 }
 
 /**
+ * Save user due date (deadline) on a task
+ */
+export async function saveTaskDueDate(id, dueDate) {
+  const res = await fetch('/api/due-date', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, due_date: dueDate })
+  });
+  if (!res.ok) throw new Error('Failed to update due date');
+  return await res.json();
+}
+
+/**
  * Delete task (logical ignore or permanent disk removal)
  */
 export async function deleteTask(id, deleteFromDisk = false) {

@@ -549,3 +549,102 @@
 .note-input:focus {
   border-color: var(--text-secondary);
 }
+
+/* ======================================================== */
+/* COUNTDOWN BADGES & DEADLINE STYLES (ANTI-AI-SLOP CRAFT)  */
+/* ======================================================== */
+
+.due-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.due-pill svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.due-urgent {
+  color: #ea580c;
+  background: rgba(234, 88, 12, 0.1);
+  border: 1px solid rgba(234, 88, 12, 0.3);
+}
+
+.due-urgent:hover {
+  background: rgba(234, 88, 12, 0.18);
+  border-color: rgba(234, 88, 12, 0.5);
+}
+
+.due-soon {
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.09);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.due-soon:hover {
+  background: rgba(217, 119, 6, 0.16);
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+.due-normal {
+  color: var(--text-secondary);
+  background: var(--surface-active);
+  border: 1px solid var(--border);
+}
+
+.due-normal:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.due-overdue {
+  color: var(--warn);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+}
+
+.due-overdue:hover {
+  background: rgba(229, 72, 77, 0.2);
+  border-color: var(--warn);
+}
+
+.due-completed {
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px dashed var(--border);
+}
+
+.due-pulse-dot {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: due-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes due-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+.btn-due-active {
+  color: var(--lmu-green) !important;
+  border-color: var(--lmu-green-border) !important;
+}

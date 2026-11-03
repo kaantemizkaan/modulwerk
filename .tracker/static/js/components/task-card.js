@@ -18,6 +18,87 @@ const categoryLabels = {
 };
 
 /**
+ * Calculate human-readable countdown status and badge styling
+ * @param {string|null} dueDateStr 
+ * @param {boolean} isDone 
+ * @returns {Object|null}
+ */
+export function calculateDueStatus(dueDateStr, isDone) {
+  if (!dueDateStr) return null;
+  const target = new Date(dueDateStr);
+  if (isNaN(target.getTime())) return null;
+
+  const now = new Date();
+  const diffMs = target.getTime() - now.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHours = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (isDone) {
+    const formatted = target.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return {
+      status: 'completed',
+      cssClass: 'due-completed',
+      label: `Due ${formatted}`,
+      hasPulse: false,
+      title: `Completed (Deadline: ${target.toLocaleString()})`
+    };
+  }
+
+  // Overdue
+  if (diffMs < 0) {
+    const overdueHours = Math.abs(diffHours);
+    const overdueDays = Math.abs(diffDays);
+    const label = overdueHours < 24 ? `${overdueHours}h overdue` : `${overdueDays}d overdue`;
+    return {
+      status: 'overdue',
+      cssClass: 'due-overdue',
+      label,
+      hasPulse: false,
+      title: `Overdue since ${target.toLocaleString()}`
+    };
+  }
+
+  // Urgent (< 24 hours)
+  if (diffHours < 24) {
+    const h = diffHours;
+    const m = Math.max(0, diffMin % 60);
+    const label = h > 0 ? `${h}h ${m}m left` : `${m}m left`;
+    return {
+      status: 'urgent',
+      cssClass: 'due-urgent',
+      label,
+      hasPulse: true,
+      title: `Urgent deadline: ${target.toLocaleString()}`
+    };
+  }
+
+  // Soon (1 - 3 days)
+  if (diffDays < 4) {
+    const weekday = target.toLocaleDateString('en-US', { weekday: 'short' });
+    const time = target.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    return {
+      status: 'soon',
+      cssClass: 'due-soon',
+      label: `${diffDays}d left (${weekday} ${time})`,
+      hasPulse: false,
+      title: `Due on ${target.toLocaleString()}`
+    };
+  }
+
+  // Normal (> 3 days)
+  const monthDay = target.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return {
+    status: 'normal',
+    cssClass: 'due-normal',
+    label: `${diffDays}d left (${monthDay})`,
+    hasPulse: false,
+    title: `Due on ${target.toLocaleString()}`
+  };
+}
+
+/**
  * Render single task card HTML in English
  * @param {Object} t 
  * @returns {string}
@@ -66,6 +147,20 @@ export function renderTaskCard(t) {
   cleanTitle = cleanTitle.replace(/\bHausaufgabe\b/gi, 'Homework');
   cleanTitle = cleanTitle.replace(/\bLoesung\b/gi, 'Solution');
 
+  // Calculate Due Date Status
+  const dueInfo = calculateDueStatus(t.due_date, isDone);
+  const dueBadgeHtml = dueInfo ? `
+    <span 
+      class="due-pill ${dueInfo.cssClass}" 
+      onclick="event.stopPropagation(); window.appActions.openDueModal('${t.id}')"
+      title="${esc(dueInfo.title)} (Click to edit deadline)"
+    >
+      ${dueInfo.hasPulse ? '<span class="due-pulse-dot"></span>' : ''}
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>${esc(dueInfo.label)}</span>
+    </span>
+  ` : '';
+
   return `
     <article 
       class="task-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}" 
@@ -99,6 +194,8 @@ export function renderTaskCard(t) {
           >
             ${isOpt ? 'Optional' : 'Required'}
           </button>
+
+          ${dueBadgeHtml}
         </div>
 
         <div class="card-meta-right">
@@ -110,6 +207,14 @@ export function renderTaskCard(t) {
             <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             <span>${esc(dirPath)}</span>
           </span>
+
+          <button 
+            class="btn btn-icon ${t.due_date ? 'btn-due-active' : ''}" 
+            onclick="window.appActions.openDueModal('${t.id}')"
+            title="${t.due_date ? 'Deadline: ' + esc(t.due_date) + ' (click to change)' : 'Set deadline'}"
+          >
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </button>
 
           <button 
             class="btn btn-icon" 

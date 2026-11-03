@@ -357,3 +357,131 @@ export function toggleNoteDrawer(id) {
     if (input) input.focus();
   }
 }
+
+// --------------------------------------------------------
+// 6. DUE DATE (DEADLINE) CONTROLLERS
+// --------------------------------------------------------
+export function openDueModal(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  state.pendingDueTaskId = taskId;
+
+  const modal = document.getElementById('dueModal');
+  const titleEl = document.getElementById('dueTaskTitle');
+  const curEl = document.getElementById('dueCurrentText');
+  const pickerEl = document.getElementById('dueCustomPicker');
+  const btnClear = document.getElementById('btnClearDue');
+
+  if (titleEl) titleEl.textContent = t.title || 'Task';
+  if (curEl) {
+    if (t.due_date) {
+      const d = new Date(t.due_date);
+      curEl.textContent = !isNaN(d.getTime()) ? d.toLocaleString() : t.due_date;
+    } else {
+      curEl.textContent = 'None set';
+    }
+  }
+
+  if (btnClear) {
+    btnClear.style.display = t.due_date ? 'inline-flex' : 'none';
+  }
+
+  if (pickerEl) {
+    if (t.due_date) {
+      const d = new Date(t.due_date);
+      if (!isNaN(d.getTime())) {
+        const pad = n => String(n).padStart(2, '0');
+        pickerEl.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      } else {
+        pickerEl.value = '';
+      }
+    } else {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(12, 0, 0, 0);
+      const pad = n => String(n).padStart(2, '0');
+      pickerEl.value = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}T12:00`;
+    }
+  }
+
+  if (modal) modal.classList.add('open');
+}
+
+export function closeDueModal() {
+  const modal = document.getElementById('dueModal');
+  if (modal) modal.classList.remove('open');
+  state.pendingDueTaskId = null;
+}
+
+export function getPresetIsoString(presetKey) {
+  const now = new Date();
+  const d = new Date(now);
+
+  if (presetKey === 'today-18') {
+    d.setHours(18, 0, 0, 0);
+    if (d <= now) {
+      d.setHours(23, 59, 0, 0);
+    }
+  } else if (presetKey === 'tomorrow-12') {
+    d.setDate(d.getDate() + 1);
+    d.setHours(12, 0, 0, 0);
+  } else if (presetKey === 'thursday-12') {
+    const currentDay = d.getDay();
+    let daysUntilThursday = (4 - currentDay + 7) % 7;
+    if (daysUntilThursday === 0 && now.getHours() >= 12) {
+      daysUntilThursday = 7;
+    }
+    d.setDate(d.getDate() + daysUntilThursday);
+    d.setHours(12, 0, 0, 0);
+  } else if (presetKey === 'week-1') {
+    d.setDate(d.getDate() + 7);
+    d.setHours(12, 0, 0, 0);
+  }
+
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+}
+
+async function applyTaskDueDate(isoStr) {
+  const taskId = state.pendingDueTaskId;
+  if (!taskId) return;
+
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+
+  t.due_date = isoStr || null;
+  closeDueModal();
+  notifySubscribers();
+
+  if (state.isOnline) {
+    try {
+      await api.saveTaskDueDate(taskId, isoStr);
+      showToast(isoStr ? 'Deadline set successfully ✓' : 'Deadline removed ✓');
+    } catch (err) {
+      showToast('Error updating deadline: ' + err.message);
+    }
+  } else {
+    localStorage.setItem('modulwerk_tasks', JSON.stringify(state.tasks));
+    showToast(isoStr ? 'Deadline set (offline)' : 'Deadline removed (offline)');
+  }
+}
+
+export function setDuePreset(presetKey) {
+  const isoStr = getPresetIsoString(presetKey);
+  applyTaskDueDate(isoStr);
+}
+
+export function saveCustomDueDate() {
+  const pickerEl = document.getElementById('dueCustomPicker');
+  if (!pickerEl || !pickerEl.value) {
+    showToast('Please select a date and time');
+    return;
+  }
+  const val = pickerEl.value;
+  const isoStr = val.length === 16 ? val + ':00' : val;
+  applyTaskDueDate(isoStr);
+}
+
+export function clearDueDate() {
+  applyTaskDueDate(null);
+}

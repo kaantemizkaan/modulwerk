@@ -465,16 +465,66 @@
     </div>
   </div>
 
-  <!-- Hidden Matrix Slot Picker -->
-  <input type="file" id="hiddenMatrixPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">
+  <!-- Task Deadline / Due Date Modal -->
+  <div class="modal-overlay" id="dueModal">
+    <div class="modal-panel" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2 style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Set Task Deadline
+        </h2>
+        <button class="btn btn-icon" onclick="window.appActions.closeDueModal()" style="height:24px;width:24px;border:none;">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast"></div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+        Target: <strong id="dueTaskTitle" style="color:var(--text);"></strong>
+      </p>
 
-  <!-- Application Entry Point (Native ES Modules) -->
-  <script type="module" src="/static/js/app.js"></script>
-</body>
-</html>
+      <div style="font-size: 11.5px; color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center;">
+        <span>Current deadline:</span>
+        <span id="dueCurrentText" style="font-family:var(--font-mono); font-weight:500; color:var(--text);">None</span>
+      </div>
+
+      <div class="field">
+        <label style="margin-bottom:6px;">Quick Presets</label>
+        <div class="due-preset-grid">
+          <button type="button" class="btn-preset" onclick="window.appActions.setDuePreset('today-18')">
+            <span class="preset-name">Today 18:00</span>
+            <span class="preset-hint">End of working day</span>
+          </button>
+          <button type="button" class="btn-preset" onclick="window.appActions.setDuePreset('tomorrow-12')">
+            <span class="preset-name">Tomorrow 12:00</span>
+            <span class="preset-hint">Midday submission</span>
+          </button>
+          <button type="button" class="btn-preset" onclick="window.appActions.setDuePreset('thursday-12')">
+            <span class="preset-name">Thursday 12:00</span>
+            <span class="preset-hint">Weekly cutoff</span>
+          </button>
+          <button type="button" class="btn-preset" onclick="window.appActions.setDuePreset('week-1')">
+            <span class="preset-name">In 1 Week</span>
+            <span class="preset-hint">+7 days at 12:00</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="dueCustomPicker">Custom Date &amp; Time</label>
+        <div style="display:flex; gap:8px;">
+          <input type="datetime-local" id="dueCustomPicker" class="field-input" style="flex:1;">
+          <button type="button" class="btn btn-primary" onclick="window.appActions.saveCustomDueDate()">Apply</button>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content:space-between; align-items:center; margin-top:20px;">
+        <button type="button" class="btn" id="btnClearDue" onclick="window.appActions.clearDueDate()" style="color:var(--warn); border-color:var(--warn-border);">
+          Remove Deadline
+        </button>
+        <button type="button" class="btn" onclick="window.appActions.closeDueModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Hidden Matrix Slot Picker -->
   <input type="file" id="hiddenMatrixPicker" accept=".pdf,.docx,.doc,.txt,.md,.java,.py,.c,.cpp,.ipynb,.zip" style="display:none;">

@@ -6,6 +6,7 @@ import { state, notifySubscribers, showToast, getModuleColor } from '../state.js
 import * as api from '../api.js';
 import { esc } from '../utils.js';
 import { checkNormalizeCandidates } from '../components/modals.js';
+import { calculateDueStatus } from '../components/task-card.js';
 
 const categoryLabels = {
   'Hausaufgabe': 'Homework',
@@ -219,6 +220,8 @@ export function renderMatrixView(filtered, modules) {
         shortTitle = shortTitle.replace(/\s*\((?:(?:blatt|sheet)\s*)?0*(\d+)\)/i, ' $1').trim();
         if (!shortTitle) shortTitle = t.title;
 
+        const dueInfo = calculateDueStatus(t.due_date, isDone);
+
         return `
           <div class="matrix-card ${isDone ? 'done' : ''} ${isAbgabe ? 'card-pending-abgabe' : ''} ${isOpt ? 'card-optional' : ''}">
             <div class="matrix-card-top">
@@ -230,6 +233,21 @@ export function renderMatrixView(filtered, modules) {
               </div>
               <span class="badge ${catClass}" style="font-size:9.5px; padding:1px 5px;">${esc(displayCategory)}</span>
             </div>
+
+            ${dueInfo ? `
+              <div style="margin-top:2px; margin-bottom:4px; display:flex;">
+                <span 
+                  class="due-pill ${dueInfo.cssClass}" 
+                  style="font-size:9.5px; padding:1px 5px; gap:3px;" 
+                  onclick="event.stopPropagation(); window.appActions.openDueModal('${t.id}')"
+                  title="${esc(dueInfo.title)} (Click to edit deadline)"
+                >
+                  ${dueInfo.hasPulse ? '<span class="due-pulse-dot" style="width:4px;height:4px;"></span>' : ''}
+                  <svg viewBox="0 0 24 24" style="width:9px;height:9px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>${esc(dueInfo.label)}</span>
+                </span>
+              </div>
+            ` : ''}
 
             <div class="matrix-pair-row">
               <span 
