@@ -21,6 +21,11 @@ export const state = {
   // Tree View State
   collapsedNodes: new Set(),
 
+  // Matrix View State
+  matrixAutoCollapse: localStorage.getItem('modulwerk_matrix_auto_collapse') !== 'false',
+  matrixExpandedSheets: new Set(),
+  matrixCollapsedSheets: new Set(),
+
   // Modals & Temp Selection State
   currentSolutionTaskId: null,
   pendingDeleteTaskId: null,

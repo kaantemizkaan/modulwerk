@@ -66,7 +66,11 @@ import {
   handleMatrixPickedFile,
   handleMatrixSlotDragOver,
   handleMatrixSlotDragLeave,
-  handleMatrixSlotDrop
+  handleMatrixSlotDrop,
+  toggleMatrixColumn,
+  toggleMatrixAutoCollapse,
+  expandAllMatrixColumns,
+  collapseCompletedMatrixColumns
 } from './views/matrix-view.js';
 
 // ========================================================
@@ -647,6 +651,10 @@ window.appActions = {
   handleMatrixSlotDragOver,
   handleMatrixSlotDragLeave,
   handleMatrixSlotDrop,
+  toggleMatrixColumn,
+  toggleMatrixAutoCollapse,
+  expandAllMatrixColumns,
+  collapseCompletedMatrixColumns,
   setSubject,
   setStatus,
   setViewMode,

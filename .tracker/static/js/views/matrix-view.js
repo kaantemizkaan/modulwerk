@@ -91,6 +91,59 @@ export async function uploadMatrixFile(file, subject, sheet) {
   }
 }
 
+export function isSheetCollapsed(sheet) {
+  if (state.matrixExpandedSheets && state.matrixExpandedSheets.has(sheet)) return false;
+  if (state.matrixCollapsedSheets && state.matrixCollapsedSheets.has(sheet)) return true;
+  if (!state.matrixAutoCollapse) return false;
+
+  const getSheetDisplay = (s) => (s || '').replace(/^Blatt\s*/i, 'Sheet ');
+  const sheetTasks = state.tasks.filter(t => getSheetDisplay(t.sheet) === sheet);
+  const sDone = sheetTasks.filter(t => t.completed).length;
+  return sheetTasks.length > 0 && sDone === sheetTasks.length;
+}
+
+export function toggleMatrixColumn(sheet) {
+  if (!state.matrixExpandedSheets) state.matrixExpandedSheets = new Set();
+  if (!state.matrixCollapsedSheets) state.matrixCollapsedSheets = new Set();
+
+  const isCurrentlyCollapsed = isSheetCollapsed(sheet);
+  if (isCurrentlyCollapsed) {
+    state.matrixExpandedSheets.add(sheet);
+    state.matrixCollapsedSheets.delete(sheet);
+  } else {
+    state.matrixCollapsedSheets.add(sheet);
+    state.matrixExpandedSheets.delete(sheet);
+  }
+  notifySubscribers();
+}
+
+export function toggleMatrixAutoCollapse() {
+  state.matrixAutoCollapse = !state.matrixAutoCollapse;
+  localStorage.setItem('modulwerk_matrix_auto_collapse', state.matrixAutoCollapse ? 'true' : 'false');
+  if (state.matrixExpandedSheets) state.matrixExpandedSheets.clear();
+  if (state.matrixCollapsedSheets) state.matrixCollapsedSheets.clear();
+  notifySubscribers();
+  showToast(state.matrixAutoCollapse ? 'Auto-collapse enabled for completed columns' : 'Auto-collapse disabled (All columns expanded)');
+}
+
+export function expandAllMatrixColumns() {
+  state.matrixAutoCollapse = false;
+  localStorage.setItem('modulwerk_matrix_auto_collapse', 'false');
+  if (state.matrixCollapsedSheets) state.matrixCollapsedSheets.clear();
+  if (state.matrixExpandedSheets) state.matrixExpandedSheets.clear();
+  notifySubscribers();
+  showToast('All columns expanded');
+}
+
+export function collapseCompletedMatrixColumns() {
+  state.matrixAutoCollapse = true;
+  localStorage.setItem('modulwerk_matrix_auto_collapse', 'true');
+  if (state.matrixCollapsedSheets) state.matrixCollapsedSheets.clear();
+  if (state.matrixExpandedSheets) state.matrixExpandedSheets.clear();
+  notifySubscribers();
+  showToast('Completed columns collapsed');
+}
+
 export function renderMatrixView(filtered, modules) {
   const activeModules = modules.filter(m => state.tasks.some(t => t.subject === m));
   const otherTasks = state.tasks.filter(t => !modules.includes(t.subject));
@@ -114,23 +167,89 @@ export function renderMatrixView(filtered, modules) {
     allSheets.push('Sheet 01');
   }
 
-  // Build Table Header with column metrics
+  // Calculate column widths and collapse states
   const minColWidth = 220;
-  const colWidthStyle = `min-width:${minColWidth}px; width:max(${minColWidth}px, calc((100% - 170px) / ${allSheets.length}));`;
-  const thCols = allSheets.map(sheet => {
+  const collapsedColWidth = 46;
+  const modColWidth = 165;
+
+  const sheetMeta = {};
+  let collapsedCount = 0;
+
+  allSheets.forEach(sheet => {
     const sheetTasks = filtered.filter(t => getSheetDisplay(t.sheet) === sheet);
+    const totalSheetTasks = state.tasks.filter(t => getSheetDisplay(t.sheet) === sheet);
     const sDone = sheetTasks.filter(t => t.completed).length;
-    const isAllDone = sheetTasks.length > 0 && sDone === sheetTasks.length;
+    const totalDone = totalSheetTasks.filter(t => t.completed).length;
+    const isAllDone = totalSheetTasks.length > 0 && totalDone === totalSheetTasks.length;
+    const isCollapsed = isSheetCollapsed(sheet);
+
+    if (isCollapsed) collapsedCount++;
+
+    sheetMeta[sheet] = {
+      sheetTasks,
+      totalSheetTasks,
+      sDone,
+      totalDone,
+      isAllDone,
+      isCollapsed
+    };
+  });
+
+  const expandedCount = allSheets.length - collapsedCount;
+  const totalTableMinWidth = modColWidth + (expandedCount * minColWidth) + (collapsedCount * collapsedColWidth);
+  const expandedColWidthStyle = `min-width:${minColWidth}px; width:max(${minColWidth}px, calc((100% - ${modColWidth}px - ${collapsedCount * collapsedColWidth}px) / ${expandedCount || 1}));`;
+  const collapsedColWidthStyle = `width:${collapsedColWidth}px; min-width:${collapsedColWidth}px; max-width:${collapsedColWidth}px;`;
+
+  // Build Table Header with column metrics
+  const thCols = allSheets.map(sheet => {
+    const meta = sheetMeta[sheet];
+    const { sheetTasks, sDone, isAllDone, isCollapsed } = meta;
+
+    if (isCollapsed) {
+      return `
+        <th 
+          class="matrix-th matrix-col-collapsed" 
+          style="${collapsedColWidthStyle}"
+          onclick="window.appActions.toggleMatrixColumn('${esc(sheet)}')"
+          title="${esc(sheet)} (${sDone}/${sheetTasks.length} completed) · Click to expand"
+        >
+          <div class="matrix-col-header-collapsed">
+            <span class="matrix-col-expand-icon" title="Expand column">
+              <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            </span>
+            <span class="matrix-col-vertical-label">${esc(sheet)}</span>
+            <span class="matrix-col-mini-pill ${isAllDone ? 'all-done' : ''}">
+              ${isAllDone ? '✓' : `${sDone}/${sheetTasks.length}`}
+            </span>
+          </div>
+        </th>
+      `;
+    }
 
     return `
-      <th class="matrix-th" style="${colWidthStyle}">
+      <th class="matrix-th" style="${expandedColWidthStyle}">
         <div class="matrix-col-header">
-          <span>${esc(sheet)}</span>
-          ${sheetTasks.length > 0 ? `
-            <span class="matrix-col-pill ${isAllDone ? 'all-done' : ''}" title="${sDone}/${sheetTasks.length} completed">
-              ${sDone}/${sheetTasks.length}${isAllDone ? ' ✓' : ''}
-            </span>
-          ` : ''}
+          <div class="matrix-col-title-wrap">
+            <span>${esc(sheet)}</span>
+          </div>
+          <div class="matrix-col-actions-wrap">
+            ${sheetTasks.length > 0 ? `
+              <span 
+                class="matrix-col-pill ${isAllDone ? 'all-done clickable' : ''}" 
+                ${isAllDone ? `onclick="window.appActions.toggleMatrixColumn('${esc(sheet)}')" title="${sDone}/${sheetTasks.length} completed · Click to collapse"` : `title="${sDone}/${sheetTasks.length} completed"`}
+              >
+                ${sDone}/${sheetTasks.length}${isAllDone ? ' ✓' : ''}
+              </span>
+            ` : ''}
+            <button 
+              type="button" 
+              class="matrix-col-collapse-btn" 
+              onclick="window.appActions.toggleMatrixColumn('${esc(sheet)}')" 
+              title="Collapse ${esc(sheet)}"
+            >
+              <svg viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            </button>
+          </div>
         </div>
       </th>
     `;
@@ -152,14 +271,44 @@ export function renderMatrixView(filtered, modules) {
     const col = getModuleColor(mod);
 
     const cellsHtml = allSheets.map(sheet => {
+      const meta = sheetMeta[sheet];
+      const { isCollapsed } = meta;
       const cellTasks = modTasks.filter(t => getSheetDisplay(t.sheet) === sheet);
       const allModTasks = state.tasks.filter(t => (modules.includes(t.subject) ? t.subject === mod : mod === 'Other'));
       const hasRealTasksInSheet = allModTasks.some(t => getSheetDisplay(t.sheet) === sheet);
+      const cellDoneCount = cellTasks.filter(t => t.completed).length;
+      const isAllCellDone = cellTasks.length > 0 && cellDoneCount === cellTasks.length;
+
+      if (isCollapsed) {
+        return `
+          <td 
+            class="matrix-td matrix-td-collapsed" 
+            style="${collapsedColWidthStyle}"
+            onclick="window.appActions.toggleMatrixColumn('${esc(sheet)}')"
+            title="${esc(mod)} · ${esc(sheet)} (${cellDoneCount}/${cellTasks.length} completed) · Click to expand"
+          >
+            <div class="matrix-collapsed-cell">
+              ${cellTasks.length > 0 ? `
+                <div class="matrix-collapsed-indicator ${isAllCellDone ? 'done' : ''}">
+                  <span class="matrix-collapsed-stripe" style="background:${col.color};"></span>
+                  ${isAllCellDone ? `
+                    <svg viewBox="0 0 24 24" class="matrix-collapsed-check"><polyline points="20 6 9 17 4 12"/></svg>
+                  ` : `
+                    <span class="matrix-collapsed-fraction">${cellDoneCount}/${cellTasks.length}</span>
+                  `}
+                </div>
+              ` : `
+                <span class="matrix-blank-dash" style="opacity:0.25; font-size:11px;">—</span>
+              `}
+            </div>
+          </td>
+        `;
+      }
 
       if (cellTasks.length === 0) {
         if (isFilterActive || hasRealTasksInSheet) {
           return `
-            <td class="matrix-td matrix-td-empty" style="${colWidthStyle}">
+            <td class="matrix-td matrix-td-empty" style="${expandedColWidthStyle}">
               <div class="matrix-cell-blank">
                 <span class="matrix-blank-dash">—</span>
               </div>
@@ -168,7 +317,7 @@ export function renderMatrixView(filtered, modules) {
         }
 
         return `
-          <td class="matrix-td" style="${colWidthStyle}">
+          <td class="matrix-td" style="${expandedColWidthStyle}">
             <div 
               class="matrix-empty-slot"
               onclick="window.appActions.triggerMatrixSlotPicker('${esc(mod)}', '${esc(sheet)}')"
@@ -290,7 +439,7 @@ export function renderMatrixView(filtered, modules) {
       }).join('');
 
       return `
-        <td class="matrix-td" style="${colWidthStyle}">
+        <td class="matrix-td" style="${expandedColWidthStyle}">
           <div class="matrix-cell-stack">
             ${cardsHtml}
           </div>
@@ -327,19 +476,58 @@ export function renderMatrixView(filtered, modules) {
     `;
   }).join('');
 
-  return `
-    <div class="matrix-wrapper">
-      <table class="matrix-table" style="min-width: calc(170px + ${allSheets.length * minColWidth}px);">
-        <thead>
-          <tr>
-            <th class="matrix-th matrix-th-mod">Module</th>
-            ${thCols}
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
+  const toolbarHtml = `
+    <div class="matrix-toolbar">
+      <div class="matrix-toolbar-left">
+        <span class="matrix-toolbar-badge">
+          <strong>${allSheets.length}</strong> Sheets
+          ${collapsedCount > 0 ? `<span class="matrix-collapsed-tag">${collapsedCount} collapsed</span>` : ''}
+        </span>
+        <span class="matrix-toolbar-sep">•</span>
+        <span class="matrix-toolbar-hint">Click any completed column to expand / collapse</span>
+      </div>
+      <div class="matrix-toolbar-right">
+        <button 
+          type="button" 
+          class="matrix-toggle-btn ${state.matrixAutoCollapse ? 'active' : ''}" 
+          onclick="window.appActions.toggleMatrixAutoCollapse()" 
+          title="Toggle auto-collapsing 100% completed columns"
+        >
+          <span class="matrix-toggle-switch"></span>
+          <span>Auto-collapse completed</span>
+        </button>
+        ${collapsedCount > 0 ? `
+          <button 
+            type="button" 
+            class="matrix-link-btn" 
+            onclick="window.appActions.expandAllMatrixColumns()" 
+            title="Expand all collapsed columns"
+          >
+            <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <span>Expand all</span>
+          </button>
+        ` : ''}
+      </div>
     </div>
   `;
+
+  return `
+    <div class="matrix-wrapper">
+      ${toolbarHtml}
+      <div class="matrix-scroll-container">
+        <table class="matrix-table" style="min-width: ${totalTableMinWidth}px;">
+          <thead>
+            <tr>
+              <th class="matrix-th matrix-th-mod">Module</th>
+              ${thCols}
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
 }
