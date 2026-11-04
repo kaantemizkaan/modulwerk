@@ -167,10 +167,11 @@ export function renderMatrixView(filtered, modules) {
     allSheets.push('Sheet 01');
   }
 
-  // Calculate column widths and collapse states
-  const minColWidth = 220;
-  const collapsedColWidth = 46;
-  const modColWidth = 165;
+  // Calculate compact column widths and collapse states
+  const minColWidth = 190;
+  const maxColWidth = 240;
+  const collapsedColWidth = 36;
+  const modColWidth = 140;
 
   const sheetMeta = {};
   let collapsedCount = 0;
@@ -185,25 +186,29 @@ export function renderMatrixView(filtered, modules) {
 
     if (isCollapsed) collapsedCount++;
 
+    const numMatch = sheet.match(/\d+/);
+    const shortNum = numMatch ? numMatch[0] : sheet.replace(/^Sheet\s*/i, '');
+
     sheetMeta[sheet] = {
       sheetTasks,
       totalSheetTasks,
       sDone,
       totalDone,
       isAllDone,
-      isCollapsed
+      isCollapsed,
+      shortNum
     };
   });
 
   const expandedCount = allSheets.length - collapsedCount;
   const totalTableMinWidth = modColWidth + (expandedCount * minColWidth) + (collapsedCount * collapsedColWidth);
-  const expandedColWidthStyle = `min-width:${minColWidth}px; width:max(${minColWidth}px, calc((100% - ${modColWidth}px - ${collapsedCount * collapsedColWidth}px) / ${expandedCount || 1}));`;
+  const expandedColWidthStyle = `min-width:${minColWidth}px; max-width:${maxColWidth}px; width:clamp(${minColWidth}px, calc((100% - ${modColWidth}px - ${collapsedCount * collapsedColWidth}px) / ${expandedCount || 1}), ${maxColWidth}px);`;
   const collapsedColWidthStyle = `width:${collapsedColWidth}px; min-width:${collapsedColWidth}px; max-width:${collapsedColWidth}px;`;
 
   // Build Table Header with column metrics
   const thCols = allSheets.map(sheet => {
     const meta = sheetMeta[sheet];
-    const { sheetTasks, sDone, isAllDone, isCollapsed } = meta;
+    const { sheetTasks, sDone, isAllDone, isCollapsed, shortNum } = meta;
 
     if (isCollapsed) {
       return `
@@ -214,10 +219,7 @@ export function renderMatrixView(filtered, modules) {
           title="${esc(sheet)} (${sDone}/${sheetTasks.length} completed) · Click to expand"
         >
           <div class="matrix-col-header-collapsed">
-            <span class="matrix-col-expand-icon" title="Expand column">
-              <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-            </span>
-            <span class="matrix-col-vertical-label">${esc(sheet)}</span>
+            <span class="matrix-col-compact-num">${esc(shortNum)}</span>
             <span class="matrix-col-mini-pill ${isAllDone ? 'all-done' : ''}">
               ${isAllDone ? '✓' : `${sDone}/${sheetTasks.length}`}
             </span>
@@ -289,8 +291,7 @@ export function renderMatrixView(filtered, modules) {
           >
             <div class="matrix-collapsed-cell">
               ${cellTasks.length > 0 ? `
-                <div class="matrix-collapsed-indicator ${isAllCellDone ? 'done' : ''}">
-                  <span class="matrix-collapsed-stripe" style="background:${col.color};"></span>
+                <div class="matrix-collapsed-indicator ${isAllCellDone ? 'done' : ''}" style="border-left-color:${col.color};">
                   ${isAllCellDone ? `
                     <svg viewBox="0 0 24 24" class="matrix-collapsed-check"><polyline points="20 6 9 17 4 12"/></svg>
                   ` : `
@@ -298,7 +299,7 @@ export function renderMatrixView(filtered, modules) {
                   `}
                 </div>
               ` : `
-                <span class="matrix-blank-dash" style="opacity:0.25; font-size:11px;">—</span>
+                <span class="matrix-blank-dash" style="opacity:0.25; font-size:10px;">—</span>
               `}
             </div>
           </td>
@@ -459,16 +460,16 @@ export function renderMatrixView(filtered, modules) {
     return `
       <tr class="matrix-tr">
         <td class="matrix-td-mod" data-module="${esc(mod)}">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-            <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 8px ${col.bg};"></span>
-            <span style="font-size:13px; font-weight:600; color:var(--text);">${esc(mod)}</span>
-            ${isModCleared ? '<span class="all-clear-badge" style="font-size:8.5px; padding:0 4px;">✓</span>' : ''}
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
+            <span class="mod-dot" style="background: ${col.color}; box-shadow: 0 0 6px ${col.bg};"></span>
+            <span style="font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(mod)}</span>
+            ${isModCleared ? '<span class="all-clear-badge" style="font-size:8px; padding:0 3px;">✓</span>' : ''}
           </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
             <div class="chip-sparkline" title="${mMandDone}/${mMand.length} required completed">${mDots}</div>
           </div>
-          <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">
-            ${mMandDone}/${mMand.length} required · ${mTotalDone}/${modTasks.length} total
+          <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-secondary); white-space:nowrap;">
+            ${mMandDone}/${mMand.length} req · ${mTotalDone}/${modTasks.length} tot
           </div>
         </td>
         ${cellsHtml}
