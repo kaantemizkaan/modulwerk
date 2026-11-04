@@ -530,4 +530,3 @@ export function renderMatrixView(filtered, modules) {
     </div>
   `;
 }
-}
