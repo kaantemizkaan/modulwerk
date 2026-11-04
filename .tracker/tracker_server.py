@@ -17,7 +17,13 @@ import platform
 import subprocess
 import webbrowser
 from datetime import datetime
-from http.server import HTTPServer, BaseHTTPRequestHandler
+try:
+    from http.server import ThreadingHTTPServer, HTTPServer, BaseHTTPRequestHandler
+except ImportError:
+    import socketserver
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
+        daemon_threads = True
 from urllib.parse import urlparse, parse_qs, unquote
 from pathlib import Path
 
@@ -351,6 +357,18 @@ def open_in_system_explorer(target_path):
 
 
 class ModulwerkRequestHandler(BaseHTTPRequestHandler):
+    def handle(self):
+        try:
+            super().handle()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
+    def _safe_write(self, content: bytes):
+        try:
+            self.wfile.write(content)
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
     def log_message(self, format, *args):
         # Quiet logs for clean console
         pass
@@ -379,7 +397,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_cors_headers()
                 self.send_header('Content-Length', str(len(content)))
                 self.end_headers()
-                self.wfile.write(content)
+                self._safe_write(content)
             else:
                 self.send_error(404, "Modulwerk.html not found")
             return
@@ -405,7 +423,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_cors_headers()
                 self.send_header('Content-Length', str(len(content)))
                 self.end_headers()
-                self.wfile.write(content)
+                self._safe_write(content)
             else:
                 self.send_error(404, "Static file not found")
             return
@@ -443,7 +461,7 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
                 self.send_cors_headers()
                 self.send_header('Content-Length', str(len(content)))
                 self.end_headers()
-                self.wfile.write(content)
+                self._safe_write(content)
             else:
                 self.send_error(404, f"File {abs_p} not found on disk")
             return
@@ -767,20 +785,35 @@ class ModulwerkRequestHandler(BaseHTTPRequestHandler):
         self.send_error(404, "Endpoint not found")
 
     def send_json(self, data, status=200):
-        body = json.dumps(data, ensure_ascii=False).encode('utf-8')
-        self.send_response(status)
-        self.send_header('Content-Type', 'application/json; charset=utf-8')
-        self.send_cors_headers()
-        self.send_header('Content-Length', str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            body = json.dumps(data, ensure_ascii=False).encode('utf-8')
+            self.send_response(status)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_cors_headers()
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self._safe_write(body)
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
+
+class ModulwerkServer(ThreadingHTTPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
+    def handle_error(self, request, client_address):
+        exc_type, _, _ = sys.exc_info()
+        if exc_type in (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            # Client closed socket before response completed (e.g. F5 refresh, tab closed)
+            return
+        super().handle_error(request, client_address)
 
 
 def run_server(port=5050):
     server_address = ('', port)
     for p in range(port, port + 50):
         try:
-            httpd = HTTPServer(('', p), ModulwerkRequestHandler)
+            httpd = ModulwerkServer(('', p), ModulwerkRequestHandler)
             actual_port = p
             break
         except OSError:
